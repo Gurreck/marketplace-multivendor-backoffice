@@ -33,10 +33,13 @@ exports.getProducts = async (req, res) => {
     // Si el usuario es vendedor y quiere ver "sus" productos (puedes ajustar esta lógica según param o ruta)
     // Por ahora, si pasamos ?vendor=me en la query string
     // Si la ruta es /vendor/me o se pasa el query param, filtramos por el usuario actual
-    if (
-      (req.path.includes("/vendor/me") || req.query.vendor === "me") &&
-      req.user
-    ) {
+    if (req.path.includes("/vendor/me") || req.query.vendor === "me") {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: "Debe iniciar sesión para ver sus productos.",
+        });
+      }
       query.vendor = req.user.id;
     }
 

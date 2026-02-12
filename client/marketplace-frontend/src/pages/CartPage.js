@@ -1,16 +1,58 @@
 import React from "react";
-import Navbar from "../components/Navbar";
+import PublicLayout from "../components/PublicLayout";
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import orderService from "../services/orderService"; // Assuming this path for orderService
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartTotal } =
     useCart();
+  const navigate = useNavigate();
+
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) return;
+
+    try {
+      const orderData = {
+        orderItems: cartItems.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          image: item.images?.[0] || "",
+          price: item.price,
+          product: item._id,
+          vendor: item.vendor?._id || item.vendor,
+        })),
+        shippingAddress: {
+          address: "Dirección de prueba 123",
+          city: "Ciudad",
+          country: "País",
+        },
+        paymentMethod: "Tarjeta de Crédito",
+        itemsPrice: cartTotal,
+        taxPrice: cartTotal * 0.15,
+        shippingPrice: 10,
+        totalPrice: cartTotal * 1.15 + 10,
+      };
+
+      const data = await orderService.createOrder(orderData);
+      if (data.success) {
+        alert("¡Pedido realizado con éxito!");
+        clearCart();
+        navigate("/orders");
+      }
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Error al procesar el pedido. Asegúrate de estar autenticado.",
+      );
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
 
   return (
-    <div className="public-layout">
-      <Navbar />
-
+    <PublicLayout>
       <div className="container mt-4">
         <div className="card glass-effect cart-container">
           <div className="card-header">
@@ -93,9 +135,7 @@ const CartPage = () => {
                 </div>
                 <button
                   className="btn btn-primary btn-block btn-lg mt-3"
-                  onClick={() =>
-                    alert("¡Checkout simulado! Gracias por tu compra.")
-                  }
+                  onClick={handleCheckout}
                 >
                   Proceder al Pago
                 </button>
@@ -104,7 +144,7 @@ const CartPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </PublicLayout>
   );
 };
 

@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import Layout from "../components/Layout"; // Optional: Use a PublicLayout without sidebar?
-// Actually, Layout has Sidebar which is not for public.
-// We should create a PublicLayout or just use Navbar + Content.
-// For now, let's use a simple div structure with Navbar because Layout.js enforces Sidebar.
-// Wait, Layout.js checks user role/auth?
-// Let's modify Layout.js later to handle public view (hide sidebar) or create PublicLayout.
-import Navbar from "../components/Navbar";
+import PublicLayout from "../components/PublicLayout";
 import ProductCard from "../components/ProductCard";
 import productService from "../services/productService";
 
@@ -38,8 +32,7 @@ const HomePage = () => {
   const categories = [...new Set(products.map((p) => p.category))];
 
   return (
-    <div className="public-layout">
-      <Navbar /> {/* Public Navbar */}
+    <PublicLayout>
       <div className="hero-section">
         <div className="hero-content">
           <h1>Bienvenido al Marketplace</h1>
@@ -83,7 +76,7 @@ const HomePage = () => {
           </div>
         )}
       </div>
-    </div>
+    </PublicLayout>
   );
 };
 

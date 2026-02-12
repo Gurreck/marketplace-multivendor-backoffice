@@ -76,4 +76,4 @@ Debes correr el backend y el frontend en **dos terminales separadas**.
 
 ### Usuarios de Prueba (si corriste `npm run seed`)
 
-- **Admin**: `admin@marketplace.com` / `123456`
+- **Admin**: `admin@marketplace.com` / `admin123`

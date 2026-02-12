@@ -6,32 +6,35 @@ const Sidebar = ({ isOpen }) => {
   const { user } = useAuth();
 
   const getMenuItems = () => {
+    const commonItems = [
+      { path: "/profile", icon: <FiUsers />, label: "Mi Perfil" },
+    ];
+
     switch (user?.role) {
       case "administrador":
         return [
           { path: "/admin/dashboard", icon: <FiHome />, label: "Dashboard" },
-          { path: "/admin/users", icon: <FiUsers />, label: "Usuarios" },
+          {
+            path: "/admin/users",
+            icon: <FiUsers />,
+            label: "Gestionar Usuarios",
+          },
+          ...commonItems,
         ];
       case "vendedor":
         return [
-          { path: "/vendedor/dashboard", icon: <FiHome />, label: "Dashboard" },
-          {
-            path: "/vendedor/productos",
-            icon: <FiPackage />,
-            label: "Mis Productos",
-          },
+          { path: "/vendedor/dashboard", icon: <FiHome />, label: "Mi Tienda" },
+          { path: "/sales", icon: <FiPackage />, label: "Mis Ventas" },
+          ...commonItems,
         ];
       case "cliente":
         return [
-          { path: "/cliente/dashboard", icon: <FiHome />, label: "Dashboard" },
-          {
-            path: "/cliente/pedidos",
-            icon: <FiShoppingBag />,
-            label: "Mis Pedidos",
-          },
+          { path: "/", icon: <FiHome />, label: "Marketplace" },
+          { path: "/orders", icon: <FiShoppingBag />, label: "Mis Compras" },
+          ...commonItems,
         ];
       default:
-        return [];
+        return commonItems;
     }
   };
 

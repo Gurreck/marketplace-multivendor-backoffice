@@ -6,7 +6,7 @@ const generateToken = require("../config/generateToken");
 // @access  Público
 const register = async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    const { nombre, email, password, role } = req.body;
 
     // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ email });
@@ -17,8 +17,8 @@ const register = async (req, res) => {
       });
     }
 
-    // Crear usuario (role por defecto: 'cliente')
-    const user = await User.create({ nombre, email, password });
+    // Crear usuario
+    const user = await User.create({ nombre, email, password, role });
 
     // Generar token
     const token = generateToken(user);
@@ -44,9 +44,10 @@ const register = async (req, res) => {
       });
     }
 
+    console.error("Error en register:", error); // Log para consola
     res.status(500).json({
       success: false,
-      message: "Error en el servidor al registrar usuario.",
+      message: "Error interno: " + error.message, // Mostrar error al usuario (dev mode)
     });
   }
 };

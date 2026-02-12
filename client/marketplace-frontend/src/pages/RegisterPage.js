@@ -8,6 +8,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("cliente");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -31,8 +32,12 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      await register(nombre, email, password);
-      navigate("/cliente/dashboard");
+      const userData = await register(nombre, email, password, role);
+      if (userData.role === "vendedor") {
+        navigate("/vendedor/dashboard");
+      } else {
+        navigate("/cliente/dashboard");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || "Error al registrar. Intenta de nuevo.",
@@ -114,6 +119,19 @@ const RegisterPage = () => {
                 placeholder="Repite tu contraseña"
                 required
               />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="role">Tipo de cuenta</label>
+              <select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="form-select"
+              >
+                <option value="cliente">Cliente (Quiero comprar)</option>
+                <option value="vendedor">Vendedor (Quiero vender)</option>
+              </select>
             </div>
 
             <button

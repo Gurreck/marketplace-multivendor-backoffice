@@ -15,6 +15,9 @@ import DashboardAdmin from "./pages/DashboardAdmin";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import HomePage from "./pages/HomePage";
 import CartPage from "./pages/CartPage";
+import ProfilePage from "./pages/ProfilePage";
+import MyOrdersPage from "./pages/MyOrdersPage";
+import SalesPage from "./pages/SalesPage";
 import "./App.css";
 
 // Redirige a home si ya está autenticado (para login/register)
@@ -90,6 +93,32 @@ function App() {
               element={
                 <PrivateRoute roles={["administrador"]}>
                   <DashboardAdmin />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Rutas Comunes Protegidas */}
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute roles={["cliente", "vendedor", "administrador"]}>
+                  <ProfilePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <PrivateRoute roles={["cliente", "vendedor", "administrador"]}>
+                  <MyOrdersPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/sales"
+              element={
+                <PrivateRoute roles={["vendedor", "administrador"]}>
+                  <SalesPage />
                 </PrivateRoute>
               }
             />

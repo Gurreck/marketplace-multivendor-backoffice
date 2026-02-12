@@ -8,6 +8,9 @@ const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
 const productRoutes = require("./routes/productRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -16,27 +19,40 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 
-// Middleware global de seguridad
-app.use(helmet()); // Headers de seguridad HTTP
-app.use(mongoSanitize()); // Prevenir inyección SQL/NoSQL
-app.use(xss()); // Prevenir XSS (Cross-Site Scripting)
-app.use(hpp()); // Prevenir contaminación de parámetros HTTP
+// 1. Headers de seguridad (Helmet va primero)
+app.use(helmet());
 
-// Configuración CORS (Permitir frontend local)
+// 2. Configuración CORS (Antes de procesar requests)
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"], // Ajustar según puerto react
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   }),
 );
 
-app.use(express.json({ limit: "10kb" })); // Limitar tamaño de body para prevenir DoS
+// 3. Body Parser (Necesario para que funcionen las sanitizaciones posteriores)
+app.use(express.json({ limit: "10kb" }));
+
+// Debug: Ver qué llega en el body
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log("Body:", req.body);
+  next();
+});
+
+// 4. Sanitización y seguridad de datos
+app.use(mongoSanitize()); // Prevenir inyección SQL/NoSQL
+app.use(xss()); // Prevenir XSS (Cross-Site Scripting)
+app.use(hpp()); // Prevenir contaminación de parámetros HTTP
 
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", protectedRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/users", userRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
