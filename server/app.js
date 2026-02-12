@@ -11,9 +11,26 @@ const productRoutes = require("./routes/productRoutes");
 
 const app = express();
 
-// Middleware global
-app.use(cors());
-app.use(express.json());
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
+
+// Middleware global de seguridad
+app.use(helmet()); // Headers de seguridad HTTP
+app.use(mongoSanitize()); // Prevenir inyección SQL/NoSQL
+app.use(xss()); // Prevenir XSS (Cross-Site Scripting)
+app.use(hpp()); // Prevenir contaminación de parámetros HTTP
+
+// Configuración CORS (Permitir frontend local)
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:3001"], // Ajustar según puerto react
+    credentials: true,
+  }),
+);
+
+app.use(express.json({ limit: "10kb" })); // Limitar tamaño de body para prevenir DoS
 
 // Rutas
 app.use("/api/auth", authRoutes);
