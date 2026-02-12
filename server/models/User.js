@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "La contraseña es obligatoria"],
       minlength: [6, "La contraseña debe tener al menos 6 caracteres"],
-      select: false, // No incluir por defecto en las consultas
+      select: false,
     },
     role: {
       type: String,
@@ -36,10 +36,10 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-// Hash de la contraseña antes de guardar
-// Hash de la contraseña antes de guardar
+// Hash de la contraseña antes de guardar - VERSIÓN SIN NEXT
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
+  
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

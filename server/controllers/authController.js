@@ -6,11 +6,17 @@ const generateToken = require("../config/generateToken");
 // @access  Público
 const register = async (req, res) => {
   try {
+    console.log('📝 Intentando registrar usuario...');
+    console.log('Body recibido:', req.body);
+    
     const { nombre, email, password } = req.body;
 
     // Verificar si el usuario ya existe
+    console.log('🔍 Buscando usuario existente con email:', email);
     const existingUser = await User.findOne({ email });
+    
     if (existingUser) {
+      console.log('❌ Usuario ya existe');
       return res.status(400).json({
         success: false,
         message: "Ya existe un usuario registrado con este email.",
@@ -18,10 +24,14 @@ const register = async (req, res) => {
     }
 
     // Crear usuario (role por defecto: 'cliente')
+    console.log('✅ Creando nuevo usuario...');
     const user = await User.create({ nombre, email, password });
+    console.log('✅ Usuario creado con ID:', user._id);
 
     // Generar token
+    console.log('🔑 Generando token...');
     const token = generateToken(user);
+    console.log('✅ Token generado exitosamente');
 
     res.status(201).json({
       success: true,
@@ -35,6 +45,11 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('❌❌❌ ERROR EN REGISTER ❌❌❌');
+    console.error('Tipo de error:', error.name);
+    console.error('Mensaje:', error.message);
+    console.error('Stack completo:', error.stack);
+    
     // Errores de validación de Mongoose
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((e) => e.message);
@@ -47,6 +62,7 @@ const register = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error en el servidor al registrar usuario.",
+      error: error.message, // ⭐ Muestra el error en la respuesta
     });
   }
 };
@@ -56,6 +72,9 @@ const register = async (req, res) => {
 // @access  Público
 const login = async (req, res) => {
   try {
+    console.log('🔐 Intentando login...');
+    console.log('Email recibido:', req.body.email);
+    
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -100,9 +119,11 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('❌ Error en login:', error);
     res.status(500).json({
       success: false,
       message: "Error en el servidor al iniciar sesión.",
+      error: error.message,
     });
   }
 };

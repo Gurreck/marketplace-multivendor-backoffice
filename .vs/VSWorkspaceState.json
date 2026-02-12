@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\client",
+    "\\client\\marketplace-frontend",
+    "\\server",
+    "\\server\\config",
+    "\\server\\controllers",
+    "\\server\\routes"
+  ],
+  "SelectedNode": "\\server\\package.json",
+  "PreviewInSolutionExplorer": false
+}

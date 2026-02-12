@@ -54,4 +54,6 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+// Exportar como 'protect' para consistencia
+const protect = authMiddleware;
+module.exports = protect;

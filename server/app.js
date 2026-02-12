@@ -1,4 +1,13 @@
 require("dotenv").config();
+
+// 🔍 DEBUG: Ver variables de entorno
+console.log('===================== DEBUG .ENV =====================');
+console.log('PORT:', process.env.PORT);
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+console.log('JWT_SECRET existe?:', !!process.env.JWT_SECRET);
+console.log('====================================================');
+
+// ... resto del código
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -12,27 +21,29 @@ const productRoutes = require("./routes/productRoutes");
 const app = express();
 
 const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
-const hpp = require("hpp");
 
-// Middleware global de seguridad
-app.use(helmet()); // Headers de seguridad HTTP
-app.use(mongoSanitize()); // Prevenir inyección SQL/NoSQL
-app.use(xss()); // Prevenir XSS (Cross-Site Scripting)
-app.use(hpp()); // Prevenir contaminación de parámetros HTTP
+// ⚠️ COMENTADOS - Incompatibles con Node.js v24
+// const xss = require("xss-clean");
+// const hpp = require("hpp");
 
-// Configuración CORS (Permitir frontend local)
+// 1️⃣ PRIMERO: CORS (antes de cualquier cosa)
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"], // Ajustar según puerto react
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
-  }),
+  })
 );
 
-app.use(express.json({ limit: "10kb" })); // Limitar tamaño de body para prevenir DoS
+// 2️⃣ SEGUNDO: Parsear el body (ANTES de sanitizar)
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true }));
 
-// Rutas
+// 3️⃣ TERCERO: Middleware de seguridad
+app.use(helmet()); // Headers de seguridad HTTP
+// app.use(xss()); // ⚠️ DESACTIVADO - Incompatible con Node.js v24
+// app.use(hpp()); // ⚠️ DESACTIVADO - Incompatible con Node.js v24
+
+// 4️⃣ CUARTO: Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", protectedRoutes);
@@ -71,10 +82,16 @@ app.use((req, res) => {
 
 // Manejo de errores global
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('==================== ERROR ====================');
+  console.error('Ruta:', req.method, req.path);
+  console.error('Error completo:', err);
+  console.error('Stack:', err.stack);
+  console.error('===============================================');
+  
   res.status(500).json({
     success: false,
     message: "Error interno del servidor.",
+    error: err.message,
   });
 });
 

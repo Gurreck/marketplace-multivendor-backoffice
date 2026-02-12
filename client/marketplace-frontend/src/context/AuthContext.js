@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }) => {
       email,
       password,
     });
+    console.log("Respuesta del registro:", nombre, email, response.data);
     const { token: newToken, ...userData } = response.data.data;
 
     localStorage.setItem("token", newToken);

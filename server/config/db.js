@@ -1,15 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      family: 4, // Force IPv4
-      tlsInsecure: true, // DEBUG: Ignore SSL errors
-    });
-    console.log(`MongoDB conectado: ${conn.connection.host}`);
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ Conectado a MongoDB Atlas');
   } catch (error) {
-    console.error(`Error de conexión a MongoDB: ${error.message}`);
-    process.exit(1);
+    console.error('❌ Error de conexión a MongoDB:', error.message);
+    process.exit(1); // mejor detener el servidor si no conecta
   }
 };
 

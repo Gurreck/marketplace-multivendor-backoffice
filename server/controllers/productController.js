@@ -3,9 +3,8 @@ const Product = require("../models/Product");
 // @desc    Crear un nuevo producto
 // @route   POST /api/products
 // @access  Private (Vendedor, Admin)
-exports.createProduct = async (req, res) => {
+const createProduct = async (req, res) => {
   try {
-    // Si es vendedor, el producto le pertenece a él. Si es admin, puede asignar otro (opcional, aquí simplificamos).
     const product = await Product.create({
       ...req.body,
       vendor: req.user.id,
@@ -16,6 +15,7 @@ exports.createProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
+    console.error('Error en createProduct:', error);
     res.status(400).json({
       success: false,
       message: error.message,
@@ -26,17 +26,12 @@ exports.createProduct = async (req, res) => {
 // @desc    Obtener todos los productos
 // @route   GET /api/products
 // @access  Public / Private (Filtra según rol)
-exports.getProducts = async (req, res) => {
+const getProducts = async (req, res) => {
   try {
     let query = {};
 
-    // Si el usuario es vendedor y quiere ver "sus" productos (puedes ajustar esta lógica según param o ruta)
-    // Por ahora, si pasamos ?vendor=me en la query string
-    // Si la ruta es /vendor/me o se pasa el query param, filtramos por el usuario actual
-    if (
-      (req.path.includes("/vendor/me") || req.query.vendor === "me") &&
-      req.user
-    ) {
+    // Solo filtrar por vendor si el usuario está autenticado Y lo solicita
+    if (req.query.vendor === "me" && req.user) {
       query.vendor = req.user.id;
     }
 
@@ -51,6 +46,7 @@ exports.getProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
+    console.error('Error en getProducts:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -61,7 +57,7 @@ exports.getProducts = async (req, res) => {
 // @desc    Obtener un producto por ID
 // @route   GET /api/products/:id
 // @access  Public
-exports.getProductById = async (req, res) => {
+const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate(
       "vendor",
@@ -80,6 +76,7 @@ exports.getProductById = async (req, res) => {
       data: product,
     });
   } catch (error) {
+    console.error('Error en getProductById:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -90,7 +87,7 @@ exports.getProductById = async (req, res) => {
 // @desc    Actualizar un producto
 // @route   PUT /api/products/:id
 // @access  Private (Vendor dueño del producto o Admin)
-exports.updateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
   try {
     let product = await Product.findById(req.params.id);
 
@@ -122,6 +119,7 @@ exports.updateProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
+    console.error('Error en updateProduct:', error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -132,7 +130,7 @@ exports.updateProduct = async (req, res) => {
 // @desc    Eliminar un producto
 // @route   DELETE /api/products/:id
 // @access  Private (Vendor dueño del producto o Admin)
-exports.deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
@@ -161,9 +159,19 @@ exports.deleteProduct = async (req, res) => {
       message: "Producto eliminado",
     });
   } catch (error) {
+    console.error('Error en deleteProduct:', error);
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
+};
+
+// ⭐ EXPORTAR TODO AL FINAL
+module.exports = {
+  createProduct,
+  getProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
 };
