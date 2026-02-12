@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", protectedRoutes);
+app.use("/api/products", productRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {

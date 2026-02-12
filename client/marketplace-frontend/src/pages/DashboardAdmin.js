@@ -1,138 +1,170 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import UserTable from "../components/UserTable";
 import RoleModal from "../components/RoleModal";
-import { useAuth } from "../context/AuthContext";
+import ProductTable from "../components/ProductTable";
 import api from "../services/api";
-import { FiUsers, FiShield, FiShoppingBag } from "react-icons/fi";
+import productService from "../services/productService";
 
 const DashboardAdmin = () => {
-  const { user } = useAuth();
   const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [modalLoading, setModalLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
+  const [activeTab, setActiveTab] = useState("users"); // 'users' or 'products'
 
-  const fetchUsers = useCallback(async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/admin/users");
-      setUsers(response.data.data);
-      setError("");
-    } catch (err) {
-      setError("Error al cargar los usuarios.");
+      const [usersRes, productsRes] = await Promise.all([
+        api.get("/admin/users"),
+        productService.getProducts(), // Admin ve todos
+      ]);
+      setUsers(usersRes.data.data);
+      setProducts(productsRes.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
-  const handleEditRole = (user) => {
-    setSelectedUser(user);
-    setSuccessMsg("");
   };
 
-  const handleConfirmRole = async (userId, newRole) => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const stats = {
+    totalUsers: users.length,
+    usersAdmins: users.filter((u) => u.role === "administrador").length,
+    usersVendors: users.filter((u) => u.role === "vendedor").length,
+    totalProducts: products.length,
+  };
+
+  // --- User Management ---
+  const handleEditRole = (user) => {
+    setSelectedUser(user);
+    setIsRoleModalOpen(true);
+  };
+
+  const handleSaveRole = async (newRole) => {
     try {
-      setModalLoading(true);
-      await api.put(`/admin/users/${userId}/role`, { role: newRole });
-      setSuccessMsg("Rol actualizado exitosamente.");
-      setSelectedUser(null);
-      fetchUsers(); // Recargar lista
-    } catch (err) {
-      setError(err.response?.data?.message || "Error al actualizar el rol.");
-    } finally {
-      setModalLoading(false);
+      await api.put(`/admin/users/${selectedUser._id}/role`, { role: newRole });
+      setIsRoleModalOpen(false);
+      fetchData(); // Recargar datos
+    } catch (error) {
+      console.error("Error actualizando rol:", error);
+      alert("Error al actualizar el rol");
     }
   };
 
-  const stats = {
-    total: users.length,
-    admins: users.filter((u) => u.role === "administrador").length,
-    vendors: users.filter((u) => u.role === "vendedor").length,
-    clients: users.filter((u) => u.role === "cliente").length,
+  // --- Product Management (Admin) ---
+  const handleDeleteProduct = async (id) => {
+    if (
+      window.confirm(
+        "¿Seguro que deseas eliminar este producto? (Acción de Admin)",
+      )
+    ) {
+      try {
+        await productService.deleteProduct(id);
+        fetchData();
+      } catch (error) {
+        console.error("Error eliminando producto:", error);
+        alert("Error al eliminar producto");
+      }
+    }
   };
+
+  const handleEditProduct = (product) => {
+    alert(
+      "Como admin, por ahora solo puedes eliminar productos. La edición es por parte del vendedor.",
+    );
+    // Podríamos implementar edición para admin si se requiere rehaciendo ProductModal para soportar edición arbitraria
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <Layout>
-      <div className="dashboard">
+      <div className="dashboard fade-in-up">
         <div className="dashboard-header">
-          <h1>Panel de Administración 🔧</h1>
-          <p>Bienvenido, {user?.nombre}</p>
+          <h1>Panel de Administración</h1>
+          <p>Gestión global del sistema</p>
         </div>
 
         <div className="stats-grid">
-          <div className="stat-card stat-card-purple">
-            <div className="stat-icon">
-              <FiUsers />
-            </div>
+          <div className="stat-card glass-effect stat-card-purple">
+            <div className="stat-icon">👥</div>
             <div className="stat-info">
-              <h3>{stats.total}</h3>
-              <p>Total Usuarios</p>
+              <h3>Usuarios</h3>
+              <p className="stat-value">{stats.totalUsers}</p>
             </div>
           </div>
-
-          <div className="stat-card stat-card-blue">
-            <div className="stat-icon">
-              <FiShield />
-            </div>
+          <div className="stat-card glass-effect stat-card-blue">
+            <div className="stat-icon">📦</div>
             <div className="stat-info">
-              <h3>{stats.admins}</h3>
-              <p>Administradores</p>
+              <h3>Productos</h3>
+              <p className="stat-value">{stats.totalProducts}</p>
             </div>
           </div>
-
-          <div className="stat-card stat-card-green">
-            <div className="stat-icon">
-              <FiShoppingBag />
-            </div>
+          <div className="stat-card glass-effect stat-card-orange">
+            <div className="stat-icon">🏪</div>
             <div className="stat-info">
-              <h3>{stats.vendors}</h3>
-              <p>Vendedores</p>
-            </div>
-          </div>
-
-          <div className="stat-card stat-card-orange">
-            <div className="stat-icon">
-              <FiUsers />
-            </div>
-            <div className="stat-info">
-              <h3>{stats.clients}</h3>
-              <p>Clientes</p>
+              <h3>Vendedores</h3>
+              <p className="stat-value">{stats.usersVendors}</p>
             </div>
           </div>
         </div>
 
-        {successMsg && <div className="alert alert-success">{successMsg}</div>}
-        {error && <div className="alert alert-error">{error}</div>}
+        <div className="tabs-container mb-4">
+          <button
+            className={`btn ${activeTab === "users" ? "btn-primary" : "btn-secondary"} mr-2`}
+            onClick={() => setActiveTab("users")}
+          >
+            Usuarios
+          </button>
+          <button
+            className={`btn ${activeTab === "products" ? "btn-primary" : "btn-secondary"}`}
+            onClick={() => setActiveTab("products")}
+          >
+            Productos
+          </button>
+        </div>
 
-        <div className="card">
-          <div className="card-header">
-            <h2>Gestión de Usuarios</h2>
-            <span className="card-count">{stats.total} usuarios</span>
-          </div>
-
-          {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p>Cargando usuarios...</p>
+        {activeTab === "users" && (
+          <div className="card glass-effect">
+            <div className="card-header">
+              <h2>Gestión de Usuarios</h2>
             </div>
-          ) : (
             <UserTable users={users} onEditRole={handleEditRole} />
-          )}
-        </div>
+          </div>
+        )}
 
-        {selectedUser && (
+        {activeTab === "products" && (
+          <div className="card glass-effect">
+            <div className="card-header">
+              <h2>Gestión de Productos Global</h2>
+            </div>
+            <ProductTable
+              products={products}
+              onEdit={handleEditProduct}
+              onDelete={handleDeleteProduct}
+            />
+          </div>
+        )}
+
+        {isRoleModalOpen && (
           <RoleModal
-            user={selectedUser}
-            onClose={() => setSelectedUser(null)}
-            onConfirm={handleConfirmRole}
-            loading={modalLoading}
+            isOpen={isRoleModalOpen}
+            onClose={() => setIsRoleModalOpen(false)}
+            currentUser={selectedUser}
+            onSave={handleSaveRole}
           />
         )}
       </div>
