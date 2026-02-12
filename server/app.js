@@ -25,7 +25,12 @@ app.use(helmet());
 // 2. Configuración CORS (Antes de procesar requests)
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      /\.onrender\.com$/,
+      /\.vercel\.app$/,
+    ],
     credentials: true,
   }),
 );
