@@ -116,7 +116,7 @@ body::before {
       transparent 50%
     );
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
 a {
