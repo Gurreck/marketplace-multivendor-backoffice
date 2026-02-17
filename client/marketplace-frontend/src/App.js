@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+
 import Login from './Inicio/login';
 import Register from './Inicio/register';
 import ForgotPassword from './Inicio/forgot_Password';
@@ -18,6 +19,7 @@ function App() {
           onRegisterClick={() => setCurrentView('register')}
           onForgotClick={() => setCurrentView('forgot-password')}
         />
+
       )}
     </div>
   );
