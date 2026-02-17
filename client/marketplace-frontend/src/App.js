@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import './App.css';
-import Login from './componentes/login';
-import Register from './componentes/register';
+
+import Login from './Inicio/login';
+import Register from './Inicio/register';
+import ForgotPassword from './Inicio/forgot_Password';
 
 function App() {
-  const [showRegister, setShowRegister] = useState(false);
+  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'forgot-password'
 
   return (
     <div className="App">
-      {showRegister ? (
-        <Register onBackToLogin={() => setShowRegister(false)} />
+      {currentView === 'register' ? (
+        <Register onBackToLogin={() => setCurrentView('login')} />
+      ) : currentView === 'forgot-password' ? (
+        <ForgotPassword onBackToLogin={() => setCurrentView('login')} />
       ) : (
-        <Login onRegisterClick={() => setShowRegister(true)} />
+        <Login
+          onRegisterClick={() => setCurrentView('register')}
+          onForgotClick={() => setCurrentView('forgot-password')}
+        />
+
       )}
     </div>
   );
