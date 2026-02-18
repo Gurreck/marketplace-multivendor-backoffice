@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './login.css';
 import logo from '../resource/logo1.png';
 
-export default function Login({ onRegisterClick, onForgotClick }) {
+export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -49,8 +49,8 @@ export default function Login({ onRegisterClick, onForgotClick }) {
 
       console.log('Intentar login con:', { email, password });
 
-      // Simulación de login exitoso
-      alert(`Bienvenido ${email}!`);
+      // Login exitoso - navega a la vista principal
+      onLoginSuccess(email);
       setEmail('');
       setPassword('');
 
