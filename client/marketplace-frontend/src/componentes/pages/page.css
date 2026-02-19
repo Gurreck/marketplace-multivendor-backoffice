@@ -72,6 +72,7 @@
   gap: 10px;
   cursor: pointer;
   transition: transform 0.3s ease;
+
 }
 
 .logo:hover {
@@ -82,6 +83,10 @@
   width: 50px;
   height: auto;
   filter: drop-shadow(0 0 8px rgba(0, 148, 255, 0.5));
+  scale: 2;
+  top: 3px;
+  position: relative;
+
 }
 
 .logo-text {
