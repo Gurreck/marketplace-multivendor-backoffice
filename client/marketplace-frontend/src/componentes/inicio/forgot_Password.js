@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './forgot_Password.css';
-import logo from '../resource/logo1.png';
+import logo from '../../resource/logo1.png';
 
 export default function ForgotPassword({ onBackToLogin }) {
     const [email, setEmail] = useState('');
