@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './page.css';
+import logo from '../../resource/logo1.png';
 
 export default function Principal({ userEmail, onLogout }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +19,11 @@ export default function Principal({ userEmail, onLogout }) {
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   // Datos de ejemplo - productos CON IMÁGENES REALES
   const products = [
@@ -342,7 +348,7 @@ export default function Principal({ userEmail, onLogout }) {
       alert('Por favor escribe un comentario');
       return;
     }
-    
+
     const productId = selectedProduct.id;
     const comment = {
       id: Date.now(),
@@ -351,12 +357,12 @@ export default function Principal({ userEmail, onLogout }) {
       rating: commentRating,
       date: new Date().toLocaleDateString('es-ES')
     };
-    
+
     setComments({
       ...comments,
       [productId]: [...(comments[productId] || []), comment]
     });
-    
+
     setNewComment('');
     setCommentRating(5);
     setShowNotification('Comentario agregado exitosamente');
@@ -417,13 +423,13 @@ export default function Principal({ userEmail, onLogout }) {
 
   // Funciones para navegar entre imágenes del modal
   const goToPreviousImage = () => {
-    setCurrentImageIndex((prev) => 
+    setCurrentImageIndex((prev) =>
       prev === 0 ? selectedProduct.images.length - 1 : prev - 1
     );
   };
 
   const goToNextImage = () => {
-    setCurrentImageIndex((prev) => 
+    setCurrentImageIndex((prev) =>
       prev === selectedProduct.images.length - 1 ? 0 : prev + 1
     );
   };
@@ -436,14 +442,14 @@ export default function Principal({ userEmail, onLogout }) {
   };
 
   return (
-    <div className="principal-container">
+    <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
       {/* Header/Navbar */}
       <header className="header">
         <div className="header-top">
           <div className="header-left">
             <div className="logo">
-              <span className="logo-icon">🛍️</span>
-              <h1 className="logo-text">MarketPlace</h1>
+              <img src={logo} alt="Nexora Logo" className="logo-img-header" />
+              <h1 className="logo-text">Nexora</h1>
             </div>
           </div>
 
@@ -460,6 +466,13 @@ export default function Principal({ userEmail, onLogout }) {
           </div>
 
           <div className="header-right">
+            <button
+              className="theme-toggle-header"
+              onClick={toggleTheme}
+              title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
             <button className="user-menu">
               👤 {userEmail.split('@')[0]}
             </button>
@@ -514,8 +527,8 @@ export default function Principal({ userEmail, onLogout }) {
                     setSelectedProduct(product);
                     setCurrentImageIndex(0);
                   }} style={{ cursor: 'pointer' }}>
-                    <img 
-                      src={product.images[0]} 
+                    <img
+                      src={product.images[0]}
                       alt={product.name}
                       className="product-real-image"
                       onError={(e) => {
@@ -647,11 +660,11 @@ export default function Principal({ userEmail, onLogout }) {
         <div className="product-modal-overlay" onClick={() => setSelectedProduct(null)}>
           <div className="product-modal" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedProduct(null)}>✕</button>
-            
+
             <div className="modal-content">
               <div className="modal-image-section">
                 <div className="modal-image-container">
-                  <img 
+                  <img
                     src={getCurrentModalImage()}
                     alt={selectedProduct.name}
                     className="modal-product-image"
@@ -661,19 +674,19 @@ export default function Principal({ userEmail, onLogout }) {
                     }}
                   />
                   <div className="modal-image-fallback">📦</div>
-                  
+
                   {/* Controles de navegación */}
                   {!productImages[selectedProduct.id] && selectedProduct.images.length > 1 && (
                     <>
                       <button className="image-nav-btn prev" onClick={goToPreviousImage}>
-                        ◀ 
+                        ◀
                       </button>
                       <button className="image-nav-btn next" onClick={goToNextImage}>
                         ▶
                       </button>
                     </>
                   )}
-                  
+
                   {/* Indicador de página */}
                   {!productImages[selectedProduct.id] && selectedProduct.images.length > 1 && (
                     <div className="image-page-indicator">
@@ -686,7 +699,7 @@ export default function Principal({ userEmail, onLogout }) {
                 {!productImages[selectedProduct.id] && selectedProduct.images.length > 1 && (
                   <div className="modal-image-thumbnails">
                     {selectedProduct.images.map((image, index) => (
-                      <div 
+                      <div
                         key={index}
                         className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                         onClick={() => setCurrentImageIndex(index)}
@@ -700,7 +713,7 @@ export default function Principal({ userEmail, onLogout }) {
 
               <div className="modal-info-section">
                 <h1 className="modal-product-name">{selectedProduct.name}</h1>
-                
+
                 <div className="modal-rating">
                   <span className="stars">⭐</span>
                   <span className="rating-value">{selectedProduct.rating}</span>
@@ -724,7 +737,7 @@ export default function Principal({ userEmail, onLogout }) {
                 </div>
 
                 <div className="modal-actions">
-                  <button 
+                  <button
                     className="modal-add-btn"
                     onClick={() => {
                       addToCart(selectedProduct);
@@ -733,7 +746,7 @@ export default function Principal({ userEmail, onLogout }) {
                   >
                     ➕ Agregar al Carrito
                   </button>
-                  <button 
+                  <button
                     className="modal-close-btn"
                     onClick={() => setSelectedProduct(null)}
                   >
@@ -744,7 +757,7 @@ export default function Principal({ userEmail, onLogout }) {
                 {/* Sección de Comentarios */}
                 <div className="modal-comments-section">
                   <h3>💬 Comentarios y Reseñas</h3>
-                  
+
                   <div className="comment-form">
                     <textarea
                       value={newComment}
@@ -755,8 +768,8 @@ export default function Principal({ userEmail, onLogout }) {
                     <div className="comment-controls">
                       <div className="rating-selector">
                         <label>Calificación:</label>
-                        <select 
-                          value={commentRating} 
+                        <select
+                          value={commentRating}
                           onChange={(e) => setCommentRating(Number(e.target.value))}
                           className="rating-input"
                         >
@@ -767,7 +780,7 @@ export default function Principal({ userEmail, onLogout }) {
                           <option value={1}>⭐ Malo</option>
                         </select>
                       </div>
-                      <button 
+                      <button
                         className="comment-submit-btn"
                         onClick={handleAddComment}
                       >
@@ -800,8 +813,8 @@ export default function Principal({ userEmail, onLogout }) {
                     <h3>🔍 Productos Similares</h3>
                     <div className="similar-products-grid">
                       {getSimilarProducts().map((product) => (
-                        <div 
-                          key={product.id} 
+                        <div
+                          key={product.id}
                           className="similar-product-card"
                           onClick={() => {
                             setSelectedProduct(product);
@@ -810,7 +823,7 @@ export default function Principal({ userEmail, onLogout }) {
                           style={{ cursor: 'pointer' }}
                         >
                           <div className="similar-product-image">
-                            <img 
+                            <img
                               src={product.images[0]}
                               alt={product.name}
                               onError={(e) => {
