@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import './login.css';
+import logo from '../../resource/logo1.png';
 
-export default function Login({ onRegisterClick }) {
+export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,14 +46,14 @@ export default function Login({ onRegisterClick }) {
       //   body: JSON.stringify({ email, password })
       // });
       // const data = await response.json();
-      
+
       console.log('Intentar login con:', { email, password });
-      
-      // Simulación de login exitoso
-      alert(`Bienvenido ${email}!`);
+
+      // Login exitoso - navega a la vista principal
+      onLoginSuccess(email);
       setEmail('');
       setPassword('');
-      
+
     } catch (err) {
       setError('Error al iniciar sesión. Intenta nuevamente.');
       console.error(err);
@@ -57,13 +63,21 @@ export default function Login({ onRegisterClick }) {
   };
 
   return (
-    <div className="login-container">
+    <div className={`login-container ${!isDarkMode ? 'light-mode' : ''}`}>
       <div className="login-card">
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+          title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+        >
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+
         <div className="login-icon">
-          <span>🛒</span>
+          <img src={logo} alt="Nexora Logo" className="logo-img" />
         </div>
-        
-        <h1 className="login-title">Marketplace</h1>
+
+        <h1 className="login-title">Nexora</h1>
         <p className="login-subtitle">Inicia sesión en tu cuenta</p>
 
         {error && <div className="login-error">{error}</div>}
@@ -95,10 +109,17 @@ export default function Login({ onRegisterClick }) {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
             />
+            <button
+              type="button"
+              className="forgot-link-btn"
+              onClick={onForgotClick}
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="login-button"
             disabled={loading}
           >
@@ -108,7 +129,7 @@ export default function Login({ onRegisterClick }) {
 
         <div className="login-footer">
           <span>¿No tienes cuenta? </span>
-          <button 
+          <button
             type="button"
             className="link-button"
             onClick={onRegisterClick}

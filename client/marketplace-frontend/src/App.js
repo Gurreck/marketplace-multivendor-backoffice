@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
 
-import Login from './Inicio/login';
-import Register from './Inicio/register';
-import ForgotPassword from './Inicio/forgot_Password';
-import Principal from './pages/page'; 
+import Login from './componentes/inicio/login';
+import Register from './componentes/inicio/register';
+import ForgotPassword from './componentes/inicio/forgot_Password';
+import Principal from './componentes/pages/page';
 
 function App() {
   const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'forgot-password', 'principal'

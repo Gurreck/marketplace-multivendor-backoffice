@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './register.css';
-import logo from '../resource/logo1.png';
+import logo from '../../resource/logo1.png';
 
 export default function Register({ onBackToLogin }) {
     const [formData, setFormData] = useState({
