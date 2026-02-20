@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './forgot_Password.css';
 import logo from '../../resource/logo1.png';
+import { useNavigate } from 'react-router-dom';
 
-export default function ForgotPassword({ onBackToLogin }) {
+export default function ForgotPassword() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -26,7 +28,7 @@ export default function ForgotPassword({ onBackToLogin }) {
             console.log('Recuperar contraseña para:', email);
             alert(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
             setLoading(false);
-            onBackToLogin();
+            navigate('/login');
         }, 1500);
     };
 
@@ -76,7 +78,7 @@ export default function ForgotPassword({ onBackToLogin }) {
                     <button
                         type="button"
                         className="link-button"
-                        onClick={onBackToLogin}
+                        onClick={() => navigate('/login')}
                         disabled={loading}
                     >
                         Volver al inicio de sesión

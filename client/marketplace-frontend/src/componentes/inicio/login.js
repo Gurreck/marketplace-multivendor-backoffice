@@ -1,16 +1,34 @@
 import React, { useState } from 'react';
 import './login.css';
 import logo from '../../resource/logo1.png';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }) {
+export default function Login({ onRegisterClick, onForgotClick }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
+  };
+
+  const redirectByRole = (role) => {
+    switch (role) {
+      case 'administrador':
+        return '/admin/dashboard';
+      case 'vendedor':
+        return '/vendedor/dashboard';
+      case 'cliente':
+        return '/cliente/dashboard';
+      default:
+        return '/';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -18,45 +36,14 @@ export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }
     setError('');
     setLoading(true);
 
-    // Validación básica
-    if (!email || !password) {
-      setError('Por favor, completa todos los campos');
-      setLoading(false);
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Por favor, ingresa un email válido');
-      setLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      setLoading(false);
-      return;
-    }
-
     try {
-      // Aquí irá la llamada a tu API de autenticación
-      // Ejemplo:
-      // const response = await fetch('http://localhost:5000/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password })
-      // });
-      // const data = await response.json();
-
-      console.log('Intentar login con:', { email, password });
-
-      // Login exitoso - navega a la vista principal
-      onLoginSuccess(email);
-      setEmail('');
-      setPassword('');
-
+      const userData = await login(email, password);
+      navigate(redirectByRole(userData.role));
     } catch (err) {
-      setError('Error al iniciar sesión. Intenta nuevamente.');
-      console.error(err);
+      setError(
+        err.response?.data?.message ||
+        'Error al iniciar sesión. Intenta nuevamente.'
+      );
     } finally {
       setLoading(false);
     }
@@ -94,6 +81,8 @@ export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
+              required
+              autoComplete="email"
             />
           </div>
 
@@ -108,11 +97,13 @@ export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
+              required
+              autoComplete="current-password"
             />
             <button
               type="button"
               className="forgot-link-btn"
-              onClick={onForgotClick}
+              onClick={() => navigate('/forgot-password')}
             >
               ¿Olvidaste tu contraseña?
             </button>
@@ -132,7 +123,7 @@ export default function Login({ onLoginSuccess, onRegisterClick, onForgotClick }
           <button
             type="button"
             className="link-button"
-            onClick={onRegisterClick}
+            onClick={() => navigate('/register')}
           >
             Regístrate aquí
           </button>

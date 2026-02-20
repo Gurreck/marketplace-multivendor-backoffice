@@ -1,42 +1,89 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from './componentes/inicio/login';
 import Register from './componentes/inicio/register';
 import ForgotPassword from './componentes/inicio/forgot_Password';
 import Principal from './componentes/pages/page';
+import { useAuth } from './context/AuthContext';
+
+// Componente para proteger rutas por rol
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 
 function App() {
-  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'forgot-password', 'principal'
-  const [userEmail, setUserEmail] = useState('');
-
-  const handleLoginSuccess = (email) => {
-    setUserEmail(email);
-    setCurrentView('principal');
-  };
-
-  const handleLogout = () => {
-    setUserEmail('');
-    setCurrentView('login');
-  };
+  const { user } = useAuth();
 
   return (
     <div className="App">
-      {currentView === 'register' ? (
-        <Register onBackToLogin={() => setCurrentView('login')} onRegisterSuccess={(email) => handleLoginSuccess(email)} />
-      ) : currentView === 'forgot-password' ? (
-        <ForgotPassword onBackToLogin={() => setCurrentView('login')} />
-      ) : currentView === 'principal' ? (
-        <Principal userEmail={userEmail} onLogout={handleLogout} />
-      ) : (
-        <Login
-          onLoginSuccess={handleLoginSuccess}
-          onRegisterClick={() => setCurrentView('register')}
-          onForgotClick={() => setCurrentView('forgot-password')}
+      <Routes>
+        {/* Rutas públicas */}
+        <Route path="/login" element={!user ? <Login /> : <Navigate to={getDashboardByRole(user.role)} replace />} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to={getDashboardByRole(user.role)} replace />} />
+        <Route path="/forgot-password" element={!user ? <ForgotPassword /> : <Navigate to={getDashboardByRole(user.role)} replace />} />
+
+        {/* Rutas protegidas por rol */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Principal />
+            </ProtectedRoute>
+          }
         />
-      )}
+        <Route
+          path="/vendedor/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['vendedor']}>
+              <Principal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cliente/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['cliente']}>
+              <Principal />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta por defecto */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </div>
   );
 }
+
+// Función auxiliar para obtener el dashboard según el rol
+const getDashboardByRole = (role) => {
+  switch (role) {
+    case 'administrador':
+      return '/admin/dashboard';
+    case 'vendedor':
+      return '/vendedor/dashboard';
+    case 'cliente':
+      return '/cliente/dashboard';
+    default:
+      return '/login';
+  }
+};
 
 export default App;

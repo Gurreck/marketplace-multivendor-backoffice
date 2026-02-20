@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import './register.css';
 import logo from '../../resource/logo1.png';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Register({ onBackToLogin }) {
+export default function Register() {
+    const navigate = useNavigate();
+    const { register } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -56,27 +60,18 @@ export default function Register({ onBackToLogin }) {
         }
 
         try {
-            // Aquí irá la llamada a tu API de registro
-            // const response = await fetch('http://localhost:5000/api/auth/register', {
-            //   method: 'POST',
-            //   headers: { 'Content-Type': 'application/json' },
-            //   body: JSON.stringify({
-            //     name: formData.name,
-            //     email: formData.email,
-            //     password: formData.password
-            //   })
-            // });
-            // const data = await response.json();
+            // Llamar a la API de registro usando el contexto
+            await register(formData.name, formData.email, formData.password);
 
-            console.log('Registrar usuario:', formData);
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
+            setError('');
 
             // Limpiar formulario y volver al login
             setFormData({ name: '', email: '', password: '', confirmPassword: '' });
-            onBackToLogin();
+            navigate('/login');
 
         } catch (err) {
-            setError('Error al crear la cuenta. Intenta nuevamente.');
+            setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
             console.error(err);
         } finally {
             setLoading(false);
@@ -178,7 +173,7 @@ export default function Register({ onBackToLogin }) {
                     <button
                         type="button"
                         className="link-button"
-                        onClick={onBackToLogin}
+                        onClick={() => navigate('/login')}
                         disabled={loading}
                     >
                         Inicia sesión
