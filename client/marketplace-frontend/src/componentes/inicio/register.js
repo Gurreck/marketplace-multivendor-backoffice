@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import './register.css';
 import logo from '../../resource/logo1.png';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Register({ onBackToLogin }) {
+export default function Register() {
+    const navigate = useNavigate();
+    const { register } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role: 'cliente'
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -31,7 +36,7 @@ export default function Register({ onBackToLogin }) {
         setLoading(true);
 
         // Validación
-        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.role) {
             setError('Por favor, completa todos los campos');
             setLoading(false);
             return;
@@ -56,27 +61,18 @@ export default function Register({ onBackToLogin }) {
         }
 
         try {
-            // Aquí irá la llamada a tu API de registro
-            // const response = await fetch('http://localhost:5000/api/auth/register', {
-            //   method: 'POST',
-            //   headers: { 'Content-Type': 'application/json' },
-            //   body: JSON.stringify({
-            //     name: formData.name,
-            //     email: formData.email,
-            //     password: formData.password
-            //   })
-            // });
-            // const data = await response.json();
+            // Llamar a la API de registro usando el contexto
+            await register(formData.name, formData.email, formData.password, formData.role);
 
-            console.log('Registrar usuario:', formData);
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
+            setError('');
 
             // Limpiar formulario y volver al login
-            setFormData({ name: '', email: '', password: '', confirmPassword: '' });
-            onBackToLogin();
+            setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'cliente' });
+            navigate('/login');
 
         } catch (err) {
-            setError('Error al crear la cuenta. Intenta nuevamente.');
+            setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
             console.error(err);
         } finally {
             setLoading(false);
@@ -164,6 +160,23 @@ export default function Register({ onBackToLogin }) {
                         />
                     </div>
 
+                    <div className="form-group">
+                        <label htmlFor="role">
+                            <span className="label-icon">🏷️</span> Tipo de cuenta
+                        </label>
+                        <select
+                            id="role"
+                            name="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            disabled={loading}
+                            className="role-select"
+                        >
+                            <option value="cliente">🛒 Cliente</option>
+                            <option value="vendedor">🏪 Vendedor</option>
+                        </select>
+                    </div>
+
                     <button
                         type="submit"
                         className="register-button"
@@ -178,7 +191,7 @@ export default function Register({ onBackToLogin }) {
                     <button
                         type="button"
                         className="link-button"
-                        onClick={onBackToLogin}
+                        onClick={() => navigate('/login')}
                         disabled={loading}
                     >
                         Inicia sesión

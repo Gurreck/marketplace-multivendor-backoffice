@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import './page.css';
 import logo from '../../resource/logo1.png';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Principal({ userEmail, onLogout }) {
+export default function Principal() {
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [cartOpen, setCartOpen] = useState(false);
@@ -352,7 +356,7 @@ export default function Principal({ userEmail, onLogout }) {
     const productId = selectedProduct.id;
     const comment = {
       id: Date.now(),
-      author: userEmail.split('@')[0],
+      author: user.email.split('@')[0],
       text: newComment,
       rating: commentRating,
       date: new Date().toLocaleDateString('es-ES')
@@ -474,7 +478,7 @@ export default function Principal({ userEmail, onLogout }) {
               {isDarkMode ? '☀️' : '🌙'}
             </button>
             <button className="user-menu">
-              👤 {userEmail.split('@')[0]}
+              👤 {user?.email?.split('@')[0] || 'Usuario'}
             </button>
             <button
               className="cart-btn"
@@ -482,7 +486,10 @@ export default function Principal({ userEmail, onLogout }) {
             >
               🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </button>
-            <button className="logout-btn" onClick={onLogout}>
+            <button className="logout-btn" onClick={() => {
+              logout();
+              navigate('/login');
+            }}>
               ✖ Salir
             </button>
           </div>
