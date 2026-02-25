@@ -662,7 +662,8 @@ export default function Principal() {
         )}
       </div>
 
-      {/* Modal de Detalle de Producto */}
+      {/* Modal de Detalle de Producto */}   /* la vista de detalle de producto ************************ */
+
       {selectedProduct && (
         <div className="product-modal-overlay" onClick={() => setSelectedProduct(null)}>
           <div className="product-modal" onClick={(e) => e.stopPropagation()}>
