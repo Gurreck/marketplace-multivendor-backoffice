@@ -6,7 +6,10 @@ import Login from './componentes/inicio/login';
 import Register from './componentes/inicio/register';
 import ForgotPassword from './componentes/inicio/forgot_Password';
 import Principal from './componentes/pages/page';
+import PageViewProduct from './componentes/pageViewProduct/pageViewProduct';
+import PagePay from './componentes/pagePay/pagePay';
 import { useAuth } from './context/AuthContext';
+
 
 // Componente para proteger rutas por rol
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -60,6 +63,22 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
               <Principal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/product/:id"
+          element={
+            <ProtectedRoute>
+              <PageViewProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <PagePay />
             </ProtectedRoute>
           }
         />
