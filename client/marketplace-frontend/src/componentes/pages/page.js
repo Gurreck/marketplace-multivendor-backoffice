@@ -668,7 +668,7 @@ export default function Principal() {
           <div className="product-modal" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setSelectedProduct(null)}>✕</button>
 
-            <div className="modal-content">
+            <div className="modal-content">            /* la vista de detalle de producto */
               <div className="modal-image-section">
                 <div className="modal-image-container">
                   <img
