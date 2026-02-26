@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './page.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,23 @@ export default function Principal() {
   const [cartOpen, setCartOpen] = useState(false);
   const [showNotification, setShowNotification] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [promoProducts, setPromoProducts] = useState([]);
+
+  // Lógica para rotar productos de promoción cada 30 segundos
+  useEffect(() => {
+    const getRandomProducts = () => {
+      const shuffled = [...products].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 2);
+    };
+
+    setPromoProducts(getRandomProducts());
+
+    const interval = setInterval(() => {
+      setPromoProducts(getRandomProducts());
+    }, 30000); // 30 segundos
+
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -33,6 +50,18 @@ export default function Principal() {
   const handleAddToCart = (product) => {
     addToCart(product);
     setShowNotification(`${product.name} agregado al carrito`);
+    setTimeout(() => setShowNotification(''), 3000);
+  };
+
+  const handlePromoAddToCart = (product) => {
+    const discountedProduct = {
+      ...product,
+      originalPrice: product.price,
+      price: Math.floor(product.price * 0.90),
+      isPromo: true
+    };
+    addToCart(discountedProduct);
+    setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
     setTimeout(() => setShowNotification(''), 3000);
   };
 
@@ -109,12 +138,37 @@ export default function Principal() {
         </div>
       </header>
 
-      {/* Notificación */}
-      {showNotification && (
-        <div className="notification">
-          ✓ {showNotification}
+      {/* Banner de Promociones */}
+      <section className="promo-banner">
+        <div className="promo-content">
+          <div className="promo-text-side">
+            <p className="promo-subtitle">— Bueno, Bonito, Barato —</p>
+            <h2 className="promo-title">HASTA <span className="highlight">10% EN PRODUCTOS</span></h2>
+          </div>
+
+          <div className="promo-products-side">
+            {promoProducts.map((product, index) => (
+              <div
+                key={`${product.id}-${index}`}
+                className="promo-mini-card clickeable"
+                onClick={() => handlePromoAddToCart(product)}
+                title="Haz clic para agregar al carrito con 10% de descuento"
+              >
+                <div className="mini-card-image">
+                  <img src={product.images[0]} alt={product.name} />
+                </div>
+                <div className="mini-card-footer">
+                  <span className="mini-price-original">₡ {product.price.toLocaleString()}</span>
+                  <span className="mini-price">₡ {Math.floor(product.price * 0.90).toLocaleString()}</span>
+                </div>
+              </div>
+            ))}
+
+            <div className="promo-decoration-clock">⏰</div>
+            <div className="promo-decoration-percent">%</div>
+          </div>
         </div>
-      )}
+      </section>
 
       <div className="main-container">
         {/* Productos Grid */}
@@ -176,68 +230,6 @@ export default function Principal() {
           )}
         </section>
 
-        {/* Carrito     vista del carrito previa*/}
-        {(cartOpen || cartItems.length > 0) && (
-          <aside className="cart-panel">
-            <div className="cart-header">
-              <h2>🛒 Tu Carrito</h2>
-            </div>
-
-            {cartItems.length > 0 ? (
-              <>
-                <div className="cart-items">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="cart-item">
-                      <div className="cart-item-info">
-                        <span className="cart-item-emoji">📦</span>
-                        <div>
-                          <p className="cart-item-name">{item.name}</p>
-                          <p className="cart-item-price">${item.price}</p>
-                        </div>
-                      </div>
-
-                      <div className="cart-item-controls">
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        >
-                          −
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <span className="cart-item-subtotal">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </span>
-
-                      <button
-                        className="remove-btn"
-                        onClick={() => removeFromCart(item.id)}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-
-
-                <button className="checkout-btn" onClick={handleCheckout}>
-                  Proceder al Pago
-                </button>
-              </>
-            ) : (
-              <div className="empty-cart">
-                <p>Tu carrito está vacío</p>
-                <p>😢 Agrega productos para comenzar a comprar</p>
-              </div>
-            )}
-          </aside>
-        )}
       </div>
     </div>
   );
