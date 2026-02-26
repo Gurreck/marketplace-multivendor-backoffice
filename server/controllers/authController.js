@@ -8,13 +8,13 @@ const register = async (req, res) => {
   try {
     console.log('📝 Intentando registrar usuario...');
     console.log('Body recibido:', req.body);
-    
-    const { nombre, email, password } = req.body;
+
+    const { nombre, email, password, role } = req.body;
 
     // Verificar si el usuario ya existe
     console.log('🔍 Buscando usuario existente con email:', email);
     const existingUser = await User.findOne({ email });
-    
+
     if (existingUser) {
       console.log('❌ Usuario ya existe');
       return res.status(400).json({
@@ -23,9 +23,9 @@ const register = async (req, res) => {
       });
     }
 
-    // Crear usuario (role por defecto: 'cliente')
+    // Crear usuario con el rol seleccionado (por defecto: 'cliente')
     console.log('✅ Creando nuevo usuario...');
-    const user = await User.create({ nombre, email, password });
+    const user = await User.create({ nombre, email, password, role: role || 'cliente' });
     console.log('✅ Usuario creado con ID:', user._id);
 
     // Generar token
@@ -49,7 +49,7 @@ const register = async (req, res) => {
     console.error('Tipo de error:', error.name);
     console.error('Mensaje:', error.message);
     console.error('Stack completo:', error.stack);
-    
+
     // Errores de validación de Mongoose
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((e) => e.message);
@@ -74,7 +74,7 @@ const login = async (req, res) => {
   try {
     console.log('🔐 Intentando login...');
     console.log('Email recibido:', req.body.email);
-    
+
     const { email, password } = req.body;
 
     if (!email || !password) {

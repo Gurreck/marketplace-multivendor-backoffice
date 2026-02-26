@@ -11,7 +11,8 @@ export default function Register() {
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role: 'cliente'
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export default function Register() {
         setLoading(true);
 
         // Validación
-        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.role) {
             setError('Por favor, completa todos los campos');
             setLoading(false);
             return;
@@ -61,13 +62,13 @@ export default function Register() {
 
         try {
             // Llamar a la API de registro usando el contexto
-            await register(formData.name, formData.email, formData.password);
+            await register(formData.name, formData.email, formData.password, formData.role);
 
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
             setError('');
 
             // Limpiar formulario y volver al login
-            setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+            setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'cliente' });
             navigate('/login');
 
         } catch (err) {
@@ -157,6 +158,23 @@ export default function Register() {
                             onChange={handleChange}
                             disabled={loading}
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="role">
+                            <span className="label-icon">🏷️</span> Tipo de cuenta
+                        </label>
+                        <select
+                            id="role"
+                            name="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            disabled={loading}
+                            className="role-select"
+                        >
+                            <option value="cliente">🛒 Cliente</option>
+                            <option value="vendedor">🏪 Vendedor</option>
+                        </select>
                     </div>
 
                     <button
