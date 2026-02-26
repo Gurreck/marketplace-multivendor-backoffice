@@ -298,14 +298,15 @@
 }
 
 .similar-image {
-    height: 150px;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
+    background: #fff;
 }
 
 .similar-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .similar-info {

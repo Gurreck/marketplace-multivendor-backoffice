@@ -185,26 +185,42 @@
     gap: 12px;
 }
 
+.price-stack-checkout {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.current-price-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.old-price-checkout {
+    color: #ffd700;
+    /* Color dorado/amarillo suave para resaltar el fondo */
+    text-decoration: line-through;
+    text-decoration-color: #ff4d4d;
+    /* Línea de tachado roja intensa */
+    text-decoration-thickness: 2px;
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
 .current-price {
     font-size: 1.3rem;
     font-weight: 700;
     color: #10b981;
 }
 
-.old-price {
-    text-decoration: line-through;
-    color: #6b7280;
-    font-size: 0.9rem;
-}
-
-.discount-tag {
-    color: var(--nexora-cyan);
-    background: rgba(0, 194, 255, 0.1);
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1px solid var(--nexora-border);
+.discount-badge-checkout {
+    color: #ff8c00;
+    border: 1.5px solid #ff8c00;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
 }
 
 .item-actions-box {

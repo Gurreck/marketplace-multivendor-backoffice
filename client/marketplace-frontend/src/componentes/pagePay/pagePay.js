@@ -141,7 +141,21 @@ const PagePay = () => {
                                         <h4 className="item-name-checkout">{item.name}</h4>
                                         <p className="item-vendor-checkout">Nexora Premium</p>
                                         <div className="item-pricing-row">
-                                            <span className="current-price">${item.price}</span>
+                                            {item.originalPrice ? (
+                                                <>
+                                                    <div className="price-stack-checkout">
+                                                        <span className="old-price-checkout">₡ {item.originalPrice.toLocaleString()}</span>
+                                                        <div className="current-price-row">
+                                                            <span className="current-price">₡ {item.price.toLocaleString()}</span>
+                                                            <span className="discount-badge-checkout">
+                                                                -{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <span className="current-price">₡ {item.price.toLocaleString()}</span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
