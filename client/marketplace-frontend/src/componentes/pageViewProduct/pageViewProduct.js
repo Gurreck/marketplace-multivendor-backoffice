@@ -3,7 +3,7 @@ import './pageViewProduct.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { products } from '../../data/products';
+import api from '../../services/api';
 
 const PageViewProduct = () => {
     const { id } = useParams();
@@ -13,56 +13,41 @@ const PageViewProduct = () => {
 
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [newComment, setNewComment] = useState('');
-    const [commentRating, setCommentRating] = useState(5);
-    const [comments, setComments] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [similarProducts, setSimilarProducts] = useState([]);
     const [showNotification, setShowNotification] = useState('');
 
     useEffect(() => {
-        const product = products.find(p => p.id === parseInt(id));
-        if (product) {
-            setSelectedProduct(product);
-        } else {
+        fetchProductDetail();
+    }, [id]);
+
+    const fetchProductDetail = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get(`/products/${id}`);
+            if (response.data.success) {
+                setSelectedProduct(response.data.data);
+                // Fetch similar products
+                fetchSimilarProducts(response.data.data.category, response.data.data._id);
+            }
+        } catch (error) {
+            console.error('Error fetching product detail:', error);
             navigate('/');
+        } finally {
+            setLoading(false);
         }
-    }, [id, navigate]);
-
-    const handleAddComment = () => {
-        if (!newComment.trim()) {
-            alert('Por favor escribe un comentario');
-            return;
-        }
-
-        const productId = selectedProduct.id;
-        const comment = {
-            id: Date.now(),
-            author: user?.email?.split('@')[0] || 'Usuario',
-            text: newComment,
-            rating: commentRating,
-            date: new Date().toLocaleDateString('es-ES')
-        };
-
-        setComments({
-            ...comments,
-            [productId]: [...(comments[productId] || []), comment]
-        });
-
-        setNewComment('');
-        setCommentRating(5);
-        setShowNotification('Comentario agregado exitosamente');
-        setTimeout(() => setShowNotification(''), 3000);
     };
 
-    const getProductComments = () => {
-        const productComments = comments[selectedProduct?.id] || [];
-        return [...productComments].sort((a, b) => b.id - a.id);
-    };
-
-    const getSimilarProducts = () => {
-        if (!selectedProduct) return [];
-        return products
-            .filter(p => p.category === selectedProduct.category && p.id !== selectedProduct.id)
-            .slice(0, 4);
+    const fetchSimilarProducts = async (category, currentId) => {
+        try {
+            const response = await api.get('/products');
+            if (response.data.success) {
+                const filtered = response.data.data.filter(p => p.category === category && p._id !== currentId);
+                setSimilarProducts(filtered.slice(0, 4));
+            }
+        } catch (error) {
+            console.error('Error fetching similar products:', error);
+        }
     };
 
     const goToPreviousImage = () => {
@@ -77,7 +62,13 @@ const PageViewProduct = () => {
         );
     };
 
-    if (!selectedProduct) return <div className="loading">Cargando producto...</div>;
+    if (loading) return (
+        <div className="loading" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0094FF', fontSize: '24px' }}>
+            Cargando producto...
+        </div>
+    );
+
+    if (!selectedProduct) return null;
 
     return (
         <div className="product-page-container">
@@ -105,12 +96,6 @@ const PageViewProduct = () => {
                                     <button className="image-nav-btn next" onClick={goToNextImage}>▶</button>
                                 </>
                             )}
-
-                            {selectedProduct.images.length > 1 && (
-                                <div className="image-page-indicator">
-                                    {currentImageIndex + 1} / {selectedProduct.images.length}
-                                </div>
-                            )}
                         </div>
 
                         {selectedProduct.images.length > 1 && (
@@ -126,39 +111,14 @@ const PageViewProduct = () => {
                                 ))}
                             </div>
                         )}
-
-                        {/* Listado de comentarios movido aquí */}
-                        <div className="comments-section-list">
-                            <h3>💬 Comentarios y Reseñas</h3>
-                            <div className="comments-list">
-                                {getProductComments().length > 0 ? (
-                                    getProductComments().map((comment) => (
-                                        <div key={comment.id} className="comment-item">
-                                            <div className="comment-header">
-                                                <strong>{comment.author}</strong>
-                                                <span className="comment-rating">{'⭐'.repeat(comment.rating)}</span>
-                                            </div>
-                                            <p className="comment-text">{comment.text}</p>
-                                            <span className="comment-date">{comment.date}</span>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="no-comments">Sé el primero en comentar este producto</p>
-                                )}
-                            </div>
-                        </div>
                     </div>
 
                     <div className="info-section">
                         <h1 className="product-name">{selectedProduct.name}</h1>
 
                         <div className="product-meta">
-                            <div className="rating">
-                                <span className="stars">⭐</span>
-                                <span className="rating-value">{selectedProduct.rating}</span>
-                            </div>
                             <div className="vendor">
-                                Vendedor: <strong>{selectedProduct.vendor}</strong>
+                                Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
                             </div>
                         </div>
 
@@ -168,7 +128,7 @@ const PageViewProduct = () => {
 
                         <div className="description-box">
                             <h3>Descripción</h3>
-                            <p>{selectedProduct.fullDescription}</p>
+                            <p>{selectedProduct.description}</p>
                         </div>
 
                         <div className="category-tag">
@@ -188,53 +148,17 @@ const PageViewProduct = () => {
                             </button>
                         </div>
 
-                        {/* Formulario de comentarios se queda aquí */}
-                        <div className="comments-form-section">
-                            <h3>💬 Deja tu comentario, reseña y una calificación</h3>
-
-                            <div className="comment-form">
-                                <textarea
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                    placeholder="Comparte tu opinión de este producto..."
-                                    className="comment-input"
-                                />
-                                <div className="comment-controls">
-                                    <div className="rating-selector">
-                                        <label>Calificación:</label>
-                                        <select
-                                            value={commentRating}
-                                            onChange={(e) => setCommentRating(Number(e.target.value))}
-                                            className="rating-input"
-                                        >
-                                            <option value={5}>⭐⭐⭐⭐⭐ Excelente</option>
-                                            <option value={4}>⭐⭐⭐⭐ Muy Bueno</option>
-                                            <option value={3}>⭐⭐⭐ Bueno</option>
-                                            <option value={2}>⭐⭐ Regular</option>
-                                            <option value={1}>⭐ Malo</option>
-                                        </select>
-                                    </div>
-                                    <button
-                                        className="comment-submit-btn"
-                                        onClick={handleAddComment}
-                                    >
-                                        Enviar Comentario
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Productos Similares */}
-                        {getSimilarProducts().length > 0 && (
+                        {similarProducts.length > 0 && (
                             <div className="similar-products-section">
                                 <h3>🔍 Productos Similares</h3>
                                 <div className="similar-products-grid">
-                                    {getSimilarProducts().map((product) => (
+                                    {similarProducts.map((product) => (
                                         <div
-                                            key={product.id}
+                                            key={product._id}
                                             className="similar-product-card"
                                             onClick={() => {
-                                                navigate(`/product/${product.id}`);
+                                                navigate(`/product/${product._id}`);
                                                 setCurrentImageIndex(0);
                                                 window.scrollTo(0, 0);
                                             }}
@@ -245,7 +169,6 @@ const PageViewProduct = () => {
                                             <div className="similar-info">
                                                 <p className="similar-name">{product.name}</p>
                                                 <p className="similar-price">${product.price}</p>
-                                                <span className="similar-rating">⭐ {product.rating}</span>
                                             </div>
                                         </div>
                                     ))}
