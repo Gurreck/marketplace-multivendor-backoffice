@@ -88,7 +88,7 @@ function App() {
         />
 
         <Route
-          path="/cliente/dashboard"
+          path="/cliente"
           element={
             <ProtectedRoute allowedRoles={["cliente"]}>
               <Principal />
@@ -150,7 +150,7 @@ const getDashboardByRole = (role) => {
     case "vendedor":
       return "/vendedor";
     case "cliente":
-      return "/cliente/dashboard";
+      return "/cliente";
     default:
       return "/login";
   }
