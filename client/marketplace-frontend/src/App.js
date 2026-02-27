@@ -1,72 +1,101 @@
-import React from 'react';
-import './App.css';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import "./App.css";
+import { Routes, Route, Navigate } from "react-router-dom";
 
-import Login from './componentes/inicio/login';
-import Register from './componentes/inicio/register';
-import ForgotPassword from './componentes/inicio/forgot_Password';
-import Principal from './componentes/pages/page';
-import PageViewProduct from './componentes/pageViewProduct/pageViewProduct';
-import PageVendedor from './componentes/pageVendedor/pageVendedor';
-import PagePay from './componentes/pagePay/pagePay';
-import { useAuth } from './context/AuthContext';
+import Login from "./componentes/inicio/login";
+import Register from "./componentes/inicio/register";
+import ForgotPassword from "./componentes/inicio/forgot_Password";
+import Principal from "./componentes/pages/page";
+import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
+import PagePay from "./componentes/pagePay/pagePay";
+import PageVendedor from "./componentes/pageVendedor/pageVendedor";
 
+import { useAuth } from "./context/AuthContext";
 
-// Componente para proteger rutas por rol
+// 🔐 Componente para proteger rutas
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
+  if (loading) return <div>Cargando...</div>;
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!user) return <Navigate to="/login" replace />;
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/login" replace />;
-  }
+  if (allowedRoles && !allowedRoles.includes(user.role))
+    return <Navigate to={getDashboardByRole(user.role)} replace />;
 
   return children;
 };
 
 function App() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Cargando...</div>;
 
   return (
     <div className="App">
       <Routes>
-        {/* Rutas públicas */}
-        <Route path="/login" element={!user ? <Login /> : <Navigate to={getDashboardByRole(user.role)} replace />} />
-        <Route path="/register" element={!user ? <Register /> : <Navigate to={getDashboardByRole(user.role)} replace />} />
-        <Route path="/forgot-password" element={!user ? <ForgotPassword /> : <Navigate to={getDashboardByRole(user.role)} replace />} />
+        {/* ⭐ rutas públicas */}
+        <Route
+          path="/login"
+          element={
+            user ? (
+              <Navigate to={getDashboardByRole(user.role)} replace />
+            ) : (
+              <Login />
+            )
+          }
+        />
 
-        {/* Rutas protegidas por rol */}
+        <Route
+          path="/register"
+          element={
+            user ? (
+              <Navigate to={getDashboardByRole(user.role)} replace />
+            ) : (
+              <Register />
+            )
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={
+            user ? (
+              <Navigate to={getDashboardByRole(user.role)} replace />
+            ) : (
+              <ForgotPassword />
+            )
+          }
+        />
+
+        {/* ⭐ rutas protegidas */}
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['administrador']}>
+            <ProtectedRoute allowedRoles={["administrador"]}>
               <Principal />
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/vendedor/dashboard"
+          path="/vendedor"
           element={
-            <ProtectedRoute allowedRoles={['vendedor']}>
+            <ProtectedRoute allowedRoles={["vendedor"]}>
               <PageVendedor />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/cliente/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['cliente']}>
+            <ProtectedRoute allowedRoles={["cliente"]}>
               <Principal />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/product/:id"
           element={
@@ -75,6 +104,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/checkout"
           element={
@@ -84,25 +114,45 @@ function App() {
           }
         />
 
-        {/* Ruta por defecto */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* ⭐ ruta raiz inteligente */}
+        <Route
+          path="/"
+          element={
+            user ? (
+              <Navigate to={getDashboardByRole(user.role)} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        {/* ⭐ fallback */}
+        <Route
+          path="*"
+          element={
+            user ? (
+              <Navigate to={getDashboardByRole(user.role)} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
       </Routes>
     </div>
   );
 }
 
-// Función auxiliar para obtener el dashboard según el rol
+// ⭐ función para redirigir por rol
 const getDashboardByRole = (role) => {
   switch (role) {
-    case 'administrador':
-      return '/admin/dashboard';
-    case 'vendedor':
-      return '/vendedor/dashboard';
-    case 'cliente':
-      return '/cliente/dashboard';
+    case "administrador":
+      return "/admin/dashboard";
+    case "vendedor":
+      return "/vendedor";
+    case "cliente":
+      return "/cliente/dashboard";
     default:
-      return '/login';
+      return "/login";
   }
 };
 

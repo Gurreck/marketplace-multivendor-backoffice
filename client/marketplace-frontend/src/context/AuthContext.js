@@ -18,15 +18,36 @@ export const AuthProvider = ({ children }) => {
 
   // Cargar datos de localStorage al iniciar
   useEffect(() => {
+  const initAuth = async () => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (storedToken && storedUser) {
+    if (!storedToken || !storedUser) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // validar token con backend
+      await api.get("/auth/verify", {
+        headers: { Authorization: `Bearer ${storedToken}` }
+      });
+
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+    } catch (error) {
+      // token inválido → borrar storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setToken(null);
+      setUser(null);
     }
+
     setLoading(false);
-  }, []);
+  };
+
+  initAuth();
+}, []);
 
   const login = async (email, password) => {
     const response = await api.post("/auth/login", { email, password });
