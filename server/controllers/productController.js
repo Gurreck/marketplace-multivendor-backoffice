@@ -100,7 +100,7 @@ const updateProduct = async (req, res) => {
 
     // Verificar propiedad
     if (
-      product.vendor.toString() !== req.user.id &&
+      !product.vendor.equals(req.user.id) &&
       req.user.role !== "administrador"
     ) {
       return res.status(403).json({
@@ -143,7 +143,7 @@ const deleteProduct = async (req, res) => {
 
     // Verificar propiedad
     if (
-      product.vendor.toString() !== req.user.id &&
+      !product.vendor.equals(req.user.id) &&
       req.user.role !== "administrador"
     ) {
       return res.status(403).json({
