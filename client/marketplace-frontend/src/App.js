@@ -7,6 +7,7 @@ import Register from './componentes/inicio/register';
 import ForgotPassword from './componentes/inicio/forgot_Password';
 import Principal from './componentes/pages/page';
 import PageViewProduct from './componentes/pageViewProduct/pageViewProduct';
+import PageVendedor from './componentes/pageVendedor/pageVendedor';
 import PagePay from './componentes/pagePay/pagePay';
 import { useAuth } from './context/AuthContext';
 
@@ -54,7 +55,7 @@ function App() {
           path="/vendedor/dashboard"
           element={
             <ProtectedRoute allowedRoles={['vendedor']}>
-              <Principal />
+              <PageVendedor />
             </ProtectedRoute>
           }
         />
