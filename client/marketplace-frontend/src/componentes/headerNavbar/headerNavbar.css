@@ -1,0 +1,214 @@
+/* Header */
+.header {
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--nexora-border);
+    padding: 20px 60px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.header-left {
+    flex-shrink: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.logo-img-header {
+    width: 60px;
+    height: auto;
+    filter: drop-shadow(0 0 8px rgba(0, 148, 255, 0.5));
+    scale: 1.8;
+    top: 3px;
+    position: relative;
+}
+
+.logo-text {
+    color: var(--nexora-blue);
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Search Bar */
+.header-center {
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: var(--input-bg);
+    border: 1px solid var(--nexora-border);
+    border-radius: 30px;
+    padding: 0 25px;
+    transition: all 0.3s ease;
+    height: 50px;
+}
+
+.search-bar:focus-within {
+    border-color: var(--nexora-blue);
+    box-shadow: 0 0 20px rgba(0, 148, 255, 0.2);
+}
+
+.search-icon {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 0;
+    color: #e5e7eb;
+    outline: none;
+    font-size: 16px;
+}
+
+.search-bar input::placeholder {
+    color: #6b7280;
+}
+
+/* Header Right */
+.header-right {
+    display: flex;
+    gap: 15px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.user-menu,
+.cart-btn,
+.logout-btn,
+.theme-toggle-header {
+    background: var(--btn-bg);
+    border: 1px solid var(--nexora-border);
+    color: var(--nexora-blue);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-header {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 18px;
+}
+
+.user-menu:hover,
+.cart-btn:hover,
+.logout-btn:hover,
+.theme-toggle-header:hover {
+    background: rgba(0, 148, 255, 0.4);
+    border-color: var(--nexora-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 148, 255, 0.2);
+}
+
+.logout-btn {
+    color: #f87171;
+    border-color: rgba(244, 63, 94, 0.3);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.logout-btn:hover {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: #f87171;
+}
+
+.cart-btn {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #f87171;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Categorías */
+.categories-bar {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 0;
+    scrollbar-width: thin;
+}
+
+.categories-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.categories-bar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.categories-bar::-webkit-scrollbar-thumb {
+    background: rgba(0, 148, 255, 0.3);
+    border-radius: 2px;
+}
+
+.category-btn {
+    background: transparent;
+    border: 1px solid var(--nexora-border);
+    color: #9ca3af;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.category-btn:hover {
+    border-color: var(--nexora-blue);
+    color: var(--nexora-blue);
+}
+
+.category-btn.active {
+    background: rgba(0, 148, 255, 0.3);
+    border-color: var(--nexora-blue);
+    color: var(--nexora-blue);
+    font-weight: 600;
+}

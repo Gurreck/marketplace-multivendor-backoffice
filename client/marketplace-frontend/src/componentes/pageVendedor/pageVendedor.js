@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import './pageVendedor.css';
-import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
+import DivPromo from '../divPromo/divPromo';
 
 export default function PageVendedor() {
     const navigate = useNavigate();
     const { logout, user } = useAuth();
+    const { addToCart } = useCart();
 
     const [products, setProducts] = useState([]);
+    const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('Todos');
+    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [showNotification, setShowNotification] = useState('');
 
     // State for Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,18 +33,16 @@ export default function PageVendedor() {
         images: [''] // Array of URLs
     });
 
-    const categories = ['Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
+    const categories = ['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
 
     useEffect(() => {
         fetchMyProducts();
+        fetchAllProducts();
     }, []);
 
     const fetchMyProducts = async () => {
         try {
             setLoading(true);
-            // Backend route: router.get("/vendor/me", protect, authorize("vendedor"), getProducts);
-            // Wait, let's check productController.js getProducts: 
-            // if (req.query.vendor === "me" && req.user) { query.vendor = req.user.id; }
             const response = await api.get('/products/vendor/me');
             if (response.data.success) {
                 setProducts(response.data.data);
@@ -48,6 +53,29 @@ export default function PageVendedor() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const fetchAllProducts = async () => {
+        try {
+            const response = await api.get('/products');
+            if (response.data.success) {
+                setAllProducts(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching all products:', error);
+        }
+    };
+
+    const handlePromoAddToCart = (product) => {
+        const discountedProduct = {
+            ...product,
+            originalPrice: product.price,
+            price: Math.floor(product.price * 0.90),
+            isPromo: true
+        };
+        addToCart(discountedProduct);
+        setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
+        setTimeout(() => setShowNotification(''), 3000);
     };
 
     const handleInputChange = (e) => {
@@ -90,7 +118,7 @@ export default function PageVendedor() {
             name: '',
             description: '',
             price: '',
-            category: categories[0],
+            category: categories[1], // Computadoras
             brand: '',
             stock: '0',
             images: ['']
@@ -115,7 +143,6 @@ export default function PageVendedor() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Clean empty image URLs
             const cleanedImages = formData.images.filter(img => img.trim() !== '');
             if (cleanedImages.length === 0) {
                 alert('Debes incluir al menos una URL de imagen válida.');
@@ -162,81 +189,76 @@ export default function PageVendedor() {
         }
     };
 
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+    const filteredProducts = products.filter((product) => {
+        const matchesCategory = selectedCategory === 'Todos' || product.category === selectedCategory;
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+
     return (
-        <div className="vendor-dashboard">
-            <header className="vendor-header">
-                <div className="vendor-logo" onClick={() => navigate('/vendedor/dashboard')}>
-                    <img src={logo} alt="Nexora Logo" />
-                    <h2>Nexora Vendor</h2>
-                </div>
-
-                <div className="vendor-user-actions">
-                    <span>Hola, <strong>{user?.nombre || 'Vendedor'}</strong></span>
-                    <button className="btn-icon" onClick={() => { logout(); navigate('/login'); }} title="Cerrar Sesión">
-                        ✖
-                    </button>
-                </div>
-            </header>
-
-            <main className="vendor-content">
-                <div className="content-header">
-                    <h1>Mis Productos</h1>
-                    <button className="btn-primary" onClick={openAddModal}>
-                        <span>+</span> Nuevo Producto
-                    </button>
-                </div>
-
-                {loading ? (
-                    <div className="loading-container">
-                        <div className="spinner"></div>
-                        <p>Cargando tus productos...</p>
+        <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
+            {showNotification && <div className="notification">{showNotification}</div>}
+            <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+            <div className="main-container">
+                <section className="products-section">
+                    <div className="section-header">
+                        <h2>Mis Productos {selectedCategory !== 'Todos' && `— ${selectedCategory}`}</h2>
+                        <div className="header-actions">
+                            <button className="btn-exit-vendedor" onClick={() => { logout(); navigate('/login'); }}>
+                                ✖ Salir
+                            </button>
+                            <p>{filteredProducts.length} productos publicados</p>
+                            <button className="add-btn-vendedor" onClick={openAddModal}>
+                                ➕ Nuevo Producto
+                            </button>
+                        </div>
                     </div>
-                ) : error ? (
-                    <div className="empty-dashboard">
-                        <span className="empty-icon">⚠️</span>
-                        <h3>Error</h3>
-                        <p>{error}</p>
-                        <button className="btn-primary" onClick={fetchMyProducts}>Reintentar</button>
-                    </div>
-                ) : products.length === 0 ? (
-                    <div className="empty-dashboard">
-                        <span className="empty-icon">📦</span>
-                        <h3>No tienes productos en venta</h3>
-                        <p>Comienza agregando tu primer producto para que los clientes puedan verlo.</p>
-                        <button className="btn-primary" onClick={openAddModal}>Agregar Producto</button>
-                    </div>
-                ) : (
-                    <div className="products-management-grid">
-                        {products.map((product) => (
-                            <div key={product._id} className="vendor-product-card">
-                                <div className="card-img-container">
-                                    <img src={product.images[0]} alt={product.name} />
-                                    <span className="card-category-badge">{product.category}</span>
-                                </div>
 
-                                <div className="card-info">
-                                    <h3>{product.name}</h3>
-                                    <p className="card-desc">{product.description}</p>
-
-                                    <div className="card-meta">
-                                        <span className="card-price">${product.price}</span>
-                                        <span className="card-stock">Stock: {product.stock}</span>
+                    {loading ? (
+                        <div className="loading-container">
+                            <div className="spinner"></div>
+                            <p>Cargando tus productos...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="empty-state">
+                            <p>⚠️ {error}</p>
+                            <button className="add-btn" onClick={fetchMyProducts}>Reintentar</button>
+                        </div>
+                    ) : filteredProducts.length === 0 ? (
+                        <div className="empty-state">
+                            <p>📦 No tienes productos en esta categoría</p>
+                            <button className="add-btn" onClick={openAddModal}>➕ Agregar Producto</button>
+                        </div>
+                    ) : (
+                        <div className="products-grid">
+                            {filteredProducts.map((product) => (
+                                <div key={product._id} className="product-card">
+                                    <div className="product-image">
+                                        <img src={product.images[0]} alt={product.name} className="product-real-image" />
+                                        <div className="product-badge">{product.category}</div>
                                     </div>
 
-                                    <div className="card-actions">
-                                        <button className="btn-action btn-edit" onClick={() => openEditModal(product)}>
-                                            ✏️ Editar
-                                        </button>
-                                        <button className="btn-action btn-delete" onClick={() => handleDelete(product._id)}>
-                                            🗑️ Eliminar
-                                        </button>
+                                    <div className="product-info">
+                                        <h3 className="product-name">{product.name}</h3>
+                                        <p className="product-short-desc">{product.description?.substring(0, 60)}...</p>
+                                        <div className="card-meta">
+                                            <span className="product-price">${product.price}</span>
+                                            <span className="card-stock">Stock: {product.stock}</span>
+                                        </div>
+
+                                        <div className="product-footer-vendedor">
+                                            <button className="btn-edit" onClick={() => openEditModal(product)}>✏️ Editar</button>
+                                            <button className="btn-delete" onClick={() => handleDelete(product._id)}>🗑️ Borrar</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </main>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
 
             {/* Modal for Add/Edit */}
             {isModalOpen && (
@@ -304,7 +326,7 @@ export default function PageVendedor() {
                                 <div className="form-group">
                                     <label>Categoría</label>
                                     <select name="category" value={formData.category} onChange={handleInputChange}>
-                                        {categories.map(cat => (
+                                        {categories.filter(c => c !== 'Todos').map(cat => (
                                             <option key={cat} value={cat}>{cat}</option>
                                         ))}
                                     </select>
@@ -316,7 +338,7 @@ export default function PageVendedor() {
                                         name="brand"
                                         value={formData.brand}
                                         onChange={handleInputChange}
-                                        placeholder="EjBase: Dell, Sony..."
+                                        placeholder="Ej: Dell, Sony..."
                                     />
                                 </div>
                             </div>
@@ -333,22 +355,22 @@ export default function PageVendedor() {
                                             required={index === 0}
                                         />
                                         {formData.images.length > 1 && (
-                                            <button type="button" className="btn-icon" onClick={() => removeImageField(index)} style={{ borderRadius: '8px', width: '35px', height: '35px' }}>
+                                            <button type="button" className="btn-icon-minus" onClick={() => removeImageField(index)}>
                                                 -
                                             </button>
                                         )}
                                     </div>
                                 ))}
-                                <button type="button" className="btn-action" onClick={addImageField} style={{ width: 'fit-content' }}>
+                                <button type="button" className="btn-add-img" onClick={addImageField}>
                                     + Añadir otra URL de imagen
                                 </button>
                             </div>
 
-                            <div className="form-actions">
-                                <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>
+                            <div className="form-actions-modal">
+                                <button type="button" className="btn-secondary-modal" onClick={() => setIsModalOpen(false)}>
                                     Cancelar
                                 </button>
-                                <button type="submit" className="btn-primary submit-btn">
+                                <button type="submit" className="btn-primary-modal">
                                     {editingProduct ? 'Guardar Cambios' : 'Publicar Producto'}
                                 </button>
                             </div>
