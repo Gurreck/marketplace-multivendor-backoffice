@@ -5,8 +5,19 @@ const Product = require("../models/Product");
 // @access  Private (Vendedor, Admin)
 const createProduct = async (req, res) => {
   try {
+    // Construir URLs de las imágenes subidas
+    let images = [];
+    if (req.files && req.files.length > 0) {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      images = req.files.map((file) => `${baseUrl}/uploads/${file.filename}`);
+    } else if (req.body.images) {
+      // Fallback: si vienen URLs directas (compatibilidad)
+      images = Array.isArray(req.body.images) ? req.body.images : [req.body.images];
+    }
+
     const product = await Product.create({
       ...req.body,
+      images,
       vendor: req.user.id,
     });
 
@@ -109,7 +120,14 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    // Si vienen archivos nuevos, actualizar las imágenes
+    let updateData = { ...req.body };
+    if (req.files && req.files.length > 0) {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      updateData.images = req.files.map((file) => `${baseUrl}/uploads/${file.filename}`);
+    }
+
+    product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });

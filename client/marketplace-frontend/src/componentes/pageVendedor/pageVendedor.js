@@ -30,8 +30,10 @@ export default function PageVendedor() {
         category: '',
         brand: '',
         stock: '',
-        images: [''] // Array of URLs
     });
+    const [imageFiles, setImageFiles] = useState([]);      // Archivos seleccionados
+    const [imagePreviews, setImagePreviews] = useState([]); // Vista previa de imágenes
+    const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)
 
     const categories = ['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
 
@@ -45,7 +47,11 @@ export default function PageVendedor() {
             setLoading(true);
             const response = await api.get('/products/vendor/me');
             if (response.data.success) {
-                setProducts(response.data.data);
+                // Ordenar por fecha de creación descendente (más recientes primero)
+                const sorted = [...response.data.data].sort(
+                    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                setProducts(sorted);
             }
         } catch (err) {
             console.error('Error fetching products:', err);
@@ -86,30 +92,39 @@ export default function PageVendedor() {
         });
     };
 
-    const handleImageChange = (index, value) => {
-        const newImages = [...formData.images];
-        newImages[index] = value;
-        setFormData({
-            ...formData,
-            images: newImages
-        });
-    };
+    const handleFileSelect = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
 
-    const addImageField = () => {
-        setFormData({
-            ...formData,
-            images: [...formData.images, '']
-        });
-    };
-
-    const removeImageField = (index) => {
-        if (formData.images.length > 1) {
-            const newImages = formData.images.filter((_, i) => i !== index);
-            setFormData({
-                ...formData,
-                images: newImages
-            });
+        // Limitar a 5 imágenes en total
+        const totalImages = imageFiles.length + files.length;
+        if (totalImages > 5) {
+            alert('Máximo 5 imágenes permitidas.');
+            return;
         }
+
+        setImageFiles(prev => [...prev, ...files]);
+
+        // Generar vista previa
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreviews(prev => [...prev, reader.result]);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Limpiar el input para permitir seleccionar el mismo archivo de nuevo
+        e.target.value = '';
+    };
+
+    const removeNewImage = (index) => {
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const removeExistingImage = (index) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const openAddModal = () => {
@@ -118,11 +133,13 @@ export default function PageVendedor() {
             name: '',
             description: '',
             price: '',
-            category: categories[1], // Computadoras
+            category: categories[1],
             brand: '',
             stock: '0',
-            images: ['']
         });
+        setImageFiles([]);
+        setImagePreviews([]);
+        setExistingImages([]);
         setIsModalOpen(true);
     };
 
@@ -135,32 +152,52 @@ export default function PageVendedor() {
             category: product.category,
             brand: product.brand || '',
             stock: product.stock,
-            images: product.images.length > 0 ? product.images : ['']
         });
+        setImageFiles([]);
+        setImagePreviews([]);
+        setExistingImages(product.images || []);
         setIsModalOpen(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const cleanedImages = formData.images.filter(img => img.trim() !== '');
-            if (cleanedImages.length === 0) {
-                alert('Debes incluir al menos una URL de imagen válida.');
+            // Validar que haya al menos una imagen (nueva o existente)
+            if (imageFiles.length === 0 && existingImages.length === 0) {
+                alert('Debes incluir al menos una imagen.');
                 return;
             }
 
-            const dataToSubmit = {
-                ...formData,
-                images: cleanedImages,
-                price: Number(formData.price),
-                stock: Number(formData.stock)
-            };
+            // Construir FormData para enviar archivos
+            const submitData = new FormData();
+            submitData.append('name', formData.name);
+            submitData.append('description', formData.description);
+            submitData.append('price', Number(formData.price));
+            submitData.append('stock', Number(formData.stock));
+            submitData.append('category', formData.category);
+            submitData.append('brand', formData.brand);
+
+            // Agregar archivos nuevos
+            imageFiles.forEach(file => {
+                submitData.append('images', file);
+            });
+
+            // Si estamos editando y mantenemos imágenes existentes (sin subir nuevas)
+            if (editingProduct && imageFiles.length === 0 && existingImages.length > 0) {
+                existingImages.forEach(url => {
+                    submitData.append('images', url);
+                });
+            }
 
             let response;
             if (editingProduct) {
-                response = await api.put(`/products/${editingProduct._id}`, dataToSubmit);
+                response = await api.put(`/products/${editingProduct._id}`, submitData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                response = await api.post('/products', dataToSubmit);
+                response = await api.post('/products', submitData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
 
             if (response.data.success) {
@@ -344,26 +381,58 @@ export default function PageVendedor() {
                             </div>
 
                             <div className="form-group">
-                                <label>URLs de Imágenes</label>
-                                {formData.images.map((url, index) => (
-                                    <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                                        <input
-                                            type="url"
-                                            value={url}
-                                            onChange={(e) => handleImageChange(index, e.target.value)}
-                                            placeholder="https://ejemplo.com/imagen.jpg"
-                                            required={index === 0}
-                                        />
-                                        {formData.images.length > 1 && (
-                                            <button type="button" className="btn-icon-minus" onClick={() => removeImageField(index)}>
-                                                -
-                                            </button>
-                                        )}
+                                <label>Imágenes del Producto</label>
+
+                                {/* Imágenes existentes (al editar) */}
+                                {existingImages.length > 0 && (
+                                    <div className="image-previews-container">
+                                        <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>Imágenes actuales:</p>
+                                        <div className="image-previews-grid">
+                                            {existingImages.map((url, index) => (
+                                                <div key={`existing-${index}`} className="image-preview-item">
+                                                    <img src={url} alt={`Existente ${index + 1}`} />
+                                                    <button type="button" className="btn-remove-preview" onClick={() => removeExistingImage(index)}>
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                ))}
-                                <button type="button" className="btn-add-img" onClick={addImageField}>
-                                    + Añadir otra URL de imagen
-                                </button>
+                                )}
+
+                                {/* Vista previa de nuevas imágenes */}
+                                {imagePreviews.length > 0 && (
+                                    <div className="image-previews-container">
+                                        <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>Nuevas imágenes:</p>
+                                        <div className="image-previews-grid">
+                                            {imagePreviews.map((preview, index) => (
+                                                <div key={`new-${index}`} className="image-preview-item">
+                                                    <img src={preview} alt={`Preview ${index + 1}`} />
+                                                    <button type="button" className="btn-remove-preview" onClick={() => removeNewImage(index)}>
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Botón para seleccionar archivos */}
+                                <div className="file-upload-area">
+                                    <label className="btn-file-upload">
+                                        📁 Seleccionar imágenes
+                                        <input
+                                            type="file"
+                                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                            multiple
+                                            onChange={handleFileSelect}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                    <span className="file-upload-hint">
+                                        Máx. 5 imágenes (JPEG, PNG, GIF, WebP) — 5MB c/u
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="form-actions-modal">

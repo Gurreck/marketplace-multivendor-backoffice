@@ -13,6 +13,12 @@
     font-family: 'Inter', sans-serif;
 }
 
+.product-page-container > .promo-banner {
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: -40px;
+}
+
 .loading {
     display: flex;
     justify-content: center;
