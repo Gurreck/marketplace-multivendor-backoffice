@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
+import DivPromo from '../divPromo/divPromo';
+import HeaderNavbar from '../headerNavbar/headerNavbar';
 
 export default function Principal() {
   const navigate = useNavigate();
@@ -17,7 +19,6 @@ export default function Principal() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [showNotification, setShowNotification] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [promoProducts, setPromoProducts] = useState([]);
 
   useEffect(() => {
     fetchProducts();
@@ -37,23 +38,6 @@ export default function Principal() {
     }
   };
 
-  // Lógica para rotar productos de promoción cada 30 segundos
-  useEffect(() => {
-    if (products.length === 0) return;
-
-    const getRandomProducts = () => {
-      const shuffled = [...products].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, 2);
-    };
-
-    setPromoProducts(getRandomProducts());
-
-    const interval = setInterval(() => {
-      setPromoProducts(getRandomProducts());
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [products]);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -90,94 +74,20 @@ export default function Principal() {
     <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
       {showNotification && <div className="notification">{showNotification}</div>}
 
-      <header className="header">
-        <div className="header-top">
-          <div className="header-left">
-            <div className="logo" onClick={() => navigate('/')}>
-              <img src={logo} alt="Nexora Logo" className="logo-img-header" />
-              <h1 className="logo-text">Nexora</h1>
-            </div>
-          </div>
+      <HeaderNavbar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        toggleTheme={toggleTheme}
+        isDarkMode={isDarkMode}
+        user={user}
+        logout={logout}
+        cartCount={cartCount}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
 
-          <div className="header-center">
-            <div className="search-bar">
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Busca productos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="header-right">
-            <button
-              className="theme-toggle-header"
-              onClick={toggleTheme}
-              title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            >
-              {isDarkMode ? '☀️' : '🌙'}
-            </button>
-            <button className="user-menu" onClick={() => {
-              if (user?.role === 'vendedor') navigate('/vendedor/dashboard');
-            }}>
-              👤 {user?.nombre || user?.email?.split('@')[0] || 'Usuario'}
-            </button>
-            <button
-              className="cart-btn"
-              onClick={() => navigate('/checkout')}
-            >
-              🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-            </button>
-            <button className="logout-btn" onClick={() => {
-              logout();
-              navigate('/login');
-            }}>
-              ✖ Salir
-            </button>
-          </div>
-        </div>
-
-        <div className="categories-bar">
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-      </header>
-
-      <section className="promo-banner">
-        <div className="promo-content">
-          <div className="promo-text-side">
-            <p className="promo-subtitle">— Bueno, Bonito, Barato —</p>
-            <h2 className="promo-title">HASTA <span className="highlight">10% EN PRODUCTOS</span></h2>
-          </div>
-
-          <div className="promo-products-side">
-            {promoProducts.map((product, index) => (
-              <div
-                key={`${product._id || product.id}-${index}`}
-                className="promo-mini-card clickeable"
-                onClick={() => handlePromoAddToCart(product)}
-              >
-                <div className="mini-card-image">
-                  <img src={product.images[0]} alt={product.name} />
-                </div>
-                <div className="mini-card-footer">
-                  <span className="mini-price-original">₡ {product.price.toLocaleString()}</span>
-                  <span className="mini-price">₡ {Math.floor(product.price * 0.90).toLocaleString()}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <DivPromo products={products} handlePromoAddToCart={handlePromoAddToCart} />
 
       <div className="main-container">
         <section className="products-section">
@@ -203,7 +113,7 @@ export default function Principal() {
                   <div className="product-info">
                     <h3 className="product-name" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>{product.name}</h3>
                     <p className="product-short-desc">{product.description?.substring(0, 60)}...</p>
-                    <p className="product-vendor">por {product.vendor?.nombre || product.vendor}</p>
+                    <p className="product-vendor">vendedor: {product.vendor?.nombre || product.vendor}</p>
 
                     <div className="product-footer">
                       <span className="product-price">${product.price}</span>

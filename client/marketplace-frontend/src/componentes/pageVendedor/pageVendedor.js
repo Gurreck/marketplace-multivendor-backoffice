@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import './pageVendedor.css';
-import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
+import DivPromo from '../divPromo/divPromo';
 
 export default function PageVendedor() {
     const navigate = useNavigate();
     const { logout, user } = useAuth();
+    const { addToCart } = useCart();
 
     const [products, setProducts] = useState([]);
+    const [allProducts, setAllProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('Todos');
+    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [showNotification, setShowNotification] = useState('');
 
     // State for Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,24 +30,28 @@ export default function PageVendedor() {
         category: '',
         brand: '',
         stock: '',
-        images: [''] // Array of URLs
     });
+    const [imageFiles, setImageFiles] = useState([]);      // Archivos seleccionados
+    const [imagePreviews, setImagePreviews] = useState([]); // Vista previa de imágenes
+    const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)
 
-    const categories = ['Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
+    const categories = ['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
 
     useEffect(() => {
         fetchMyProducts();
+        fetchAllProducts();
     }, []);
 
     const fetchMyProducts = async () => {
         try {
             setLoading(true);
-            // Backend route: router.get("/vendor/me", protect, authorize("vendedor"), getProducts);
-            // Wait, let's check productController.js getProducts: 
-            // if (req.query.vendor === "me" && req.user) { query.vendor = req.user.id; }
             const response = await api.get('/products/vendor/me');
             if (response.data.success) {
-                setProducts(response.data.data);
+                // Ordenar por fecha de creación descendente (más recientes primero)
+                const sorted = [...response.data.data].sort(
+                    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                setProducts(sorted);
             }
         } catch (err) {
             console.error('Error fetching products:', err);
@@ -48,6 +59,29 @@ export default function PageVendedor() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const fetchAllProducts = async () => {
+        try {
+            const response = await api.get('/products');
+            if (response.data.success) {
+                setAllProducts(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching all products:', error);
+        }
+    };
+
+    const handlePromoAddToCart = (product) => {
+        const discountedProduct = {
+            ...product,
+            originalPrice: product.price,
+            price: Math.floor(product.price * 0.90),
+            isPromo: true
+        };
+        addToCart(discountedProduct);
+        setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
+        setTimeout(() => setShowNotification(''), 3000);
     };
 
     const handleInputChange = (e) => {
@@ -58,30 +92,39 @@ export default function PageVendedor() {
         });
     };
 
-    const handleImageChange = (index, value) => {
-        const newImages = [...formData.images];
-        newImages[index] = value;
-        setFormData({
-            ...formData,
-            images: newImages
-        });
-    };
+    const handleFileSelect = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
 
-    const addImageField = () => {
-        setFormData({
-            ...formData,
-            images: [...formData.images, '']
-        });
-    };
-
-    const removeImageField = (index) => {
-        if (formData.images.length > 1) {
-            const newImages = formData.images.filter((_, i) => i !== index);
-            setFormData({
-                ...formData,
-                images: newImages
-            });
+        // Limitar a 5 imágenes en total
+        const totalImages = imageFiles.length + files.length;
+        if (totalImages > 5) {
+            alert('Máximo 5 imágenes permitidas.');
+            return;
         }
+
+        setImageFiles(prev => [...prev, ...files]);
+
+        // Generar vista previa
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreviews(prev => [...prev, reader.result]);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Limpiar el input para permitir seleccionar el mismo archivo de nuevo
+        e.target.value = '';
+    };
+
+    const removeNewImage = (index) => {
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const removeExistingImage = (index) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const openAddModal = () => {
@@ -90,11 +133,13 @@ export default function PageVendedor() {
             name: '',
             description: '',
             price: '',
-            category: categories[0],
+            category: categories[1],
             brand: '',
             stock: '0',
-            images: ['']
         });
+        setImageFiles([]);
+        setImagePreviews([]);
+        setExistingImages([]);
         setIsModalOpen(true);
     };
 
@@ -107,33 +152,52 @@ export default function PageVendedor() {
             category: product.category,
             brand: product.brand || '',
             stock: product.stock,
-            images: product.images.length > 0 ? product.images : ['']
         });
+        setImageFiles([]);
+        setImagePreviews([]);
+        setExistingImages(product.images || []);
         setIsModalOpen(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Clean empty image URLs
-            const cleanedImages = formData.images.filter(img => img.trim() !== '');
-            if (cleanedImages.length === 0) {
-                alert('Debes incluir al menos una URL de imagen válida.');
+            // Validar que haya al menos una imagen (nueva o existente)
+            if (imageFiles.length === 0 && existingImages.length === 0) {
+                alert('Debes incluir al menos una imagen.');
                 return;
             }
 
-            const dataToSubmit = {
-                ...formData,
-                images: cleanedImages,
-                price: Number(formData.price),
-                stock: Number(formData.stock)
-            };
+            // Construir FormData para enviar archivos
+            const submitData = new FormData();
+            submitData.append('name', formData.name);
+            submitData.append('description', formData.description);
+            submitData.append('price', Number(formData.price));
+            submitData.append('stock', Number(formData.stock));
+            submitData.append('category', formData.category);
+            submitData.append('brand', formData.brand);
+
+            // Agregar archivos nuevos
+            imageFiles.forEach(file => {
+                submitData.append('images', file);
+            });
+
+            // Si estamos editando y mantenemos imágenes existentes (sin subir nuevas)
+            if (editingProduct && imageFiles.length === 0 && existingImages.length > 0) {
+                existingImages.forEach(url => {
+                    submitData.append('images', url);
+                });
+            }
 
             let response;
             if (editingProduct) {
-                response = await api.put(`/products/${editingProduct._id}`, dataToSubmit);
+                response = await api.put(`/products/${editingProduct._id}`, submitData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                response = await api.post('/products', dataToSubmit);
+                response = await api.post('/products', submitData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
 
             if (response.data.success) {
@@ -162,81 +226,76 @@ export default function PageVendedor() {
         }
     };
 
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+    const filteredProducts = products.filter((product) => {
+        const matchesCategory = selectedCategory === 'Todos' || product.category === selectedCategory;
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+
     return (
-        <div className="vendor-dashboard">
-            <header className="vendor-header">
-                <div className="vendor-logo" onClick={() => navigate('/vendedor/dashboard')}>
-                    <img src={logo} alt="Nexora Logo" />
-                    <h2>Nexora Vendor</h2>
-                </div>
-
-                <div className="vendor-user-actions">
-                    <span>Hola, <strong>{user?.nombre || 'Vendedor'}</strong></span>
-                    <button className="btn-icon" onClick={() => { logout(); navigate('/login'); }} title="Cerrar Sesión">
-                        ✖
-                    </button>
-                </div>
-            </header>
-
-            <main className="vendor-content">
-                <div className="content-header">
-                    <h1>Mis Productos</h1>
-                    <button className="btn-primary" onClick={openAddModal}>
-                        <span>+</span> Nuevo Producto
-                    </button>
-                </div>
-
-                {loading ? (
-                    <div className="loading-container">
-                        <div className="spinner"></div>
-                        <p>Cargando tus productos...</p>
+        <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
+            {showNotification && <div className="notification">{showNotification}</div>}
+            <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+            <div className="main-container">
+                <section className="products-section">
+                    <div className="section-header">
+                        <h2>Mis Productos {selectedCategory !== 'Todos' && `— ${selectedCategory}`}</h2>
+                        <div className="header-actions">
+                            <button className="btn-exit-vendedor" onClick={() => { logout(); navigate('/login'); }}>
+                                ✖ Salir
+                            </button>
+                            <p>{filteredProducts.length} productos publicados</p>
+                            <button className="add-btn-vendedor" onClick={openAddModal}>
+                                ➕ Nuevo Producto
+                            </button>
+                        </div>
                     </div>
-                ) : error ? (
-                    <div className="empty-dashboard">
-                        <span className="empty-icon">⚠️</span>
-                        <h3>Error</h3>
-                        <p>{error}</p>
-                        <button className="btn-primary" onClick={fetchMyProducts}>Reintentar</button>
-                    </div>
-                ) : products.length === 0 ? (
-                    <div className="empty-dashboard">
-                        <span className="empty-icon">📦</span>
-                        <h3>No tienes productos en venta</h3>
-                        <p>Comienza agregando tu primer producto para que los clientes puedan verlo.</p>
-                        <button className="btn-primary" onClick={openAddModal}>Agregar Producto</button>
-                    </div>
-                ) : (
-                    <div className="products-management-grid">
-                        {products.map((product) => (
-                            <div key={product._id} className="vendor-product-card">
-                                <div className="card-img-container">
-                                    <img src={product.images[0]} alt={product.name} />
-                                    <span className="card-category-badge">{product.category}</span>
-                                </div>
 
-                                <div className="card-info">
-                                    <h3>{product.name}</h3>
-                                    <p className="card-desc">{product.description}</p>
-
-                                    <div className="card-meta">
-                                        <span className="card-price">${product.price}</span>
-                                        <span className="card-stock">Stock: {product.stock}</span>
+                    {loading ? (
+                        <div className="loading-container">
+                            <div className="spinner"></div>
+                            <p>Cargando tus productos...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="empty-state">
+                            <p>⚠️ {error}</p>
+                            <button className="add-btn" onClick={fetchMyProducts}>Reintentar</button>
+                        </div>
+                    ) : filteredProducts.length === 0 ? (
+                        <div className="empty-state">
+                            <p>📦 No tienes productos en esta categoría</p>
+                            <button className="add-btn" onClick={openAddModal}>➕ Agregar Producto</button>
+                        </div>
+                    ) : (
+                        <div className="products-grid">
+                            {filteredProducts.map((product) => (
+                                <div key={product._id} className="product-card">
+                                    <div className="product-image">
+                                        <img src={product.images[0]} alt={product.name} className="product-real-image" />
+                                        <div className="product-badge">{product.category}</div>
                                     </div>
 
-                                    <div className="card-actions">
-                                        <button className="btn-action btn-edit" onClick={() => openEditModal(product)}>
-                                            ✏️ Editar
-                                        </button>
-                                        <button className="btn-action btn-delete" onClick={() => handleDelete(product._id)}>
-                                            🗑️ Eliminar
-                                        </button>
+                                    <div className="product-info">
+                                        <h3 className="product-name">{product.name}</h3>
+                                        <p className="product-short-desc">{product.description?.substring(0, 60)}...</p>
+                                        <div className="card-meta">
+                                            <span className="product-price">${product.price}</span>
+                                            <span className="card-stock">Stock: {product.stock}</span>
+                                        </div>
+
+                                        <div className="product-footer-vendedor">
+                                            <button className="btn-edit" onClick={() => openEditModal(product)}>✏️ Editar</button>
+                                            <button className="btn-delete" onClick={() => handleDelete(product._id)}>🗑️ Borrar</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </main>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            </div>
 
             {/* Modal for Add/Edit */}
             {isModalOpen && (
@@ -304,7 +363,7 @@ export default function PageVendedor() {
                                 <div className="form-group">
                                     <label>Categoría</label>
                                     <select name="category" value={formData.category} onChange={handleInputChange}>
-                                        {categories.map(cat => (
+                                        {categories.filter(c => c !== 'Todos').map(cat => (
                                             <option key={cat} value={cat}>{cat}</option>
                                         ))}
                                     </select>
@@ -316,39 +375,71 @@ export default function PageVendedor() {
                                         name="brand"
                                         value={formData.brand}
                                         onChange={handleInputChange}
-                                        placeholder="EjBase: Dell, Sony..."
+                                        placeholder="Ej: Dell, Sony..."
                                     />
                                 </div>
                             </div>
 
                             <div className="form-group">
-                                <label>URLs de Imágenes</label>
-                                {formData.images.map((url, index) => (
-                                    <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                                        <input
-                                            type="url"
-                                            value={url}
-                                            onChange={(e) => handleImageChange(index, e.target.value)}
-                                            placeholder="https://ejemplo.com/imagen.jpg"
-                                            required={index === 0}
-                                        />
-                                        {formData.images.length > 1 && (
-                                            <button type="button" className="btn-icon" onClick={() => removeImageField(index)} style={{ borderRadius: '8px', width: '35px', height: '35px' }}>
-                                                -
-                                            </button>
-                                        )}
+                                <label>Imágenes del Producto</label>
+
+                                {/* Imágenes existentes (al editar) */}
+                                {existingImages.length > 0 && (
+                                    <div className="image-previews-container">
+                                        <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>Imágenes actuales:</p>
+                                        <div className="image-previews-grid">
+                                            {existingImages.map((url, index) => (
+                                                <div key={`existing-${index}`} className="image-preview-item">
+                                                    <img src={url} alt={`Existente ${index + 1}`} />
+                                                    <button type="button" className="btn-remove-preview" onClick={() => removeExistingImage(index)}>
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                ))}
-                                <button type="button" className="btn-action" onClick={addImageField} style={{ width: 'fit-content' }}>
-                                    + Añadir otra URL de imagen
-                                </button>
+                                )}
+
+                                {/* Vista previa de nuevas imágenes */}
+                                {imagePreviews.length > 0 && (
+                                    <div className="image-previews-container">
+                                        <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>Nuevas imágenes:</p>
+                                        <div className="image-previews-grid">
+                                            {imagePreviews.map((preview, index) => (
+                                                <div key={`new-${index}`} className="image-preview-item">
+                                                    <img src={preview} alt={`Preview ${index + 1}`} />
+                                                    <button type="button" className="btn-remove-preview" onClick={() => removeNewImage(index)}>
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Botón para seleccionar archivos */}
+                                <div className="file-upload-area">
+                                    <label className="btn-file-upload">
+                                        📁 Seleccionar imágenes
+                                        <input
+                                            type="file"
+                                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                            multiple
+                                            onChange={handleFileSelect}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                    <span className="file-upload-hint">
+                                        Máx. 5 imágenes (JPEG, PNG, GIF, WebP) — 5MB c/u
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="form-actions">
-                                <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>
+                            <div className="form-actions-modal">
+                                <button type="button" className="btn-secondary-modal" onClick={() => setIsModalOpen(false)}>
                                     Cancelar
                                 </button>
-                                <button type="submit" className="btn-primary submit-btn">
+                                <button type="submit" className="btn-primary-modal">
                                     {editingProduct ? 'Guardar Cambios' : 'Publicar Producto'}
                                 </button>
                             </div>

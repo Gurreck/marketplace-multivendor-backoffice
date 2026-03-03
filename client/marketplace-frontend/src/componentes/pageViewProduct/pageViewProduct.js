@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
+import DivPromo from '../divPromo/divPromo';
 
 const PageViewProduct = () => {
     const { id } = useParams();
@@ -15,11 +16,36 @@ const PageViewProduct = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [similarProducts, setSimilarProducts] = useState([]);
+    const [allProducts, setAllProducts] = useState([]);
     const [showNotification, setShowNotification] = useState('');
 
     useEffect(() => {
         fetchProductDetail();
+        fetchAllProducts();
     }, [id]);
+
+    const fetchAllProducts = async () => {
+        try {
+            const response = await api.get('/products');
+            if (response.data.success) {
+                setAllProducts(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching all products:', error);
+        }
+    };
+
+    const handlePromoAddToCart = (product) => {
+        const discountedProduct = {
+            ...product,
+            originalPrice: product.price,
+            price: Math.floor(product.price * 0.90),
+            isPromo: true
+        };
+        addToCart(discountedProduct);
+        setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
+        setTimeout(() => setShowNotification(''), 3000);
+    };
 
     const fetchProductDetail = async () => {
         try {
@@ -78,6 +104,8 @@ const PageViewProduct = () => {
                 </div>
             )}
 
+            <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+
             <div className="product-page-content">
                 <button className="back-btn" onClick={() => navigate(-1)}>← Volver</button>
 
@@ -116,6 +144,15 @@ const PageViewProduct = () => {
                     <div className="info-section">
                         <h1 className="product-name">{selectedProduct.name}</h1>
 
+                        <div className="description-box">
+                            <h3>Descripción</h3>
+                            <p>{selectedProduct.description}</p>
+                        </div>
+
+                        <div className="category-tag">
+                            Categoría: <strong>{selectedProduct.category}</strong>
+                        </div>
+
                         <div className="product-meta">
                             <div className="vendor">
                                 Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
@@ -124,15 +161,6 @@ const PageViewProduct = () => {
 
                         <div className="price-tag">
                             <span className="product-price">${selectedProduct.price}</span>
-                        </div>
-
-                        <div className="description-box">
-                            <h3>Descripción</h3>
-                            <p>{selectedProduct.description}</p>
-                        </div>
-
-                        <div className="category-tag">
-                            Categoría: <strong>{selectedProduct.category}</strong>
                         </div>
 
                         <div className="action-buttons">

@@ -2,10 +2,40 @@ import React, { useState, useEffect } from 'react';
 import './pagePay.css';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import api from '../../services/api';
+import DivPromo from '../divPromo/divPromo';
+
+const getItemId = (item) => item._id || item.id;
 
 const PagePay = () => {
     const navigate = useNavigate();
-    const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
+    const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart, addToCart } = useCart();
+
+    const [allProducts, setAllProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchAllProducts = async () => {
+            try {
+                const response = await api.get('/products');
+                if (response.data.success) {
+                    setAllProducts(response.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+        fetchAllProducts();
+    }, []);
+
+    const handlePromoAddToCart = (product) => {
+        const discountedProduct = {
+            ...product,
+            originalPrice: product.price,
+            price: Math.floor(product.price * 0.90),
+            isPromo: true
+        };
+        addToCart(discountedProduct);
+    };
 
     // Estado para items seleccionados
     const [selectedItems, setSelectedItems] = useState({});
@@ -14,7 +44,7 @@ const PagePay = () => {
     useEffect(() => {
         const initial = {};
         cartItems.forEach(item => {
-            initial[item.id] = true;
+            initial[getItemId(item)] = true;
         });
         setSelectedItems(initial);
     }, [cartItems.length]);
@@ -23,11 +53,11 @@ const PagePay = () => {
     const [paymentSuccess, setPaymentSuccess] = useState(false);
 
     // Cálculos
-    const selectedCount = cartItems.filter(item => selectedItems[item.id]).length;
+    const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
     const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
 
     const selectedSubtotal = cartItems.reduce((acc, item) => {
-        return selectedItems[item.id] ? acc + (item.price * item.quantity) : acc;
+        return selectedItems[getItemId(item)] ? acc + (item.price * item.quantity) : acc;
     }, 0);
 
     const toggleSelection = (id) => {
@@ -43,7 +73,7 @@ const PagePay = () => {
         } else {
             const allSelected = {};
             cartItems.forEach(item => {
-                allSelected[item.id] = true;
+                allSelected[getItemId(item)] = true;
             });
             setSelectedItems(allSelected);
         }
@@ -97,6 +127,8 @@ const PagePay = () => {
 
     return (
         <div className="pay-container">
+            <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+
             {/* Header / Breadcrumbs */}
             <div className="pay-header-simple">
                 <div className="breadcrumb">
@@ -124,12 +156,12 @@ const PagePay = () => {
 
                     <div className="checkout-items-list">
                         {cartItems.map(item => (
-                            <div key={item.id} className={`checkout-item-row ${!selectedItems[item.id] ? 'dimmed' : ''}`}>
+                            <div key={getItemId(item)} className={`checkout-item-row ${!selectedItems[getItemId(item)] ? 'dimmed' : ''}`}>
                                 <div className="item-checkbox">
                                     <input
                                         type="checkbox"
-                                        checked={!!selectedItems[item.id]}
-                                        onChange={() => toggleSelection(item.id)}
+                                        checked={!!selectedItems[getItemId(item)]}
+                                        onChange={() => toggleSelection(getItemId(item))}
                                     />
                                 </div>
 
@@ -161,12 +193,12 @@ const PagePay = () => {
                                 </div>
 
                                 <div className="item-actions-box">
-                                    <button className="delete-item-btn" onClick={() => handleRemove(item.id)}>🗑️</button>
+                                    <button className="delete-item-btn" onClick={() => handleRemove(getItemId(item))}>🗑️</button>
                                     <div className="quantity-selector-checkout">
                                         <span>Cant. </span>
                                         <select
                                             value={item.quantity}
-                                            onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+                                            onChange={(e) => updateQuantity(getItemId(item), parseInt(e.target.value))}
                                         >
                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                                                 <option key={n} value={n}>{n}</option>
