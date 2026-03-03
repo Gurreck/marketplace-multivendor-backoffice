@@ -39,9 +39,15 @@ app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // 3️⃣ TERCERO: Middleware de seguridad
-app.use(helmet()); // Headers de seguridad HTTP
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Permitir cargar imágenes desde otro origen
+})); // Headers de seguridad HTTP
 // app.use(xss()); // ⚠️ DESACTIVADO - Incompatible con Node.js v24
 // app.use(hpp()); // ⚠️ DESACTIVADO - Incompatible con Node.js v24
+
+// Servir archivos estáticos de la carpeta uploads
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 4️⃣ CUARTO: Rutas
 app.use("/api/auth", authRoutes);

@@ -1,0 +1,160 @@
+.promo-banner {
+    background-color: var(--nexora-dark);
+    background-image:
+        radial-gradient(rgba(0, 194, 255, 0.1) 2px, transparent 2px),
+        linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-deep) 100%);
+    background-size: 30px 30px, 100% 100%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    overflow: hidden;
+    padding: 30px 0;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--nexora-border);
+}
+
+.promo-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 60px;
+    position: relative;
+    z-index: 2;
+}
+
+.promo-text-side {
+    color: var(--nexora-text);
+    text-align: center;
+    flex: 1;
+}
+
+.promo-subtitle {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: var(--nexora-cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.promo-title {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 15px;
+    color: var(--nexora-text);
+    text-shadow: 0 0 20px rgba(0, 148, 255, 0.3);
+}
+
+.promo-title .highlight {
+    color: var(--nexora-blue);
+}
+
+.promo-products-side {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    position: relative;
+}
+
+.promo-mini-card {
+    background: var(--nexora-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--nexora-border);
+    border-radius: 12px;
+    width: 150px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.promo-mini-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--nexora-blue);
+    box-shadow: 0 15px 35px rgba(0, 148, 255, 0.3);
+}
+
+.mini-card-image {
+    height: 130px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.mini-card-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+.mini-card-footer {
+    padding: 12px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.mini-price-original {
+    display: block;
+    color: #64748b;
+    text-decoration: line-through;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.mini-price {
+    color: var(--nexora-blue);
+    font-weight: 800;
+    font-size: 17px;
+}
+
+/* Decoraciones */
+.promo-decoration-clock {
+    position: absolute;
+    font-size: 80px;
+    bottom: -20px;
+    left: -100px;
+    opacity: 0.2;
+    transform: rotate(-15deg);
+    color: var(--nexora-blue);
+    filter: blur(1px);
+}
+
+.promo-decoration-percent {
+    position: absolute;
+    font-size: 40px;
+    top: -15px;
+    right: -20px;
+    background: var(--nexora-blue);
+    color: white;
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 900;
+    box-shadow: 0 5px 15px rgba(0, 148, 255, 0.4);
+    transform: rotate(15deg);
+    border: 2px solid var(--nexora-cyan);
+}
+
+@media (max-width: 992px) {
+    .promo-content {
+        flex-direction: column;
+        gap: 30px;
+        padding: 0 20px;
+    }
+
+    .promo-title {
+        font-size: 40px;
+    }
+
+    .promo-products-side {
+        display: none;
+    }
+}
