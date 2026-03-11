@@ -46,18 +46,109 @@ const PagePay = () => {
         addToCart(discountedProduct);
     };
 
-    // Validar número de tarjeta (debe iniciar con 4 o 5 y tener 16 dígitos)
+    // ============================================
+    // VALIDACIÓN REAL DE TARJETAS (ALGORITMO DE LUHN)
+    // ============================================
+
+    // Algoritmo de Luhn (Mod 10) - El mismo usado en la vida real
+    const luhnCheck = (cardNumber) => {
+        const cleanNumber = cardNumber.replace(/\s/g, '');
+        let sum = 0;
+        let isEven = false;
+        
+        // Recorrer de derecha a izquierda
+        for (let i = cleanNumber.length - 1; i >= 0; i--) {
+            let digit = parseInt(cleanNumber[i], 10);
+            
+            if (isEven) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            
+            sum += digit;
+            isEven = !isEven;
+        }
+        
+        return sum % 10 === 0;
+    };
+
+    // Detectar tipo de tarjeta basado en IIN/BIN (Industry Identification Number)
+    const detectCardType = (number) => {
+        const cleanNumber = number.replace(/\s/g, '');
+        
+        // Visa: empieza con 4
+        if (/^4/.test(cleanNumber)) return 'VISA';
+        
+        // Mastercard: 51-55 o 2221-2720
+        if (/^5[1-5]/.test(cleanNumber) || /^2[2-7]/.test(cleanNumber)) return 'MASTERCARD';
+        
+        // American Express: 34 o 37
+        if (/^3[47]/.test(cleanNumber)) return 'AMEX';
+        
+        // Discover: 6011, 622126-622925, 644-649, 65
+        if (/^6011/.test(cleanNumber) || /^65/.test(cleanNumber) || /^64[4-9]/.test(cleanNumber) || /^622(12[6-9]|1[3-9]\d|[2-8]\d{2}|91\d|92[0-5])/.test(cleanNumber)) return 'DISCOVER';
+        
+        // Diners Club: 300-305, 36, 38
+        if (/^3[068]/.test(cleanNumber) || /^30[0-5]/.test(cleanNumber)) return 'DINERS';
+        
+        // JCB: 3528-3589
+        if (/^35[2-8]/.test(cleanNumber)) return 'JCB';
+        
+        return null;
+    };
+
+    // Obtener longitud esperada según tipo de tarjeta
+    const getExpectedLength = (cardType) => {
+        switch (cardType) {
+            case 'AMEX': return 15;
+            case 'DINERS': return 14;
+            default: return 16; // Visa, Mastercard, Discover, JCB
+        }
+    };
+
+    // Obtener CVV esperado según tipo de tarjeta
+    const getExpectedCvvLength = (cardType) => {
+        switch (cardType) {
+            case 'AMEX': return 4;
+            default: return 3;
+        }
+    };
+
+    // Estado para el tipo de tarjeta detectado
+    const [cardType, setCardType] = useState(null);
+
+    // Validar número de tarjeta con algoritmo de Luhn (como en la vida real)
     const validateCardNumber = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
-        if (!cleanNumber.startsWith('5') && !cleanNumber.startsWith('4')) {
-            return 'La tarjeta es invalida porfavor ingrese una tarjeta valida';
+        
+        // Verificar que solo contenga dígitos
+        if (!/^\d+$/.test(cleanNumber)) {
+            return 'El numero de tarjeta debe contener solo digitos';
         }
-        if (cleanNumber.length !== 16) {
-            return 'El numero de tarjeta debe tener 16 digitos';
+        
+        // Detectar tipo de tarjeta
+        const detectedType = detectCardType(cleanNumber);
+        
+        if (!detectedType) {
+            return 'Tipo de tarjeta no reconocido. Use Visa, Mastercard, Amex o Discover';
         }
-        if (!/^[45]\d{15}$/.test(cleanNumber)) {
-            return 'Numero de tarjeta invalido';
+        
+        // Verificar longitud según tipo de tarjeta
+        const expectedLength = getExpectedLength(detectedType);
+        if (cleanNumber.length !== expectedLength) {
+            if (detectedType === 'AMEX') {
+                return `Las tarjetas ${detectedType} deben tener 15 digitos`;
+            }
+            return `Las tarjetas ${detectedType} deben tener 16 digitos`;
         }
+        
+        // Aplicar algoritmo de Luhn (validación real)
+        if (!luhnCheck(cleanNumber)) {
+            return 'Numero de tarjeta invalido (fallo validacion Luhn)';
+        }
+        
         return null;
     };
 
@@ -78,11 +169,22 @@ const PagePay = () => {
         return null;
     };
 
-    // Validar CVV (3 dígitos)
-    const validateCvv = (cvvCode) => {
-        if (!/^\d{3}$/.test(cvvCode)) {
+    // Validar CVV (3 dígitos para Visa/MC/Discover, 4 para Amex)
+    const validateCvv = (cvvCode, currentCardType = cardType) => {
+        const cleanCvv = cvvCode.replace(/\s/g, '');
+        const expectedLength = getExpectedCvvLength(currentCardType);
+        
+        if (!/^\d+$/.test(cleanCvv)) {
+            return 'El CVV debe contener solo digitos';
+        }
+        
+        if (cleanCvv.length !== expectedLength) {
+            if (expectedLength === 4) {
+                return 'El CVV de American Express debe tener 4 digitos';
+            }
             return 'El CVV debe tener 3 digitos';
         }
+        
         return null;
     };
 
@@ -94,9 +196,23 @@ const PagePay = () => {
         return null;
     };
 
-    // Formatear número de tarjeta (agregar espacio cada 4 dígitos)
+    // Formatear número de tarjeta según el tipo detectado
     const formatCardNumber = (value) => {
         const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        const cleanNumber = v.replace(/\s/g, '');
+        const detectedType = detectCardType(cleanNumber);
+        
+        // American Express: 4-6-5 (cada grupo tiene diferente cantidad)
+        if (detectedType === 'AMEX') {
+            if (v.length > 4 && v.length <= 10) {
+                return v.substring(0, 4) + ' ' + v.substring(4, 10);
+            } else if (v.length > 10) {
+                return v.substring(0, 4) + ' ' + v.substring(4, 10) + ' ' + v.substring(10, 15);
+            }
+            return v;
+        }
+        
+        // Otros tipos: 4-4-4-4
         const matches = v.match(/\d{4,16}/g);
         const match = (matches && matches[0]) || '';
         const parts = [];
@@ -119,6 +235,18 @@ const PagePay = () => {
     const handleCardNumberChange = (e) => {
         const formatted = formatCardNumber(e.target.value);
         setCardNumber(formatted);
+        
+        // Detectar tipo de tarjeta en tiempo real
+        const cleanNumber = formatted.replace(/\s/g, '');
+        const detectedType = detectCardType(cleanNumber);
+        setCardType(detectedType);
+        
+        // Ajustar longitud máxima del CVV según tipo
+        const expectedCvvLength = getExpectedCvvLength(detectedType);
+        if (cvv.length > expectedCvvLength) {
+            setCvv(cvv.substring(0, expectedCvvLength));
+        }
+        
         if (errors.cardNumber) {
             setErrors(prev => ({ ...prev, cardNumber: null }));
         }
@@ -135,7 +263,8 @@ const PagePay = () => {
 
     // Manejar cambio en CVV
     const handleCvvChange = (e) => {
-        const v = e.target.value.replace(/[^0-9]/g, '').substring(0, 3);
+        const expectedLength = getExpectedCvvLength(cardType);
+        const v = e.target.value.replace(/[^0-9]/g, '').substring(0, expectedLength);
         setCvv(v);
         if (errors.cvv) {
             setErrors(prev => ({ ...prev, cvv: null }));
@@ -207,7 +336,7 @@ const PagePay = () => {
         const newErrors = {};
         const cardError = validateCardNumber(cardNumber);
         const expiryError = validateExpiryDate(expiryDate);
-        const cvvError = validateCvv(cvv);
+        const cvvError = validateCvv(cvv, cardType);
         const nameError = validateCardName(cardName);
 
         if (cardError) newErrors.cardNumber = cardError;
@@ -374,7 +503,7 @@ const PagePay = () => {
                             <h4>Datos de la Tarjeta</h4>
                             
                             {/* Vista previa de tarjeta */}
-                            <div className="card-preview">
+                            <div className={`card-preview ${cardType ? cardType.toLowerCase() : ''}`}>
                                 <div className="card-preview-inner">
                                     <div className="card-chip"></div>
                                     <div className="card-number-preview">
@@ -388,7 +517,20 @@ const PagePay = () => {
                                             {expiryDate || 'MM/AA'}
                                         </div>
                                     </div>
-                                    <div className="card-logo-preview">VISA</div>
+                                    <div className={`card-logo-preview ${cardType ? 'has-icon' : ''}`}>
+                                        {cardType && (
+                                            <div className={`card-icon ${cardType.toLowerCase()}`}>
+                                                {cardType === 'VISA' && 'VISA'}
+                                                {cardType === 'AMEX' && 'AMEX'}
+                                                {cardType === 'DISCOVER' && 'DISC'}
+                                                {cardType === 'DINERS' && 'DC'}
+                                                {cardType === 'JCB' && 'JCB'}
+                                            </div>
+                                        )}
+                                        <span className="card-type-text">
+                                            {!cardType && 'VISA'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -407,10 +549,10 @@ const PagePay = () => {
                             <input 
                                 type="text" 
                                 className={`payment-input ${errors.cardNumber ? 'input-error' : ''}`}
-                                placeholder="Numero de Tarjeta (inicie con 4 o 5)" 
+                                placeholder="Numero de Tarjeta (inicie con 4, 5, 34, 37, 6011)" 
                                 value={cardNumber} 
                                 onChange={handleCardNumberChange}
-                                maxLength={19}
+                                maxLength={cardType === 'AMEX' ? 17 : 19}
                             />
                             {errors.cardNumber && <span className="error-message">{errors.cardNumber}</span>}
                             
@@ -430,16 +572,24 @@ const PagePay = () => {
                                     <input 
                                         type="text" 
                                         className={`payment-input ${errors.cvv ? 'input-error' : ''}`}
-                                        placeholder="CVV" 
+                                        placeholder={cardType === 'AMEX' ? 'CVV (4 digitos)' : 'CVV (3 digitos)'} 
                                         value={cvv} 
                                         onChange={handleCvvChange}
-                                        maxLength={3}
+                                        maxLength={cardType === 'AMEX' ? 4 : 3}
                                     />
                                     {errors.cvv && <span className="error-message">{errors.cvv}</span>}
                                 </div>
                             </div>
                             
-                            <p className="card-hint">Solo tarjetas que inicien con 4 o 5 son aceptadas (simulacion)</p>
+                            <p className="card-hint">
+                                <span className={`card-type-indicator ${cardType ? 'active' : ''}`}>
+                                    {cardType ? `💳 ${cardType}` : '💳 Visa/Mastercard/Amex/Discover'}
+                                </span>
+                                <br/>
+                                <span className="validation-info">
+                                    ✓ Algoritmo de Luhn &nbsp; ✓ Tipo detectado &nbsp; ✓ CVV adaptativo
+                                </span>
+                            </p>
                         </div>
 
                         <button

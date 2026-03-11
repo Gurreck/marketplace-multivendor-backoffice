@@ -469,12 +469,36 @@
 .card-preview {
     background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1e1b4b 100%);
     border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 25px;
+    min-height: 180px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    min-height: 160px;
+    transition: all 0.4s ease;
+}
+
+/* Cambiar fondo según tipo de tarjeta */
+.card-preview.visa {
+    background: linear-gradient(135deg, #1a1f71 0%, #0d1545 50%, #0a0f35 100%);
+}
+
+.card-preview.mastercard {
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 50%, #0d0d0d 100%);
+}
+
+.card-preview.amex {
+    background: linear-gradient(135deg, #006fcf 0%, #0046a6 50%, #003377 100%);
+}
+
+.card-preview.discover {
+    background: linear-gradient(135deg, #ff6600 0%, #d14700 50%, #b33d00 100%);
+}
+
+.card-preview.diners {
+    background: linear-gradient(135deg, #0079a8 0%, #005577 50%, #004060 100%);
+}
+
+.card-preview.jcb {
+    background: linear-gradient(135deg, #0d5ea1 0%, #094376 50%, #063354 100%);
 }
 
 .card-preview::before {
@@ -550,6 +574,77 @@
     color: white;
     font-style: italic;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Iconos de tarjetas con colores específicos */
+.card-logo-preview .card-icon {
+    width: 40px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.card-logo-preview .card-icon.visa {
+    background: linear-gradient(135deg, #1a1f71 0%, #0d1545 100%);
+    color: #fff;
+}
+
+.card-logo-preview .card-icon.mastercard {
+    background: linear-gradient(135deg, #eb001b 0%, #f79e1b 100%);
+    color: white;
+}
+
+.card-logo-preview .card-icon.mastercard::before {
+    content: 'MC';
+    font-style: normal;
+}
+
+.card-logo-preview .card-icon.amex {
+    background: linear-gradient(135deg, #006fcf 0%, #0046a6 100%);
+    color: white;
+    font-size: 0.6rem;
+}
+
+.card-logo-preview .card-icon.discover {
+    background: linear-gradient(135deg, #ff6600 0%, #d14700 100%);
+    color: white;
+    font-size: 0.5rem;
+}
+
+.card-logo-preview .card-icon.diners {
+    background: linear-gradient(135deg, #0079a8 0%, #005577 100%);
+    color: white;
+    font-size: 0.55rem;
+}
+
+.card-logo-preview .card-icon.jcb {
+    background: linear-gradient(135deg, #0d5ea1 0%, #094376 100%);
+    color: white;
+    font-size: 0.5rem;
+}
+
+.card-logo-preview .card-type-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Efecto de transición suave */
+.card-logo-preview .card-icon,
+.card-logo-preview .card-type-text {
+    transition: all 0.3s ease;
+}
+
+/* Ocultar texto cuando hay icono */
+.card-logo-preview.has-icon .card-type-text {
+    display: none;
 }
 
 /* Success Modal */
