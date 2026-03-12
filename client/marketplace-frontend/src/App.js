@@ -10,6 +10,7 @@ import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
 import PagePay from "./componentes/pagePay/pagePay";
 import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
+import Mascota from "./componentes/MascotaNexo/MascotaNexo";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -148,6 +149,9 @@ function App() {
           }
         />
       </Routes>
+
+      {/*  DEJAR SIEMPRE FUERA DE </Routes> */}
+      <Mascota />
     </div>
   );
 }
@@ -165,5 +169,6 @@ const getDashboardByRole = (role) => {
       return "/login";
   }
 };
+
 
 export default App;
