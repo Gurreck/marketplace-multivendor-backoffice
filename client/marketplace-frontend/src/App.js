@@ -8,6 +8,7 @@ import ForgotPassword from "./componentes/inicio/forgot_Password";
 import Principal from "./componentes/pages/page";
 import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
 import PagePay from "./componentes/pagePay/pagePay";
+import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
 
 import { useAuth } from "./context/AuthContext";
@@ -110,6 +111,15 @@ function App() {
           element={
             <ProtectedRoute>
               <PagePay />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/paymentGateway"
+          element={
+            <ProtectedRoute>
+              <PaymentGateway />
             </ProtectedRoute>
           }
         />

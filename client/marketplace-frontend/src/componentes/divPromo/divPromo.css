@@ -4,7 +4,7 @@
     radial-gradient(rgba(0, 194, 255, 0.1) 2px, transparent 2px),
     linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-deep) 100%);
     background-size: 30px 30px, 100% 100%;
-    position: 0;  
+
     top: 0;
     z-index: 100;
     overflow: hidden;
