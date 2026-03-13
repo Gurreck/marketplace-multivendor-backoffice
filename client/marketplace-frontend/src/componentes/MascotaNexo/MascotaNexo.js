@@ -1,23 +1,63 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Nexo from "../../resource/MascotaNexo/Nexo.svg";
 import "./MascotaNexo.css";
 
 export default function Mascota() {
 
-  const [mensaje, setMensaje] = useState("Hola 👋 ¿Necesitas ayuda?");
+  const location = useLocation();
+
   const [visible, setVisible] = useState(true);
+  const [indiceMensaje, setIndiceMensaje] = useState(0);
 
-  const mensajes = [
-    "Puedes usar el menú para navegar",
-    "Revisa tus notificaciones 🔔",
-    "Usa el buscador para encontrar cosas",
-    "Si necesitas ayuda estoy aquí"
-  ];
+  let mensajes = [];
 
-  const cambiarMensaje = () => {
-    const random = mensajes[Math.floor(Math.random() * mensajes.length)];
-    setMensaje(random);
-  };
+  // mensajes por página
+  if (location.pathname === "/login") {
+    mensajes = [
+      "Aquí puedes explorar productos 🛒",
+      "Usa el buscador para encontrar algo rápido",
+      "Revisa las ofertas disponibles"
+    ];
+  }
+
+  else if (location.pathname === "/cliente") {
+    mensajes = [
+      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Aquí puedes gestionar tus productos 📦",
+      "Revisa tus ventas recientes",
+      "Agrega nuevos productos para vender"
+    ];
+  }
+
+  else if (location.pathname.includes("/product")) {
+    mensajes = [
+      "Aquí puedes ver los detalles del producto",
+      "Revisa la descripción antes de comprar",
+      "Puedes agregarlo al carrito"
+    ];
+  }
+
+  else if (location.pathname === "/admin/dashboard") {
+    mensajes = [
+      "Aquí puedes administrar la plataforma",
+      "Revisa las estadísticas del sistema",
+      "Gestiona usuarios y productos"
+    ];
+  }
+
+  else {
+    mensajes = [
+      "Puedes usar el menú para navegar",
+      "Revisa tus notificaciones 🔔",
+      "Usa el buscador para encontrar cosas",
+      "Si necesitas ayuda estoy aquí"
+    ];
+  }
+
+const cambiarMensaje = () => {
+  setIndiceMensaje((indiceMensaje + 1) % mensajes.length);
+};
 
   // 🔹 si está oculta mostramos solo botón para abrir
   if (!visible) {
@@ -41,7 +81,7 @@ export default function Mascota() {
       />
 
       <div className="mascota-mensaje">
-        {mensaje}
+        {mensajes[indiceMensaje]}
       </div>
 
       <div className="mascota-botones">
