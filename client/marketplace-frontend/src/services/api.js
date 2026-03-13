@@ -7,12 +7,15 @@ const api = axios.create({
   },
 });
 
-// Interceptor para agregar token JWT a cada petición
+// Interceptor para agregar token JWT solo si existe
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token && token !== "undefined" && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      // Eliminar el header Authorization si no hay token válido
+      delete config.headers.Authorization;
     }
     return config;
   },
@@ -25,14 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      // Redirigir al login si el token expiró
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
-    }
+    // Ya no se borra token ni se redirige en caso de 401
     return Promise.reject(error);
   },
 );

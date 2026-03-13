@@ -52,8 +52,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // 4️⃣ CUARTO: Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api", protectedRoutes);
-app.use("/api/products", productRoutes);
+app.use("/api/products", productRoutes); // <-- PÚBLICA ANTES
+app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
 
 // Ruta de prueba
 app.get("/", (req, res) => {
