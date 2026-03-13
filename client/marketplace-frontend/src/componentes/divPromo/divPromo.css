@@ -1,10 +1,10 @@
 .promo-banner {
     background-color: var(--nexora-dark);
     background-image:
-        radial-gradient(rgba(0, 194, 255, 0.1) 2px, transparent 2px),
-        linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-deep) 100%);
+    radial-gradient(rgba(0, 194, 255, 0.1) 2px, transparent 2px),
+    linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-deep) 100%);
     background-size: 30px 30px, 100% 100%;
-    position: sticky;
+
     top: 0;
     z-index: 100;
     overflow: hidden;

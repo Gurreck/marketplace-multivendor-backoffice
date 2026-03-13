@@ -12,6 +12,7 @@ const PagePay = () => {
     const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart, addToCart } = useCart();
 
     const [allProducts, setAllProducts] = useState([]);
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
 
     useEffect(() => {
         const fetchAllProducts = async () => {
@@ -37,6 +38,29 @@ const PagePay = () => {
         addToCart(discountedProduct);
     };
 
+    // ============================================
+    // NAVEGAR A LA PASARELA DE PAGO
+    // ============================================
+
+    const handleProceedToPayment = () => {
+        if (selectedCount === 0) {
+            alert('Por favor selecciona al menos un producto');
+            return;
+        }
+
+        // Filtrar solo los items seleccionados
+        const selectedCartItems = cartItems.filter(item => selectedItems[getItemId(item)]);
+        
+        // Navegar a la pasarela de pago con los datos del carrito
+        navigate('/paymentGateway', {
+            state: {
+                selectedItems: selectedCartItems,
+                selectedSubtotal: selectedSubtotal,
+                selectedCount: selectedCount
+            }
+        });
+    };
+
     // Estado para items seleccionados
     const [selectedItems, setSelectedItems] = useState({});
 
@@ -48,9 +72,6 @@ const PagePay = () => {
         });
         setSelectedItems(initial);
     }, [cartItems.length]);
-
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [paymentSuccess, setPaymentSuccess] = useState(false);
 
     // Cálculos
     const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
@@ -88,16 +109,7 @@ const PagePay = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (selectedCount === 0) {
-            alert('Por favor selecciona al menos un producto');
-            return;
-        }
-        setIsProcessing(true);
-        setTimeout(() => {
-            setIsProcessing(false);
-            setPaymentSuccess(true);
-            clearCart();
-        }, 2000);
+        handleProceedToPayment();
     };
 
     if (paymentSuccess) {
@@ -218,11 +230,11 @@ const PagePay = () => {
 
                         <div className="summary-details">
                             <div className="detail-line">
-                                <span>Total de artículos:</span>
+                                <span>Total de articulos:</span>
                                 <span>${selectedSubtotal.toFixed(2)}</span>
                             </div>
                             <div className="detail-line shipping">
-                                <span>Envío:</span>
+                                <span>Envio:</span>
                                 <span>GRATIS</span>
                             </div>
                         </div>
@@ -235,24 +247,20 @@ const PagePay = () => {
                             <p className="tax-hint">Consulta el monto final al completar el pago.</p>
                         </div>
 
+                        {/* Botón para proceder al pago */}
                         <button
                             className="order-submit-btn-temu"
-                            disabled={isProcessing || selectedCount === 0}
-                            onClick={handleSubmit}
+                            disabled={selectedCount === 0}
+                            onClick={handleProceedToPayment}
                         >
-                            {isProcessing ? 'Procesando...' : `Hacer pedido (${selectedCount})`}
+                            Proceder al Pago ({selectedCount})
                         </button>
 
                         <div className="payment-trust-section">
-                            <p className="secure-payment-text">🛡️ Opciones de pago seguro</p>
-                            <div className="payment-methods-grid">
-                                <span>VISA</span>
-                                <span>MasterCard</span>
-                                <span>PayPal</span>
-                                <span>Apple Pay</span>
-                            </div>
+                            <p className="secure-payment-text">🛡️ Pago seguro</p>
+                            
                             <p className="trust-disclaimer">
-                                Nexora se compromete a proteger tu información de pago.
+                                Serás redirigido a una pagina segura para completar tu pago.
                             </p>
                         </div>
                     </div>
