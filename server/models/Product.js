@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+const imageSchema = new mongoose.Schema(
+  {
+    url: {
+      type: String,
+      required: true,
+    },
+    public_id: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -31,15 +45,18 @@ const productSchema = new mongoose.Schema(
       min: [0, "El stock no puede ser negativo"],
       default: 0,
     },
+
     images: {
-      type: [String], // URLs de imágenes
+      type: [imageSchema],
+      required: true,
       validate: {
         validator: function (v) {
-          return v && v.length > 0;
+          return v.length > 0;
         },
-        message: "Debe incluir al menos una imagen (URL)",
+        message: "Debe incluir al menos una imagen",
       },
     },
+
     vendor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -48,7 +65,9 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
+
+productSchema.index({ vendor: 1 });
 
 module.exports = mongoose.model("Product", productSchema);
