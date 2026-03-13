@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (loading) return <div>Cargando...</div>;
 
-  if (!user) return <Navigate to="/login" replace />;
+
 
   if (allowedRoles && !allowedRoles.includes(user.role))
     return <Navigate to={getDashboardByRole(user.role)} replace />;
@@ -36,39 +36,17 @@ function App() {
   return (
     <div className="App">
       <Routes>
+
         {/* ⭐ rutas públicas */}
         <Route
           path="/login"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Login />
-            )
-          }
+          element={<Login />}
         />
 
-        <Route
-          path="/register"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Register />
-            )
-          }
-        />
 
-        <Route
-          path="/forgot-password"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <ForgotPassword />
-            )
-          }
-        />
+
+
+
 
         {/* ⭐ rutas protegidas */}
         <Route
@@ -128,25 +106,13 @@ function App() {
         {/* ⭐ ruta raiz inteligente */}
         <Route
           path="/"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<Principal />}
         />
 
         {/* ⭐ fallback */}
         <Route
           path="*"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<Principal />}
         />
       </Routes>
 
@@ -166,7 +132,7 @@ const getDashboardByRole = (role) => {
     case "cliente":
       return "/cliente";
     default:
-      return "/login";
+      return "/";
   }
 };
 
