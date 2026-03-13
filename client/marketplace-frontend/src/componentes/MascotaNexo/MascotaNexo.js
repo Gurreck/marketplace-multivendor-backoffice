@@ -15,22 +15,60 @@ export default function Mascota() {
   // mensajes por página
   if (location.pathname === "/login") {
     mensajes = [
-      "Aquí puedes explorar productos 🛒",
-      "Usa el buscador para encontrar algo rápido",
-      "Revisa las ofertas disponibles"
+      "No compartas tu contraseña con nadie",
+      "Si olvidaste tu contraseña, haz clic en 'Olvidé mi contraseña' para recuperarla",
+      "Si no tienes una cuenta, haz clic en 'Registrarse' para crear una y disfrutar de nuestras ofertas"
+    ];
+  }
+
+  else  if (location.pathname === "/register") {
+    mensajes = [
+      "Crea una contraseña segura para proteger tu cuenta",
+      "Asegúrate de ingresar un email válido para recibir notificaciones",
+      "Disfruta de tus compras con Nexora!"
+    ];
+  }
+
+  else if (location.pathname === "/forgot-password") {
+    mensajes = [
+      "Ingresa el email asociado a tu cuenta para recibir instrucciones de recuperación",
+      "Si el email está registrado podrás restablecer tu contraseña",
+      "Si no recibes el email, revisa que esté correctamente ingresado o intenta nuevamente"
+    ];
+  }
+
+  else if (location.pathname === "/") {
+    mensajes = [
+      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Puedes navegar como invitado, pero algunas funciones estarán limitadas",
+      "Registrate para disfrutar de todas las funciones",
+      "Inicia sesión para acceder a tu cuenta y gestionar tus compras",
+      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
+      "Revisa nuestras promociones destacadas!"
     ];
   }
 
   else if (location.pathname === "/cliente") {
     mensajes = [
       "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
-      "Aquí puedes gestionar tus productos 📦",
-      "Revisa tus ventas recientes",
-      "Agrega nuevos productos para vender"
+      "Explora nuevas categorías de productos",
+      "Revisa tus productos en el carrito antes de finalizar tu compra",
+      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
+      "Revisa nuestras promociones destacadas!"
     ];
   }
 
   else if (location.pathname.includes("/product")) {
+    mensajes = [
+      "Aquí puedes ver los detalles del producto",
+      "Revisa la descripción antes de comprar",
+      "Puedes agregarlo al carrito"
+    ];
+  }
+
+  else if (location.pathname.includes("/vendedor")) {
     mensajes = [
       "Aquí puedes ver los detalles del producto",
       "Revisa la descripción antes de comprar",
