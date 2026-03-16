@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Login from "./componentes/inicio/login";
 import Register from "./componentes/inicio/register";
@@ -17,10 +17,19 @@ import { useAuth } from "./context/AuthContext";
 // 🔐 Componente para proteger rutas
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) return <div>Cargando...</div>;
 
+  // Si no hay usuario
+  if (!user) {
+    // si ya está en "/", permitir acceso
+    if (location.pathname === "/") {
+      return children;
+    }
 
+        return <Navigate to="/" replace />;
+  }
 
   if (allowedRoles && !allowedRoles.includes(user.role))
     return <Navigate to={getDashboardByRole(user.role)} replace />;
@@ -43,9 +52,22 @@ function App() {
           element={<Login />}
         />
 
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
 
-
+        <Route
+          path="/product/:id"
+          element={
+              <PageViewProduct />
+          }
+        />
 
 
         {/* ⭐ rutas protegidas */}
@@ -72,15 +94,6 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["cliente"]}>
               <Principal />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/product/:id"
-          element={
-            <ProtectedRoute>
-              <PageViewProduct />
             </ProtectedRoute>
           }
         />

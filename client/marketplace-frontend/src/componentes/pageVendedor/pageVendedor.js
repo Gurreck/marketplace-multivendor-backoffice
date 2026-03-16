@@ -281,7 +281,7 @@ export default function PageVendedor() {
                                         <h3 className="product-name">{product.name}</h3>
                                         <p className="product-short-desc">{product.description?.substring(0, 60)}...</p>
                                         <div className="card-meta">
-                                            <span className="product-price">${product.price}</span>
+                                            <span className="product-price">₡{product.price.toLocaleString()}</span>
                                             <span className="card-stock">Stock: {product.stock}</span>
                                         </div>
 
@@ -333,7 +333,7 @@ export default function PageVendedor() {
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Precio ($)</label>
+                                    <label>Precio (₡)</label>
                                     <input
                                         type="number"
                                         name="price"

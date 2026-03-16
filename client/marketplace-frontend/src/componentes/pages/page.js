@@ -116,7 +116,7 @@ export default function Principal() {
                     <p className="product-vendor">vendedor: {product.vendor?.nombre || product.vendor}</p>
 
                     <div className="product-footer">
-                      <span className="product-price">${product.price}</span>
+                      <span className="product-price">₡{product.price.toLocaleString()}</span>
                       <button className="add-btn" onClick={() => handleAddToCart(product)}>➕ Agregar</button>
                     </div>
                   </div>
