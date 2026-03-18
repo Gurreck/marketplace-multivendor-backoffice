@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Login from "./componentes/inicio/login";
 import Register from "./componentes/inicio/register";
@@ -10,16 +10,26 @@ import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
 import PagePay from "./componentes/pagePay/pagePay";
 import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
+import Mascota from "./componentes/MascotaNexo/MascotaNexo";
 
 import { useAuth } from "./context/AuthContext";
 
 // 🔐 Componente para proteger rutas
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) return <div>Cargando...</div>;
 
-  if (!user) return <Navigate to="/login" replace />;
+  // Si no hay usuario
+  if (!user) {
+    // si ya está en "/", permitir acceso
+    if (location.pathname === "/") {
+      return children;
+    }
+
+        return <Navigate to="/" replace />;
+  }
 
   if (allowedRoles && !allowedRoles.includes(user.role))
     return <Navigate to={getDashboardByRole(user.role)} replace />;
@@ -35,39 +45,30 @@ function App() {
   return (
     <div className="App">
       <Routes>
+
         {/* ⭐ rutas públicas */}
         <Route
           path="/login"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Login />
-            )
-          }
+          element={<Login />}
         />
 
         <Route
           path="/register"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Register />
-            )
-          }
+          element={<Register />}
         />
 
         <Route
           path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/product/:id"
           element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <ForgotPassword />
-            )
+              <PageViewProduct />
           }
         />
+
 
         {/* ⭐ rutas protegidas */}
         <Route
@@ -98,15 +99,6 @@ function App() {
         />
 
         <Route
-          path="/product/:id"
-          element={
-            <ProtectedRoute>
-              <PageViewProduct />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
           path="/checkout"
           element={
             <ProtectedRoute>
@@ -127,27 +119,18 @@ function App() {
         {/* ⭐ ruta raiz inteligente */}
         <Route
           path="/"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<Principal />}
         />
 
         {/* ⭐ fallback */}
         <Route
           path="*"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<Principal />}
         />
       </Routes>
+
+      {/*  DEJAR SIEMPRE FUERA DE </Routes> */}
+      <Mascota />
     </div>
   );
 }
@@ -162,8 +145,9 @@ const getDashboardByRole = (role) => {
     case "cliente":
       return "/cliente";
     default:
-      return "/login";
+      return "/";
   }
 };
+
 
 export default App;

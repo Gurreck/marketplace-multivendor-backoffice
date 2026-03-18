@@ -21,11 +21,11 @@ export default function Login({ onRegisterClick, onForgotClick }) {
   const redirectByRole = (role) => {
     switch (role) {
       case 'administrador':
-        return '/admin/dashboard';
+        return '/admin';
       case 'vendedor':
-        return '/vendedor/dashboard';
+        return '/vendedor';        
       case 'cliente':
-        return '/cliente/dashboard';
+        return '/cliente';
       default:
         return '/';
     }

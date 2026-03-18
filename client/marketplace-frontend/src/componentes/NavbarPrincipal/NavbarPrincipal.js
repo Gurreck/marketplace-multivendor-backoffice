@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../resource/logo1.png';
-import './headerNavbar.css';
+import './NavbarPrincipal.css';
 
-export default function HeaderNavbar({
+export default function NavbarPrincipal({
     searchTerm,
     setSearchTerm,
     toggleTheme,
@@ -48,9 +48,13 @@ export default function HeaderNavbar({
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
                     <button className="user-menu" onClick={() => {
-                        if (user?.role === 'vendedor') navigate('/vendedor/dashboard');
+                        if (!user) {
+                            navigate('/login');
+                        } else if (user?.role === 'vendedor') {
+                            navigate('/vendedor/dashboard');
+                        }
                     }}>
-                        👤 {user?.nombre || user?.email?.split('@')[0] || 'Usuario'}
+                        👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </button>
                     <button
                         className="cart-btn"
@@ -60,7 +64,7 @@ export default function HeaderNavbar({
                     </button>
                     <button className="logout-btn" onClick={() => {
                         logout();
-                        navigate('/login');
+                        navigate('/');
                     }}>
                         ✖ Salir
                     </button>
