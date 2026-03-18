@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
+import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
 const PageViewProduct = () => {
     const { id } = useParams();
@@ -97,12 +98,18 @@ const PageViewProduct = () => {
     if (!selectedProduct) return null;
 
     return (
+
+
+
         <div className="product-page-container">
             {showNotification && (
                 <div className="notification">
                     ✓ {showNotification}
                 </div>
             )}
+            <NavbarSecundario />
+
+
 
             <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
 
