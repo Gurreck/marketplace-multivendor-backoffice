@@ -24,6 +24,20 @@ const PaymentGateway = () => {
     const [cardType, setCardType] = useState(null);
     const [showCvv, setShowCvv] = useState(false);
 
+    // Estados para dirección de envío
+    const [address, setAddress] = useState({
+        pais: '',
+        provincia: '',
+        ciudad: '',
+        codigoPostal: '',
+        direccion: ''
+    });
+
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setAddress(prev => ({ ...prev, [name]: value }));
+    };
+
     // ============================================
     // VALIDACIÓN REAL DE TARJETAS (ALGORITMO DE LUHN)
     // ============================================
@@ -321,8 +335,8 @@ const PaymentGateway = () => {
             {/* Header */}
             <div className="gateway-header">
                 <div className="gateway-breadcrumb">
-                    <span onClick={() => navigate('/')}>&gt; Inicio</span> &gt; 
-                    <span onClick={() => navigate('/checkout')}>&gt; Carrito</span> &gt; 
+                    <span onClick={() => navigate('/')}> &gt; Inicio</span> &gt; 
+                    <span onClick={() => navigate('/checkout')}> &gt; Carrito</span> &gt; 
                     <span>Pago</span>
                 </div>
                 <button className="gateway-back-btn" onClick={handleGoBack}>
@@ -331,8 +345,67 @@ const PaymentGateway = () => {
             </div>
 
             <div className="gateway-main-content">
+                {/* Address Section */}
+                <div className="dirección-de-paquetes dirección-de-paquetes-right">
+                    <h3 className="gateway-address-title">📦 Dirección de envío</h3>
+                    <div className="gateway-address-form">
+                        <input
+                            type="text"
+                            className="gateway-address-input"
+                            name="pais"
+                            placeholder="País"
+                            value={address.pais}
+                            onChange={handleAddressChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            className="gateway-address-input"
+                            name="provincia"
+                            placeholder="Provincia"
+                            value={address.provincia}
+                            onChange={handleAddressChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            className="gateway-address-input"
+                            name="ciudad"
+                            placeholder="Ciudad"
+                            value={address.ciudad}
+                            onChange={handleAddressChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            className="gateway-address-input"
+                            name="codigoPostal"
+                            placeholder="Código Postal"
+                            value={address.codigoPostal}
+                            onChange={handleAddressChange}
+                            required
+                        />
+                        <textarea
+                            className="gateway-address-input"
+                            name="direccion"
+                            placeholder="Dirección exacta"
+                            value={address.direccion}
+                            onChange={handleAddressChange}
+                            required
+                            rows={4}
+                        />
+                        <button
+                            type="button"
+                            className="guardar-direccion-btn"
+                            onClick={() => alert('Dirección guardada')}
+                        >
+                            Guardar dirección
+                        </button>
+                    </div>
+                </div>
+
                 {/* Payment Form Section */}
-                <div className="gateway-payment-section">
+                <div className="pasarela-de-pago">
                     <h2 className="gateway-payment-title">
                         💳 Completar Pago
                     </h2>
@@ -477,41 +550,7 @@ const PaymentGateway = () => {
                         </p>
                     </div>
                 </div>
-
-                {/* Order Summary */}
-                <aside className="gateway-order-summary">
-                    <h3>Resumen del Pedido</h3>
-                    
-                    <div className="gateway-order-items">
-                        {selectedItems.map((item, index) => (
-                            <div key={index} className="gateway-order-item">
-                                <img src={item.images?.[0] || 'https://via.placeholder.com/60'} alt={item.name} />
-                                <div className="gateway-order-item-info">
-                                    <div className="gateway-order-item-name">{item.name}</div>
-                                    <div className="gateway-order-item-qty">Cantidad: {item.quantity}</div>
-                                </div>
-                                <div className="gateway-order-item-price">
-                                    ₡{(item.price * item.quantity).toLocaleString()}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="gateway-order-totals">
-                        <div className="gateway-total-line">
-                            <span>Subtotal ({selectedCount} items)</span>
-                            <span>₡{selectedSubtotal.toLocaleString()}</span>
-                        </div>
-                        <div className="gateway-total-line">
-                            <span>Envío</span>
-                            <span style={{ color: '#10b981' }}>GRATIS</span>
-                        </div>
-                        <div className="gateway-total-line grand-total">
-                            <span>Total</span>
-                            <span>₡{selectedSubtotal.toLocaleString()}</span>
-                        </div>
-                    </div>
-                </aside>
+                {/* Se eliminó el gateway-order-summary */}
             </div>
 
             {/* Success Modal */}
@@ -537,7 +576,7 @@ const PaymentGateway = () => {
                             </div>
                         </div>
                         <button 
-                            className="gateway-success-modal-btn"
+                            className="gateway-success-modal-btn" 
                             onClick={handleContinue}
                         >
                             Continuar

@@ -23,7 +23,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
       case 'administrador':
         return '/admin';
       case 'vendedor':
-        return '/vendedor';
+        return '/vendedor';        
       case 'cliente':
         return '/cliente';
       default:

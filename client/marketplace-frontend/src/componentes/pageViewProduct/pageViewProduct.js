@@ -160,7 +160,7 @@ const PageViewProduct = () => {
                         </div>
 
                         <div className="price-tag">
-                            <span className="product-price">${selectedProduct.price}</span>
+                            <span className="product-price"> ₡ {selectedProduct.price.toLocaleString()}</span>
                         </div>
 
                         <div className="action-buttons">
@@ -168,7 +168,7 @@ const PageViewProduct = () => {
                                 className="add-to-cart-btn"
                                 onClick={() => {
                                     addToCart(selectedProduct);
-                                    setShowNotification(`${selectedProduct.name} agregado al carrito`);
+                                    setShowNotification(`${selectedProduct.name} agregado al carrito con Nexora`);
                                     setTimeout(() => setShowNotification(''), 3000);
                                 }}
                             >
@@ -196,7 +196,7 @@ const PageViewProduct = () => {
                                             </div>
                                             <div className="similar-info">
                                                 <p className="similar-name">{product.name}</p>
-                                                <p className="similar-price">${product.price}</p>
+                                                <p className="similar-price">₡{product.price.toLocaleString()}</p>
                                             </div>
                                         </div>
                                     ))}

@@ -231,7 +231,7 @@ const PagePay = () => {
                         <div className="summary-details">
                             <div className="detail-line">
                                 <span>Total de articulos:</span>
-                                <span>${selectedSubtotal.toFixed(2)}</span>
+                                <span>₡{selectedSubtotal.toLocaleString()}</span>
                             </div>
                             <div className="detail-line shipping">
                                 <span>Envio:</span>
@@ -242,7 +242,7 @@ const PagePay = () => {
                         <div className="summary-total-final">
                             <div className="total-label-row">
                                 <strong>Total</strong>
-                                <span className="total-amount-large">${selectedSubtotal.toFixed(2)}</span>
+                                <span className="total-amount-large">₡{selectedSubtotal.toLocaleString()}</span>
                             </div>
                             <p className="tax-hint">Consulta el monto final al completar el pago.</p>
                         </div>

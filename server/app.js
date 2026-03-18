@@ -53,6 +53,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes); // <-- PÚBLICA ANTES
+const addressRoutes = require("./routes/addressRoutes");
+app.use("/api/address", addressRoutes);
 app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
 
 // Ruta de prueba
