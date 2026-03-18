@@ -1,3 +1,76 @@
+/* Botón guardar dirección */
+.guardar-direccion-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--nexora-blue), var(--nexora-cyan));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 148, 255, 0.18);
+}
+.guardar-direccion-btn:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 6px 20px rgba(0, 148, 255, 0.28);
+}
+/* Address Section------------------------------------------------------------------- */
+.dirección-de-paquetes {
+    background: var(--nexora-card);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 28px 32px 18px 32px;
+    border: 1px solid var(--nexora-border);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+    margin-bottom: 32px;
+    max-width: 460px;
+    width: 100%;
+    box-sizing: border-box;
+    right: -600px;
+    position: relative;
+    top: 180px;
+
+}
+
+.gateway-address-title {
+    font-size: 1.15rem;
+    color: var(--nexora-blue);
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.gateway-address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gateway-address-input {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--nexora-border);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.gateway-address-input:focus {
+    outline: none;
+    border-color: var(--nexora-blue);
+    box-shadow: 0 0 0 2px rgba(0,148,255,0.13);
+}
+
+.gateway-address-input::placeholder {
+    color: #8ca3b8;
+    opacity: 1;
+}
 /* ============================================
    Payment Gateway Styles - Card Entry Only
    ============================================ */
@@ -54,109 +127,25 @@
 
 /* Main Gateway Layout */
 .gateway-main-content {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 40px;
-    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 32px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
+ .dirección-de-paquetes-right {
+    margin-left: 32px;
+    min-width: 320px;
+    max-width: 400px;
+    flex: 1 1 320px;
+}
+
 /* Order Summary Card */
-.gateway-order-summary {
-    background: var(--nexora-card);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 30px;
-    border: 1px solid var(--nexora-border);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    height: fit-content;
-    position: sticky;
-    top: 100px;
-}
 
-.gateway-order-summary h3 {
-    margin: 0 0 25px 0;
-    font-size: 1.3rem;
-    color: var(--nexora-blue);
-}
-
-.gateway-order-items {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    padding-right: 10px;
-}
-
-.gateway-order-item {
-    display: flex;
-    gap: 15px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--nexora-border);
-}
-
-.gateway-order-item:last-child {
-    border-bottom: none;
-}
-
-.gateway-order-item img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 5px;
-}
-
-.gateway-order-item-info {
-    flex: 1;
-}
-
-.gateway-order-item-name {
-    font-size: 0.95rem;
-    color: white;
-    margin-bottom: 5px;
-}
-
-.gateway-order-item-qty {
-    font-size: 0.85rem;
-    color: #9ca3af;
-}
-
-.gateway-order-item-price {
-    font-size: 0.95rem;
-    color: var(--nexora-cyan);
-    font-weight: 600;
-}
-
-.gateway-order-totals {
-    border-top: 1px solid var(--nexora-border);
-    padding-top: 20px;
-}
-
-.gateway-total-line {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    color: #9ca3af;
-    font-size: 0.95rem;
-}
-
-.gateway-total-line.grand-total {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid var(--nexora-border);
-    font-size: 1.2rem;
-    color: white;
-    font-weight: 700;
-}
-
-.gateway-total-line.grand-total span:last-child {
-    color: var(--nexora-blue);
-    font-size: 1.5rem;
-}
-
-/* Payment Form */
-.gateway-payment-section {
+/* Payment Form '''''''''''''''''''''''''''''''''*/
+.pasarela-de-pago {
     background: var(--nexora-card);
     backdrop-filter: blur(15px);
     border-radius: 20px;
@@ -167,7 +156,9 @@
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
-    margin-right: 18px;
+    
+    right: 500px;
+    position: relative;
 }
 
 .gateway-payment-title {
@@ -735,17 +726,20 @@
 /* Responsive */
 @media (max-width: 900px) {
     .gateway-main-content {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
     }
-
-    .gateway-order-summary {
-        position: static;
-        order: -1;
+    .dirección-de-paquetes-right {
+        margin-left: 0;
+        margin-top: 24px;
+        width: 100%;
+        max-width: 460px;
     }
 }
 
 @media (max-width: 500px) {
-    .gateway-payment-section {
+    .pasarela-de-pago {
         padding: 20px;
         border-radius: 16px;
     }
