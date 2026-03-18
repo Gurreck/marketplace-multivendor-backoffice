@@ -12,7 +12,7 @@ export default function PageVendedor() {
   const { addToCart } = useCart();
 
   const [products, setProducts] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
+  //const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,8 +33,7 @@ export default function PageVendedor() {
   });
   const [imageFiles, setImageFiles] = useState([]); // Archivos seleccionados
   const [imagePreviews, setImagePreviews] = useState([]); // Vista previa de imágenes
-  const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)\
-  const [removedImages, setRemovedImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)
 
   const categories = [
     "Todos",
@@ -50,7 +49,7 @@ export default function PageVendedor() {
 
   useEffect(() => {
     fetchMyProducts();
-    fetchAllProducts();
+    //fetchAllProducts();
   }, []);
 
   const fetchMyProducts = async () => {
@@ -74,16 +73,7 @@ export default function PageVendedor() {
     }
   };
 
-  const fetchAllProducts = async () => {
-    try {
-      const response = await api.get("/products");
-      if (response.data.success) {
-        setAllProducts(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching all products:", error);
-    }
-  };
+  
 
   const handlePromoAddToCart = (product) => {
     const discountedProduct = {
@@ -137,12 +127,6 @@ export default function PageVendedor() {
   };
 
   const removeExistingImage = (index) => {
-    const removed = existingImages[index];
-
-    // guardar imagen eliminada
-    setRemovedImages((prev) => [...prev, removed]);
-
-    // quitarla de la vista
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -159,7 +143,6 @@ export default function PageVendedor() {
     setImageFiles([]);
     setImagePreviews([]);
     setExistingImages([]);
-    setRemovedImages([]); // ⭐ limpiar imágenes eliminadas
     setIsModalOpen(true);
   };
 
@@ -176,7 +159,6 @@ export default function PageVendedor() {
     setImageFiles([]);
     setImagePreviews([]);
     setExistingImages(product.images || []);
-    setRemovedImages([]); // ⭐ limpiar eliminadas
     setIsModalOpen(true);
   };
 
@@ -191,7 +173,6 @@ export default function PageVendedor() {
 
       // Construir FormData para enviar archivos
       const submitData = new FormData();
-
       submitData.append("name", formData.name);
       submitData.append("description", formData.description);
       submitData.append("price", Number(formData.price));
@@ -199,12 +180,7 @@ export default function PageVendedor() {
       submitData.append("category", formData.category);
       submitData.append("brand", formData.brand);
 
-      // ⭐ enviar imágenes eliminadas
-      if (removedImages.length > 0) {
-        submitData.append("removeImages", JSON.stringify(removedImages));
-      }
-
-      // nuevas imágenes
+      // Agregar archivos nuevos
       imageFiles.forEach((file) => {
         submitData.append("images", file);
       });
@@ -216,7 +192,7 @@ export default function PageVendedor() {
         existingImages.length > 0
       ) {
         existingImages.forEach((url) => {
-          submitData.append("images", url);
+          submitData.append("existingImages", JSON.stringify(existingImages));
         });
       }
 
@@ -287,7 +263,7 @@ export default function PageVendedor() {
         <div className="notification">{showNotification}</div>
       )}
       <DivPromo
-        products={allProducts}
+        //products={allProducts}
         handlePromoAddToCart={handlePromoAddToCart}
       />
       <div className="main-container">
@@ -339,7 +315,10 @@ export default function PageVendedor() {
                 <div key={product._id} className="product-card">
                   <div className="product-image">
                     <img
-                      src={product.images[0]?.url}
+                      src={
+                        product.images[0]?.url ||
+                        "https://via.placeholder.com/300"
+                      }
                       alt={product.name}
                       className="product-real-image"
                     />
@@ -352,54 +331,48 @@ export default function PageVendedor() {
                       {product.description?.substring(0, 60)}...
                     </p>
                     <div className="card-meta">
-                      <span className="product-price">${product.price}</span>
+                      <span className="product-price">
+                        ₡{product.price.toLocaleString()}
+                      </span>
                       <span className="card-stock">Stock: {product.stock}</span>
                     </div>
 
+                    <div className="product-footer-vendedor">
+                      <button
+                        className="btn-edit"
+                        onClick={() => openEditModal(product)}
+                      >
+                        ✏️ Editar
+                      </button>
+                      <button
+                        className="btn-delete"
+                        onClick={() => handleDelete(product._id)}
+                      >
+                        🗑️ Borrar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
 
-                    {loading ? (
-                        <div className="loading-container">
-                            <div className="spinner"></div>
-                            <p>Cargando tus productos...</p>
-                        </div>
-                    ) : error ? (
-                        <div className="empty-state">
-                            <p>⚠️ {error}</p>
-                            <button className="add-btn" onClick={fetchMyProducts}>Reintentar</button>
-                        </div>
-                    ) : filteredProducts.length === 0 ? (
-                        <div className="empty-state">
-                            <p>📦 No tienes productos en esta categoría</p>
-                            <button className="add-btn" onClick={openAddModal}>➕ Agregar Producto</button>
-                        </div>
-                    ) : (
-                        <div className="products-grid">
-                            {filteredProducts.map((product) => (
-                                <div key={product._id} className="product-card">
-                                    <div className="product-image">
-                                        <img src={product.images[0]} alt={product.name} className="product-real-image" />
-                                        <div className="product-badge">{product.category}</div>
-                                    </div>
-
-                                    <div className="product-info">
-                                        <h3 className="product-name">{product.name}</h3>
-                                        <p className="product-short-desc">{product.description?.substring(0, 60)}...</p>
-                                        <div className="card-meta">
-                                            <span className="product-price">₡{product.price.toLocaleString()}</span>
-                                            <span className="card-stock">Stock: {product.stock}</span>
-                                        </div>
-
-                                        <div className="product-footer-vendedor">
-                                            <button className="btn-edit" onClick={() => openEditModal(product)}>✏️ Editar</button>
-                                            <button className="btn-delete" onClick={() => handleDelete(product._id)}>🗑️ Borrar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </section>
-
+      {/* Modal for Add/Edit */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>
+                {editingProduct ? "Editar Producto" : "Subir Nuevo Producto"}
+              </h2>
+              <button
+                className="close-modal"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ×
+              </button>
             </div>
 
             <form className="product-form" onSubmit={handleSubmit}>
@@ -429,7 +402,7 @@ export default function PageVendedor() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Precio ($)</label>
+                  <label>Precio (₡)</label>
                   <input
                     type="number"
                     name="price"
@@ -500,12 +473,12 @@ export default function PageVendedor() {
                       Imágenes actuales:
                     </p>
                     <div className="image-previews-grid">
-                      {existingImages.map((url, index) => (
+                      {existingImages.map((img, index) => (
                         <div
                           key={`existing-${index}`}
                           className="image-preview-item"
                         >
-                          <img src={url.url} alt={`Existente ${index + 1}`} />
+                          <img src={img.url} alt={`Existente ${index + 1}`} />
                           <button
                             type="button"
                             className="btn-remove-preview"
@@ -514,147 +487,39 @@ export default function PageVendedor() {
                             ×
                           </button>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-
-                        <form className="product-form" onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>Nombre del Producto</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    placeholder="Ej: Laptop Dell XPS 15"
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Descripción</label>
-                                <textarea
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleInputChange}
-                                    placeholder="Describe las características principales..."
-                                    rows="4"
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Precio (₡)</label>
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        value={formData.price}
-                                        onChange={handleInputChange}
-                                        placeholder="0.00"
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Stock Disponible</label>
-                                    <input
-                                        type="number"
-                                        name="stock"
-                                        value={formData.stock}
-                                        onChange={handleInputChange}
-                                        placeholder="0"
-                                        min="0"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Categoría</label>
-                                    <select name="category" value={formData.category} onChange={handleInputChange}>
-                                        {categories.filter(c => c !== 'Todos').map(cat => (
-                                            <option key={cat} value={cat}>{cat}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Marca (Opcional)</label>
-                                    <input
-                                        type="text"
-                                        name="brand"
-                                        value={formData.brand}
-                                        onChange={handleInputChange}
-                                        placeholder="Ej: Dell, Sony..."
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Imágenes del Producto</label>
-
-                                {/* Imágenes existentes (al editar) */}
-                                {existingImages.length > 0 && (
-                                    <div className="image-previews-container">
-                                        <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>Imágenes actuales:</p>
-                                        <div className="image-previews-grid">
-                                            {existingImages.map((url, index) => (
-                                                <div key={`existing-${index}`} className="image-preview-item">
-                                                    <img src={url} alt={`Existente ${index + 1}`} />
-                                                    <button type="button" className="btn-remove-preview" onClick={() => removeExistingImage(index)}>
-                                                        ×
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Vista previa de nuevas imágenes */}
-                                {imagePreviews.length > 0 && (
-                                    <div className="image-previews-container">
-                                        <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '8px' }}>Nuevas imágenes:</p>
-                                        <div className="image-previews-grid">
-                                            {imagePreviews.map((preview, index) => (
-                                                <div key={`new-${index}`} className="image-preview-item">
-                                                    <img src={preview} alt={`Preview ${index + 1}`} />
-                                                    <button type="button" className="btn-remove-preview" onClick={() => removeNewImage(index)}>
-                                                        ×
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Botón para seleccionar archivos */}
-                                <div className="file-upload-area">
-                                    <label className="btn-file-upload">
-                                        📁 Seleccionar imágenes
-                                        <input
-                                            type="file"
-                                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                            multiple
-                                            onChange={handleFileSelect}
-                                            style={{ display: 'none' }}
-                                        />
-                                    </label>
-                                    <span className="file-upload-hint">
-                                        Máx. 5 imágenes (JPEG, PNG, GIF, WebP) — 5MB c/u
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="form-actions-modal">
-                                <button type="button" className="btn-secondary-modal" onClick={() => setIsModalOpen(false)}>
-                                    Cancelar
-                                </button>
-                                <button type="submit" className="btn-primary-modal">
-                                    {editingProduct ? 'Guardar Cambios' : 'Publicar Producto'}
-                                </button>
-                            </div>
-                        </form>
-
+                {/* Vista previa de nuevas imágenes */}
+                {imagePreviews.length > 0 && (
+                  <div className="image-previews-container">
+                    <p
+                      style={{
+                        fontSize: "0.85rem",
+                        color: "#aaa",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      Nuevas imágenes:
+                    </p>
+                    <div className="image-previews-grid">
+                      {imagePreviews.map((preview, index) => (
+                        <div
+                          key={`new-${index}`}
+                          className="image-preview-item"
+                        >
+                          <img src={preview} alt={`Preview ${index + 1}`} />
+                          <button
+                            type="button"
+                            className="btn-remove-preview"
+                            onClick={() => removeNewImage(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

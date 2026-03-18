@@ -106,7 +106,7 @@ export default function Principal() {
               {filteredProducts.map((product) => (
                 <div key={product._id || product.id} className="product-card">
                   <div className="product-image" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>
-                    <img src={product.images[0]} alt={product.name} className="product-real-image" />
+                    <img src={product.images[0]?.url || "https://via.placeholder.com/300"} alt={product.name} className="product-real-image" />
                     <div className="product-badge">{product.vendor?.nombre || product.vendor}</div>
                   </div>
 

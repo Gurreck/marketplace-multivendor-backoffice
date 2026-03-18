@@ -1,7 +1,6 @@
 // src/data/products.js
 
-export const products = [
-    {
+module.exports = [    {
         id: 1,
         name: 'Laptop Pro 15"',
         price: 1200,
