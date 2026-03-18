@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
-import HeaderNavbar from '../headerNavbar/headerNavbar';
+import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
 
 export default function Principal() {
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ export default function Principal() {
     <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
       {showNotification && <div className="notification">{showNotification}</div>}
 
-      <HeaderNavbar
+      <NavbarPrincipal
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         toggleTheme={toggleTheme}
