@@ -76,6 +76,15 @@ export default function Mascota() {
     ];
   }
 
+  else if (location.pathname.includes("/checkout")) {
+    mensajes = [
+      "",
+      "",
+      ""
+    ];
+  }
+
+
   else if (location.pathname === "/admin/dashboard") {
     mensajes = [
       "Aquí puedes administrar la plataforma",
