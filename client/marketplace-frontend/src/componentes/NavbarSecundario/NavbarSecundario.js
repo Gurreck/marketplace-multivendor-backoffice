@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../../resource/logo1.png';
 import './NavbarSecunsario.css';
 
-export default function NavbarSecundario( {
+export default function NavbarSecundario({
     toggleTheme,
     isDarkMode,
     user,
@@ -26,6 +26,10 @@ export default function NavbarSecundario( {
                 </div>
 
                 <div className="header-barra">
+                    <button className="inicio-btn" onClick={() => navigate('/')}>
+                        Inicio
+                    </button>
+
                     <button
                         className="theme-toggle-header"
                         onClick={toggleTheme}
@@ -57,7 +61,7 @@ export default function NavbarSecundario( {
                 </div>
             </div>
 
-            
+
         </header>
     );
 }
