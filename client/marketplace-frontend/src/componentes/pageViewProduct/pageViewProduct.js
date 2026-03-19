@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
+import ModalLogin from '../Modal/ModalLogin';
 
 const PageViewProduct = () => {
     const { id } = useParams();
@@ -19,6 +20,7 @@ const PageViewProduct = () => {
     const [similarProducts, setSimilarProducts] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
     const [showNotification, setShowNotification] = useState('');
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         fetchProductDetail();
@@ -38,10 +40,7 @@ const PageViewProduct = () => {
 
     const handlePromoAddToCart = (product) => {
         if (!isAuthenticated) {
-            const confirmar = window.confirm('Debes iniciar sesión para agregar productos al carrito.\n\n¿Deseas iniciar sesión ahora?');
-            if (confirmar) {
-                navigate('/login');
-            }
+            setShowLoginModal(true);
             return;
         }
         const discountedProduct = {
@@ -109,6 +108,15 @@ const PageViewProduct = () => {
 
 
         <div className="product-page-container">
+            <ModalLogin 
+                isOpen={showLoginModal} 
+                onClose={() => setShowLoginModal(false)}
+                onLogin={() => {
+                    setShowLoginModal(false);
+                    navigate('/login');
+                }}
+                mensaje="Debes iniciar sesión para agregar productos al carrito"
+            />
             {showNotification && (
                 <div className="notification">
                     ✓ {showNotification}
@@ -182,10 +190,7 @@ const PageViewProduct = () => {
                                 className="add-to-cart-btn"
                                 onClick={() => {
                                     if (!isAuthenticated) {
-                                        const confirmar = window.confirm(' Debes iniciar sesión para agregar productos al carrito.\n\n¿Deseas iniciar sesión ahora?');
-                                        if (confirmar) {
-                                            navigate('/login');
-                                        }
+                                        setShowLoginModal(true);
                                         return;
                                     }
                                     addToCart(selectedProduct);

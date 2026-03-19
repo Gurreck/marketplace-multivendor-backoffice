@@ -7,6 +7,7 @@ import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
 import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
+import ModalLogin from '../Modal/ModalLogin';
 
 export default function Principal() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function Principal() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [showNotification, setShowNotification] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -54,10 +56,7 @@ export default function Principal() {
 
   const handleAddToCart = (product) => {
     if (!isAuthenticated) {
-      const confirmar = window.confirm('Debes iniciar sesión para agregar productos al carrito.\n\n¿Deseas iniciar sesión ahora?');
-      if (confirmar) {
-        navigate('/login');
-      }
+      setShowLoginModal(true);
       return;
     }
     addToCart(product);
@@ -67,10 +66,7 @@ export default function Principal() {
 
   const handlePromoAddToCart = (product) => {
     if (!isAuthenticated) {
-      const confirmar = window.confirm(' Debes iniciar sesión para agregar productos al carrito.\n\n¿Deseas iniciar sesión ahora?');
-      if (confirmar) {
-        navigate('/login');
-      }
+      setShowLoginModal(true);
       return;
     }
     const discountedProduct = {
@@ -87,6 +83,16 @@ export default function Principal() {
   return (
     <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
       {showNotification && <div className="notification">{showNotification}</div>}
+
+      <ModalLogin 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)}
+        onLogin={() => {
+          setShowLoginModal(false);
+          navigate('/login');
+        }}
+        mensaje="Debes iniciar sesión para agregar productos al carrito"
+      />
 
       <NavbarPrincipal
         searchTerm={searchTerm}
