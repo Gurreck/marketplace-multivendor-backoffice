@@ -1,41 +1,31 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../resource/logo1.png';
-import './NavbarSecundario.css';
+import './NavbarSecunsario.css';
 
-export default function NavbarSecundario({
-    searchTerm,
-    setSearchTerm,
+export default function NavbarSecundario( {
     toggleTheme,
     isDarkMode,
     user,
     logout,
-    cartCount,
-    categories,
-    selectedCategory,
-    setSelectedCategory
+    cartCount
+
+
+
 }) {
     const navigate = useNavigate();
 
     return (
         <header className="header">
             <div className="header-top">
-                <div className="header-left">
+                <div className="header-Marca">
                     <div className="logo" onClick={() => navigate('/')}>
                         <img src={logo} alt="Nexora Logo" className="logo-img-header" />
                         <h1 className="logo-text">Nexora</h1>
                     </div>
                 </div>
 
-                
-                
-                <div className="header-right">
-                    <button
-                        className="home-btn"
-                        onClick={() => navigate('/pages/Principal')}
-                    >
-                        inicio {cartCount > 0 && <span className="cart-badge">{cartCount} </span>}
-                    </button>
+                <div className="header-barra">
                     <button
                         className="theme-toggle-header"
                         onClick={toggleTheme}

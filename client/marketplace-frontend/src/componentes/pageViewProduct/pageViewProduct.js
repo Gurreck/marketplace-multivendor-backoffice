@@ -7,6 +7,7 @@ import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
+
 const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -76,19 +77,6 @@ const PageViewProduct = () => {
             console.error('Error fetching similar products:', error);
         }
     };
-
-    const goToPreviousImage = () => {
-        setCurrentImageIndex((prev) =>
-            prev === 0 ? selectedProduct.images.length - 1 : prev - 1
-        );
-    };
-
-    const goToNextImage = () => {
-        setCurrentImageIndex((prev) =>
-            prev === selectedProduct.images.length - 1 ? 0 : prev + 1
-        );
-    };
-
     if (loading) return (
         <div className="loading" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0094FF', fontSize: '24px' }}>
             Cargando producto...
@@ -98,123 +86,56 @@ const PageViewProduct = () => {
     if (!selectedProduct) return null;
 
     return (
-
-
-
-        <div className="product-page-container">
-            {showNotification && (
-                <div className="notification">
-                    ✓ {showNotification}
-                </div>
-            )}
-            <NavbarSecundario />
-
-
-
-            <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
-
-            <div className="product-page-content">
-                <button className="back-btn" onClick={() => navigate(-1)}>← Volver</button>
-
-                <div className="main-content-layout">
-                    <div className="image-section">
-                        <div className="main-image-container">
-                            <img
-                                src={selectedProduct.images[currentImageIndex]}
-                                alt={selectedProduct.name}
-                                className="product-main-image"
-                            />
-
-                            {selectedProduct.images.length > 1 && (
-                                <>
-                                    <button className="image-nav-btn prev" onClick={goToPreviousImage}>◀</button>
-                                    <button className="image-nav-btn next" onClick={goToNextImage}>▶</button>
-                                </>
-                            )}
-                        </div>
-
-                        {selectedProduct.images.length > 1 && (
-                            <div className="image-thumbnails">
-                                {selectedProduct.images.map((image, index) => (
+        <>
+            <div className="navbar-secundario">
+                <NavbarSecundario
+                    toggleTheme={() => { }}
+                    isDarkMode={false}
+                    user={user}
+                    logout={() => { }}
+                    cartCount={0}
+                />
+            </div>
+            <div className="product-page-container">
+                {showNotification && (
+                    <div className="notification">
+                        ✓ {showNotification}
+                    </div>
+                )}
+                <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+                <div className="product-page-content">
+                    <button className="home-btn" onClick={() => navigate('/')}> Inicio</button>
+                    {/* ...existing code... */}
+                    {/* Productos Similares */}
+                    {similarProducts.length > 0 && (
+                        <div className="similar-products-section">
+                            <h3>🔍 Productos Similares</h3>
+                            <div className="similar-products-grid">
+                                {similarProducts.map((product) => (
                                     <div
-                                        key={index}
-                                        className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
-                                        onClick={() => setCurrentImageIndex(index)}
+                                        key={product._id}
+                                        className="similar-product-card"
+                                        onClick={() => {
+                                            navigate(`/product/${product._id}`);
+                                            setCurrentImageIndex(0);
+                                            window.scrollTo(0, 0);
+                                        }}
                                     >
-                                        <img src={image} alt={`Vista ${index + 1}`} />
+                                        <div className="similar-image">
+                                            <img src={product.images[0]} alt={product.name} />
+                                        </div>
+                                        <div className="similar-info">
+                                            <p className="similar-name">{product.name}</p>
+                                            <p className="similar-price">₡{product.price.toLocaleString()}</p>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
-                        )}
-                    </div>
-
-                    <div className="info-section">
-                        <h1 className="product-name">{selectedProduct.name}</h1>
-
-                        <div className="description-box">
-                            <h3>Descripción</h3>
-                            <p>{selectedProduct.description}</p>
                         </div>
-
-                        <div className="category-tag">
-                            Categoría: <strong>{selectedProduct.category}</strong>
-                        </div>
-
-                        <div className="product-meta">
-                            <div className="vendor">
-                                Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
-                            </div>
-                        </div>
-
-                        <div className="price-tag">
-                            <span className="product-price"> ₡ {selectedProduct.price.toLocaleString()}</span>
-                        </div>
-
-                        <div className="action-buttons">
-                            <button
-                                className="add-to-cart-btn"
-                                onClick={() => {
-                                    addToCart(selectedProduct);
-                                    setShowNotification(`${selectedProduct.name} agregado al carrito con Nexora`);
-                                    setTimeout(() => setShowNotification(''), 3000);
-                                }}
-                            >
-                                ➕ Agregar al Carrito
-                            </button>
-                        </div>
-
-                        {/* Productos Similares */}
-                        {similarProducts.length > 0 && (
-                            <div className="similar-products-section">
-                                <h3>🔍 Productos Similares</h3>
-                                <div className="similar-products-grid">
-                                    {similarProducts.map((product) => (
-                                        <div
-                                            key={product._id}
-                                            className="similar-product-card"
-                                            onClick={() => {
-                                                navigate(`/product/${product._id}`);
-                                                setCurrentImageIndex(0);
-                                                window.scrollTo(0, 0);
-                                            }}
-                                        >
-                                            <div className="similar-image">
-                                                <img src={product.images[0]} alt={product.name} />
-                                            </div>
-                                            <div className="similar-info">
-                                                <p className="similar-name">{product.name}</p>
-                                                <p className="similar-price">₡{product.price.toLocaleString()}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
             </div>
-        </div>
+        </>
     );
-};
-
+}
 export default PageViewProduct;
