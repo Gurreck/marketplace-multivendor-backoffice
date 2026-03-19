@@ -10,9 +10,9 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user ,isAuthenticated } = useAuth();
     const { addToCart } = useCart();
-
+   
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -37,6 +37,13 @@ const PageViewProduct = () => {
     };
 
     const handlePromoAddToCart = (product) => {
+        if (!isAuthenticated) {
+            const confirmar = window.confirm('Debes iniciar sesión para agregar productos al carrito.\n\n¿Deseas iniciar sesión ahora?');
+            if (confirmar) {
+                navigate('/login');
+            }
+            return;
+        }
         const discountedProduct = {
             ...product,
             originalPrice: product.price,
@@ -174,10 +181,21 @@ const PageViewProduct = () => {
                             <button
                                 className="add-to-cart-btn"
                                 onClick={() => {
+                                    if (!isAuthenticated) {
+                                        const confirmar = window.confirm(' Debes iniciar sesión para agregar productos al carrito.\n\n¿Deseas iniciar sesión ahora?');
+                                        if (confirmar) {
+                                            navigate('/login');
+                                        }
+                                        return;
+                                    }
                                     addToCart(selectedProduct);
-                                    setShowNotification(`${selectedProduct.name} agregado al carrito con Nexora`);
+                                    setShowNotification(`${selectedProduct.name} agregado al carrito`);
                                     setTimeout(() => setShowNotification(''), 3000);
                                 }}
+
+
+
+                                
                             >
                                 ➕ Agregar al Carrito
                             </button>
