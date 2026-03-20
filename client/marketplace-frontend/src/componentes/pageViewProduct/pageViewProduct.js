@@ -41,7 +41,7 @@ const PageViewProduct = () => {
     };
 
     const handlePromoAddToCart = (product) => {
-        if (!isAuthenticated) {
+        if (!user) {
             setShowLoginModal(true);
             return;
         }
@@ -188,7 +188,7 @@ const PageViewProduct = () => {
                             <button
                                 className="add-to-cart-btn"
                                 onClick={() => {
-                                    if (!isAuthenticated) {
+                                    if (!user) {
                                         setShowLoginModal(true);
                                         return;
                                     }
