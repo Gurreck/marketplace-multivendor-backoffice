@@ -20,26 +20,30 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("marketplace_cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Helper para obtener el ID real del producto (soporta _id de MongoDB e id)
+  const getProductId = (product) => product._id || product.id;
+
   const addToCart = (product) => {
+    const productId = getProductId(product);
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item._id === product._id);
+      const existingItem = prevItems.find((item) => getProductId(item) === productId);
       if (existingItem) {
         // Si ya existe, aumentar cantidad
         return prevItems.map((item) =>
-          item._id === product._id
+          getProductId(item) === productId
             ? { ...item, quantity: item.quantity + 1 }
             : item,
         );
       } else {
-        // Si no existe, agregar con cantidad 1
-        return [...prevItems, { ...product, quantity: 1 }];
+        // Si no existe, agregar con cantidad 1 y normalizar el id
+        return [...prevItems, { ...product, id: productId, quantity: 1 }];
       }
     });
   };
 
   const removeFromCart = (productId) => {
     setCartItems((prevItems) =>
-      prevItems.filter((item) => item._id !== productId),
+      prevItems.filter((item) => getProductId(item) !== productId),
     );
   };
 
@@ -47,7 +51,7 @@ export const CartProvider = ({ children }) => {
     if (newQuantity < 1) return;
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item._id === productId ? { ...item, quantity: newQuantity } : item,
+        getProductId(item) === productId ? { ...item, quantity: newQuantity } : item,
       ),
     );
   };

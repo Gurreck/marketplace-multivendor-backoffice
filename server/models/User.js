@@ -24,27 +24,23 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: {
-        values: ["cliente", "vendedor", "administrador"],
-        message: "Rol no válido. Debe ser: cliente, vendedor o administrador",
-      },
+      enum: ["cliente", "vendedor", "administrador"],
       default: "cliente",
+    },
+    shippingAddress: {
+      pais: { type: String },
+      provincia: { type: String },
+      ciudad: { type: String },
+      codigoPostal: { type: String },
+      direccion: { type: String },
     },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
-// Hash de la contraseña antes de guardar - VERSIÓN SIN NEXT
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
-  
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-// Método para comparar contraseñas
+// 🔐 Comparar contraseña
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };

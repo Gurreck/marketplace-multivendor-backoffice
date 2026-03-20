@@ -18,15 +18,36 @@ export const AuthProvider = ({ children }) => {
 
   // Cargar datos de localStorage al iniciar
   useEffect(() => {
+  const initAuth = async () => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (storedToken && storedUser) {
+    if (!storedToken || !storedUser) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // validar token con backend
+      await api.get("/auth/verify", {
+        headers: { Authorization: `Bearer ${storedToken}` }
+      });
+
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+    } catch (error) {
+      // token inválido → borrar storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setToken(null);
+      setUser(null);
     }
+
     setLoading(false);
-  }, []);
+  };
+
+  initAuth();
+}, []);
 
   const login = async (email, password) => {
     const response = await api.post("/auth/login", { email, password });
@@ -40,11 +61,12 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
-  const register = async (nombre, email, password) => {
+  const register = async (nombre, email, password, role = 'cliente') => {
     const response = await api.post("/auth/register", {
       nombre,
       email,
       password,
+      role,
     });
     console.log("Respuesta del registro:", nombre, email, response.data);
     const { token: newToken, ...userData } = response.data.data;
