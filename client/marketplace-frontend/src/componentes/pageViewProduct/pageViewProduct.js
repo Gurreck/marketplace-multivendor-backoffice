@@ -6,19 +6,23 @@ import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
+import ModalLogin from '../Modal/ModalLogin';
 
 const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+ 
     const { user } = useAuth();
     const { addToCart, cartCount } = useCart();
 
+ 
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [similarProducts, setSimilarProducts] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
     const [showNotification, setShowNotification] = useState('');
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         fetchProductDetail();
@@ -37,6 +41,10 @@ const PageViewProduct = () => {
     };
 
     const handlePromoAddToCart = (product) => {
+        if (!isAuthenticated) {
+            setShowLoginModal(true);
+            return;
+        }
         const discountedProduct = {
             ...product,
             originalPrice: product.price,
@@ -98,6 +106,7 @@ const PageViewProduct = () => {
     if (!selectedProduct) return null;
 
     return (
+
         <>
             <div className="navbar-secundario">
                 <NavbarSecundario
@@ -115,6 +124,9 @@ const PageViewProduct = () => {
                     </div>
                 )}
                 <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+
+
+
 
             <div className="product-page-content">
 
@@ -176,10 +188,18 @@ const PageViewProduct = () => {
                             <button
                                 className="add-to-cart-btn"
                                 onClick={() => {
+                                    if (!isAuthenticated) {
+                                        setShowLoginModal(true);
+                                        return;
+                                    }
                                     addToCart(selectedProduct);
-                                    setShowNotification(`${selectedProduct.name} agregado al carrito con Nexora`);
+                                    setShowNotification(`${selectedProduct.name} agregado al carrito`);
                                     setTimeout(() => setShowNotification(''), 3000);
                                 }}
+
+
+
+                                
                             >
                                 ➕ Agregar al Carrito
                             </button>
