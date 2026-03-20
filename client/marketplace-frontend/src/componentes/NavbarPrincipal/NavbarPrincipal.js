@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../resource/logo1.png';
-import './headerNavbar.css';
+import './NavbarPrincipal.css';
 
-export default function HeaderNavbar({
+export default function NavbarPrincipal({
     searchTerm,
     setSearchTerm,
     toggleTheme,

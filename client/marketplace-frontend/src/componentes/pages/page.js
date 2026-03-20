@@ -6,11 +6,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
-import HeaderNavbar from '../headerNavbar/headerNavbar';
+import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
+import ModalLogin from '../Modal/ModalLogin';
 
 export default function Principal() {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { logout, user ,isAuthenticated } = useAuth();
   const { addToCart, cartCount } = useCart();
 
   const [products, setProducts] = useState([]);
@@ -19,6 +20,7 @@ export default function Principal() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [showNotification, setShowNotification] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -53,12 +55,20 @@ export default function Principal() {
   });
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     addToCart(product);
     setShowNotification(`${product.name} agregado al carrito`);
     setTimeout(() => setShowNotification(''), 3000);
   };
 
   const handlePromoAddToCart = (product) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     const discountedProduct = {
       ...product,
       originalPrice: product.price,
@@ -74,7 +84,17 @@ export default function Principal() {
     <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
       {showNotification && <div className="notification">{showNotification}</div>}
 
-      <HeaderNavbar
+      <ModalLogin 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)}
+        onLogin={() => {
+          setShowLoginModal(false);
+          navigate('/login');
+        }}
+        mensaje="Debes iniciar sesión para agregar productos al carrito"
+      />
+
+      <NavbarPrincipal
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         toggleTheme={toggleTheme}
