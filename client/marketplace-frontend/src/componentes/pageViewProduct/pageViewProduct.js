@@ -12,7 +12,7 @@ const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
  
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const { addToCart, cartCount } = useCart();
 
  
@@ -41,7 +41,7 @@ const PageViewProduct = () => {
     };
 
     const handlePromoAddToCart = (product) => {
-        if (!user) {
+        if (!isAuthenticated) {
             setShowLoginModal(true);
             return;
         }
@@ -106,8 +106,16 @@ const PageViewProduct = () => {
     if (!selectedProduct) return null;
 
     return (
-
         <>
+            <ModalLogin 
+                isOpen={showLoginModal} 
+                onClose={() => setShowLoginModal(false)}
+                onLogin={() => {
+                    setShowLoginModal(false);
+                    navigate('/login');
+                }}
+                mensaje="Debes iniciar sesión para agregar productos al carrito"
+            />
             <div className="navbar-secundario">
                 <NavbarSecundario
                     toggleTheme={() => { }}
@@ -188,7 +196,7 @@ const PageViewProduct = () => {
                             <button
                                 className="add-to-cart-btn"
                                 onClick={() => {
-                                    if (!user) {
+                                    if (!isAuthenticated) {
                                         setShowLoginModal(true);
                                         return;
                                     }
