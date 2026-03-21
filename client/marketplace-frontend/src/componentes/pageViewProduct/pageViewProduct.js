@@ -134,7 +134,7 @@ const PageViewProduct = () => {
                     <div className="image-section">
                         <div className="main-image-container">
                             <img
-                                src={selectedProduct.images[currentImageIndex]}
+                                src={selectedProduct.images[currentImageIndex]?.url || "https://via.placeholder.com/600"}
                                 alt={selectedProduct.name}
                                 className="product-main-image"
                             />
@@ -155,7 +155,7 @@ const PageViewProduct = () => {
                                         className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                                         onClick={() => setCurrentImageIndex(index)}
                                     >
-                                        <img src={image} alt={`Vista ${index + 1}`} />
+                                        <img src={image.url || "https://via.placeholder.com/120"} alt={`Vista ${index + 1}`} />
                                     </div>
                                 ))}
                             </div>
@@ -221,7 +221,7 @@ const PageViewProduct = () => {
                                             }}
                                         >
                                             <div className="similar-image">
-                                                <img src={product.images[0]} alt={product.name} />
+                                                <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />
                                             </div>
                                             <div className="similar-info">
                                                 <p className="similar-name">{product.name}</p>

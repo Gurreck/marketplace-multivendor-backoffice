@@ -149,6 +149,48 @@
     cursor: not-allowed;
 }
 
+.password-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-container input {
+    width: 100%;
+    padding: 12px 45px 12px 16px;
+    box-sizing: border-box;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: fit-content;
+
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 6px;
+
+  padding: 6px 8px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.password-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: #000;
+  stroke-width: 2.5;
+}
 .login-button {
     background: var(--btn-gradient);
     color: white;
@@ -212,11 +254,13 @@
     font-weight: 500;
     cursor: pointer;
     text-align: right;
-    margin-top: -5px;
+    margin-top: 8px;
+    margin-bottom: 10px;
     transition: color 0.3s ease;
     padding: 0;
     width: fit-content;
     align-self: flex-end;
+    margin-left: auto;
 }
 
 .forgot-link-btn:hover {
@@ -264,4 +308,26 @@
     .login-subtitle {
         font-size: 12px;
     }
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--input-text);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  transition: color 0.3s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--link-color);
 }
