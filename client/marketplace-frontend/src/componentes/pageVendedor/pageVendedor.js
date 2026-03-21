@@ -12,7 +12,7 @@ export default function PageVendedor() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
 
-  const { addToCart } = useCart();
+  const { addToCart, cartCount } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
 
 
@@ -248,58 +248,44 @@ export default function PageVendedor() {
   });
 
   return (
-
-    <div className={`principal-container ${!isDarkMode ? "light-mode" : ""}`}>
-      {showNotification && (
-        <div className="notification">{showNotification}</div>
-      )}
-      <DivPromo
+    <>
+      <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
+        <NavbarSecundario
+          toggleTheme={toggleTheme}
+          isDarkMode={isDarkMode}
+          user={user}
+          logout={logout}
+          cartCount={cartCount}
+          onInicio={() => {
+            logout();
+            navigate('/');
+          }}
+          disableCart={true}
+          disableUserMenu={true}
+        />
+      </div>
+      <div className={`principal-container ${!isDarkMode ? "light-mode" : ""}`}>
+        {showNotification && (
+          <div className="notification">{showNotification}</div>
+        )}
+        {/* <DivPromo
         //products={allProducts}
         handlePromoAddToCart={handlePromoAddToCart}
-      />
-      <div className="main-container">
-        <section className="products-section">
-          <div className="section-header">
-            <h2>
-              Mis Productos{" "}
-              {selectedCategory !== "Todos" && `— ${selectedCategory}`}
-            </h2>
-            <div className="header-actions">
-              <button
-                className="btn-exit-vendedor"
-                onClick={() => {
-                  logout();
-                  navigate("/");
-                }}
-              >
-                ✖ Salir
-              </button>
-              <p>{filteredProducts.length} productos publicados</p>
-              <button className="add-btn-vendedor" onClick={openAddModal}>
-                ➕ Nuevo Producto
-              </button>
-            </div>
-          </div>
+      /> */}
+        <div className="main-container">
+          <section className="products-section">
+            <div className="section-header">
+              <h2>
+                Mis Productos{" "}
+                {selectedCategory !== "Todos" && `— ${selectedCategory}`}
+              </h2>
+              <div className="header-actions">
 
-          {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p>Cargando tus productos...</p>
-            </div>
-          ) : error ? (
-            <div className="empty-state">
-              <p>⚠️ {error}</p>
-              <button className="add-btn" onClick={fetchMyProducts}>
-                Reintentar
-              </button>
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="empty-state">
-              <p>📦 No tienes productos en esta categoría</p>
-              <button className="add-btn" onClick={openAddModal}>
-                ➕ Agregar Producto
-              </button>
-
+                <p>{filteredProducts.length} productos publicados</p>
+                <button className="add-btn-vendedor" onClick={openAddModal}>
+                  ➕ Nuevo Producto
+                </button>
+              </div>
             </div>
 
             {loading ? (
