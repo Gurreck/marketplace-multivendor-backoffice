@@ -1,18 +1,27 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
 import './NavbarSecunsario.css';
 
 export default function NavbarSecundario({
-    toggleTheme,
-    isDarkMode,
     user,
     logout,
+
+   
+
     cartCount,
     // Propiedad opcional para personalizar qué hace el botón Inicio (usada en pageVendedor)
     onInicio
+
 }) {
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useTheme();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     // Nueva función que intercepta los clics en los botones de "Inicio"
     const handleInicio = () => {
@@ -62,10 +71,7 @@ export default function NavbarSecundario({
                     >
                         🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                     </button>
-                    <button className="logout-btn" onClick={() => {
-                        logout();
-                        navigate('/');
-                    }}>
+                    <button className="logout-btn" onClick={handleLogout}>
                         ✖ Salir
                     </button>
                 </div>

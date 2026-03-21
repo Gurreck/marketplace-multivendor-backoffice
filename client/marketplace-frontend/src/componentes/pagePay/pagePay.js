@@ -3,6 +3,7 @@ import './pagePay.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
@@ -12,7 +13,8 @@ const getItemId = (item) => item._id || item.id;
 const PagePay = () => {
     const navigate = useNavigate();
     const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart, addToCart, cartCount } = useCart();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const { isDarkMode, toggleTheme } = useTheme();
 
 
 
@@ -117,16 +119,18 @@ const PagePay = () => {
 
     return (
         <>
-            <div className="navbar-secundario">
+            <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
                 <NavbarSecundario
-                    toggleTheme={() => { }}
-                    isDarkMode={false}
+                    toggleTheme={toggleTheme}
+                    isDarkMode={isDarkMode}
                     user={user}
-                    logout={() => { }}
+                    logout={logout}
                     cartCount={cartCount}
                 />
             </div>
-            <div className="pay-container">
+
+            <div className={`pay-container ${!isDarkMode ? 'light-mode' : ''}`}>
+                <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
 
 
                 {/* Header / Breadcrumbs */}

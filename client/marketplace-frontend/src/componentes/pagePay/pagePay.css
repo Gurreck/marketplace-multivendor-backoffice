@@ -6,6 +6,10 @@
     color: var(--nexora-text);
 }
 
+.light-mode.pay-container {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
 .pay-container > .promo-banner {
     margin-left: calc(-5% - 0px);
     margin-right: calc(-5% - 0px);
@@ -175,7 +179,7 @@
     margin: 0 0 8px 0;
     font-size: 1.1rem;
     line-height: 1.4;
-    color: white;
+    color: var(--nexora-text);
 }
 
 .item-vendor-checkout {
@@ -262,7 +266,7 @@
     border-radius: 8px;
     background: var(--input-bg);
     border: 1px solid var(--nexora-border);
-    color: white;
+    color: var(--nexora-text);
     cursor: pointer;
 }
 
@@ -323,7 +327,7 @@
 
 .total-label-row strong {
     font-size: 1.2rem;
-    color: white;
+    color: var(--nexora-text);
 }
 
 .total-amount-large {

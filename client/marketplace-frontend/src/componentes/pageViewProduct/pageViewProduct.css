@@ -3,14 +3,33 @@
     --nexora-blue: #0094ff;
     --nexora-bg: #0a0e27;
     --nexora-border: rgba(0, 148, 255, 0.2);
+    --nexora-text: #ffffff;
+    --nexora-text-secondary: #9ca3af;
+    --nexora-card-bg: #1a1f3a;
+    --nexora-input-bg: #1a1f3a;
+}
+
+.light-mode {
+    --nexora-blue: #0369a1;
+    --nexora-bg: #f0f9ff;
+    --nexora-border: rgba(0, 148, 255, 0.2);
+    --nexora-text: #1f2937;
+    --nexora-text-secondary: #6b7280;
+    --nexora-card-bg: #ffffff;
+    --nexora-input-bg: #f3f4f6;
 }
 
 .product-page-container {
     min-height: 100vh;
     background-color: var(--nexora-bg);
-    color: white;
+    color: var(--nexora-text);
     padding: 40px 20px;
     font-family: 'Inter', sans-serif;
+}
+
+.light-mode .product-page-container {
+    background-color: var(--nexora-bg);
+    color: var(--nexora-text);
 }
 
 .product-page-container>.promo-banner {
@@ -161,7 +180,7 @@
 }
 
 .vendor {
-    color: #9ca3af;
+    color: var(--nexora-text-secondary);
 }
 
 .price-tag {
@@ -185,7 +204,7 @@
 
 .description-box p {
     line-height: 1.6;
-    color: #d1d5db;
+    color: var(--nexora-text-secondary);
 }
 
 .action-buttons {
@@ -246,9 +265,9 @@
 
 .comment-input {
     width: 100%;
-    background: #1a1f3a;
+    background: var(--nexora-input-bg);
     border: 1px solid var(--nexora-border);
-    color: white;
+    color: var(--nexora-text);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -265,7 +284,7 @@
 }
 
 .comment-item {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--nexora-card-bg);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 10px;
@@ -284,7 +303,7 @@
 }
 
 .similar-product-card {
-    background: #1a1f3a;
+    background: var(--nexora-card-bg);
     border: 1px solid var(--nexora-border);
     border-radius: 12px;
     overflow: hidden;
