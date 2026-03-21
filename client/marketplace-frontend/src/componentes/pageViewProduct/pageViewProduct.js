@@ -11,9 +11,11 @@ import ModalLogin from '../Modal/ModalLogin';
 const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user ,isAuthenticated } = useAuth();
-    const { addToCart } = useCart();
-   
+ 
+    const { user } = useAuth();
+    const { addToCart, cartCount } = useCart();
+
+ 
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ const PageViewProduct = () => {
     };
 
     const handlePromoAddToCart = (product) => {
-        if (!isAuthenticated) {
+        if (!user) {
             setShowLoginModal(true);
             return;
         }
@@ -105,37 +107,34 @@ const PageViewProduct = () => {
 
     return (
 
+        <>
+            <div className="navbar-secundario">
+                <NavbarSecundario
+                    toggleTheme={() => { }}
+                    isDarkMode={false}
+                    user={user}
+                    logout={() => { }}
+                    cartCount={cartCount}
+                />
+            </div>
+            <div className="product-page-container">
+                {showNotification && (
+                    <div className="notification">
+                        ✓ {showNotification}
+                    </div>
+                )}
+                <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
 
 
-        <div className="product-page-container">
-            <ModalLogin 
-                isOpen={showLoginModal} 
-                onClose={() => setShowLoginModal(false)}
-                onLogin={() => {
-                    setShowLoginModal(false);
-                    navigate('/login');
-                }}
-                mensaje="Debes iniciar sesión para agregar productos al carrito"
-            />
-            {showNotification && (
-                <div className="notification">
-                    ✓ {showNotification}
-                </div>
-            )}
-            <NavbarSecundario />
 
-
-
-            <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
 
             <div className="product-page-content">
-                <button className="back-btn" onClick={() => navigate(-1)}>← Volver</button>
 
                 <div className="main-content-layout">
                     <div className="image-section">
                         <div className="main-image-container">
                             <img
-                                src={selectedProduct.images[currentImageIndex]}
+                                src={selectedProduct.images[currentImageIndex]?.url || "https://via.placeholder.com/600"}
                                 alt={selectedProduct.name}
                                 className="product-main-image"
                             />
@@ -156,7 +155,7 @@ const PageViewProduct = () => {
                                         className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                                         onClick={() => setCurrentImageIndex(index)}
                                     >
-                                        <img src={image} alt={`Vista ${index + 1}`} />
+                                        <img src={image.url || "https://via.placeholder.com/120"} alt={`Vista ${index + 1}`} />
                                     </div>
                                 ))}
                             </div>
@@ -189,7 +188,7 @@ const PageViewProduct = () => {
                             <button
                                 className="add-to-cart-btn"
                                 onClick={() => {
-                                    if (!isAuthenticated) {
+                                    if (!user) {
                                         setShowLoginModal(true);
                                         return;
                                     }
@@ -222,7 +221,7 @@ const PageViewProduct = () => {
                                             }}
                                         >
                                             <div className="similar-image">
-                                                <img src={product.images[0]} alt={product.name} />
+                                                <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />
                                             </div>
                                             <div className="similar-info">
                                                 <p className="similar-name">{product.name}</p>
@@ -237,6 +236,7 @@ const PageViewProduct = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 
