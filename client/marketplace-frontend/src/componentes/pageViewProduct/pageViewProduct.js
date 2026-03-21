@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import api from '../../services/api';
-import DivPromo from '../divPromo/divPromo';
+
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
 
@@ -20,41 +20,14 @@ const PageViewProduct = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [similarProducts, setSimilarProducts] = useState([]);
-    const [allProducts, setAllProducts] = useState([]);
+
     const [showNotification, setShowNotification] = useState('');
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         fetchProductDetail();
-        fetchAllProducts();
     }, [id]);
 
-    const fetchAllProducts = async () => {
-        try {
-            const response = await api.get('/products');
-            if (response.data.success) {
-                setAllProducts(response.data.data);
-            }
-        } catch (error) {
-            console.error('Error fetching all products:', error);
-        }
-    };
-
-    const handlePromoAddToCart = (product) => {
-        if (!isAuthenticated) {
-            setShowLoginModal(true);
-            return;
-        }
-        const discountedProduct = {
-            ...product,
-            originalPrice: product.price,
-            price: Math.floor(product.price * 0.90),
-            isPromo: true
-        };
-        addToCart(discountedProduct);
-        setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
-        setTimeout(() => setShowNotification(''), 3000);
-    };
 
     const fetchProductDetail = async () => {
         try {
@@ -131,7 +104,7 @@ const PageViewProduct = () => {
                         ✓ {showNotification}
                     </div>
                 )}
-                <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+
 
 
 
