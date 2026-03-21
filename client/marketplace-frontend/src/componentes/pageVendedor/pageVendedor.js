@@ -73,8 +73,6 @@ export default function PageVendedor() {
     }
   };
 
-  
-
   const handlePromoAddToCart = (product) => {
     const discountedProduct = {
       ...product,
@@ -186,16 +184,14 @@ export default function PageVendedor() {
       });
 
       // Si estamos editando y mantenemos imágenes existentes (sin subir nuevas)
-      if (
-        editingProduct &&
-        imageFiles.length === 0 &&
-        existingImages.length > 0
-      ) {
-        existingImages.forEach((url) => {
-          submitData.append("existingImages", JSON.stringify(existingImages));
-        });
-      }
+      // ✅ Enviar imágenes a eliminar (para Cloudinary)
+      if (editingProduct) {
+        const imagesToRemove = editingProduct.images.filter(
+          (img) => !existingImages.some((e) => e.public_id === img.public_id),
+        );
 
+        submitData.append("removeImages", JSON.stringify(imagesToRemove));
+      }
       let response;
       if (editingProduct) {
         response = await api.put(
