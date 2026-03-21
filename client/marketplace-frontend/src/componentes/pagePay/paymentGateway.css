@@ -71,6 +71,20 @@
     color: #8ca3b8;
     opacity: 1;
 }
+
+/* Estilos para error en campos de dirección */
+.gateway-address-input.input-error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.gateway-address-error-message {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: -8px;
+    margin-bottom: 8px;
+    display: block;
+}
 /* ============================================
    Payment Gateway Styles - Card Entry Only
    ============================================ */
