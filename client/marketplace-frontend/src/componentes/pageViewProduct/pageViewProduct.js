@@ -12,7 +12,7 @@ const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
  
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const { addToCart, cartCount } = useCart();
 
  
@@ -41,7 +41,7 @@ const PageViewProduct = () => {
     };
 
     const handlePromoAddToCart = (product) => {
-        if (!user) {
+        if (!isAuthenticated) {
             setShowLoginModal(true);
             return;
         }
@@ -106,8 +106,16 @@ const PageViewProduct = () => {
     if (!selectedProduct) return null;
 
     return (
-
         <>
+            <ModalLogin 
+                isOpen={showLoginModal} 
+                onClose={() => setShowLoginModal(false)}
+                onLogin={() => {
+                    setShowLoginModal(false);
+                    navigate('/login');
+                }}
+                mensaje="Debes iniciar sesión para agregar productos al carrito"
+            />
             <div className="navbar-secundario">
                 <NavbarSecundario
                     toggleTheme={() => { }}
@@ -134,7 +142,7 @@ const PageViewProduct = () => {
                     <div className="image-section">
                         <div className="main-image-container">
                             <img
-                                src={selectedProduct.images[currentImageIndex]}
+                                src={selectedProduct.images[currentImageIndex]?.url || "https://via.placeholder.com/600"}
                                 alt={selectedProduct.name}
                                 className="product-main-image"
                             />
@@ -155,7 +163,7 @@ const PageViewProduct = () => {
                                         className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
                                         onClick={() => setCurrentImageIndex(index)}
                                     >
-                                        <img src={image} alt={`Vista ${index + 1}`} />
+                                        <img src={image.url || "https://via.placeholder.com/120"} alt={`Vista ${index + 1}`} />
                                     </div>
                                 ))}
                             </div>
@@ -188,7 +196,7 @@ const PageViewProduct = () => {
                             <button
                                 className="add-to-cart-btn"
                                 onClick={() => {
-                                    if (!user) {
+                                    if (!isAuthenticated) {
                                         setShowLoginModal(true);
                                         return;
                                     }
@@ -221,7 +229,7 @@ const PageViewProduct = () => {
                                             }}
                                         >
                                             <div className="similar-image">
-                                                <img src={product.images[0]} alt={product.name} />
+                                                <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />
                                             </div>
                                             <div className="similar-info">
                                                 <p className="similar-name">{product.name}</p>
