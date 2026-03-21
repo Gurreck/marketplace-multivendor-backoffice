@@ -39,9 +39,38 @@ const PaymentGateway = () => {
         direccion: ''
     });
 
+    // Estado para errores de dirección
+    const [addressErrors, setAddressErrors] = useState({});
+
+    // Función para validar la dirección
+    const validateAddress = () => {
+        const newErrors = {};
+        if (!address.pais.trim()) newErrors.pais = 'El país es requerido';
+        if (!address.provincia.trim()) newErrors.provincia = 'La provincia es requerida';
+        if (!address.ciudad.trim()) newErrors.ciudad = 'La ciudad es requerida';
+        if (!address.codigoPostal.trim()) newErrors.codigoPostal = 'El código postal es requerido';
+        if (!address.direccion.trim()) newErrors.direccion = 'La dirección exacta es requerida';
+        return newErrors;
+    };
+
+    // Función para guardar dirección con validación
+    const handleSaveAddress = () => {
+        const errors = validateAddress();
+        if (Object.keys(errors).length > 0) {
+            setAddressErrors(errors);
+        } else {
+            setAddressErrors({});
+            alert('Dirección guardada correctamente');
+        }
+    };
+
     const handleAddressChange = (e) => {
         const { name, value } = e.target;
         setAddress(prev => ({ ...prev, [name]: value }));
+        // Limpiar error de este campo cuando el usuario escriba
+        if (addressErrors[name]) {
+            setAddressErrors(prev => ({ ...prev, [name]: null }));
+        }
     };
 
     // ============================================
@@ -363,42 +392,46 @@ const PaymentGateway = () => {
                         <div className="gateway-address-form">
                             <input
                                 type="text"
-                                className="gateway-address-input"
+                                className={`gateway-address-input ${addressErrors.pais ? 'input-error' : ''}`}
                                 name="pais"
                                 placeholder="País"
                                 value={address.pais}
                                 onChange={handleAddressChange}
                                 required
                             />
+                            {addressErrors.pais && <span className="gateway-address-error-message">{addressErrors.pais}</span>}
                             <input
                                 type="text"
-                                className="gateway-address-input"
+                                className={`gateway-address-input ${addressErrors.provincia ? 'input-error' : ''}`}
                                 name="provincia"
                                 placeholder="Provincia"
                                 value={address.provincia}
                                 onChange={handleAddressChange}
                                 required
                             />
+                            {addressErrors.provincia && <span className="gateway-address-error-message">{addressErrors.provincia}</span>}
                             <input
                                 type="text"
-                                className="gateway-address-input"
+                                className={`gateway-address-input ${addressErrors.ciudad ? 'input-error' : ''}`}
                                 name="ciudad"
                                 placeholder="Ciudad"
                                 value={address.ciudad}
                                 onChange={handleAddressChange}
                                 required
                             />
+                            {addressErrors.ciudad && <span className="gateway-address-error-message">{addressErrors.ciudad}</span>}
                             <input
                                 type="text"
-                                className="gateway-address-input"
+                                className={`gateway-address-input ${addressErrors.codigoPostal ? 'input-error' : ''}`}
                                 name="codigoPostal"
                                 placeholder="Código Postal"
                                 value={address.codigoPostal}
                                 onChange={handleAddressChange}
                                 required
                             />
+                            {addressErrors.codigoPostal && <span className="gateway-address-error-message">{addressErrors.codigoPostal}</span>}
                             <textarea
-                                className="gateway-address-input"
+                                className={`gateway-address-input ${addressErrors.direccion ? 'input-error' : ''}`}
                                 name="direccion"
                                 placeholder="Dirección exacta"
                                 value={address.direccion}
@@ -406,10 +439,11 @@ const PaymentGateway = () => {
                                 required
                                 rows={4}
                             />
+                            {addressErrors.direccion && <span className="gateway-address-error-message">{addressErrors.direccion}</span>}
                             <button
                                 type="button"
                                 className="guardar-direccion-btn"
-                                onClick={() => alert('Dirección guardada')}
+                                onClick={handleSaveAddress}
                             >
                                 Guardar dirección
                             </button>
