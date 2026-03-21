@@ -4,6 +4,7 @@ import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
 import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
@@ -13,13 +14,13 @@ export default function Principal() {
   const navigate = useNavigate();
   const { logout, user ,isAuthenticated } = useAuth();
   const { addToCart, cartCount } = useCart();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [showNotification, setShowNotification] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
@@ -41,9 +42,7 @@ export default function Principal() {
   };
 
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+
 
   const categories = ['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
 

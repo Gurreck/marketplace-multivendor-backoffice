@@ -3,6 +3,7 @@ import "./pageVendedor.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useTheme } from "../../context/ThemeContext";
 import api from "../../services/api";
 import DivPromo from "../divPromo/divPromo";
 
@@ -10,6 +11,7 @@ export default function PageVendedor() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
   const { addToCart } = useCart();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const [products, setProducts] = useState([]);
   //const [allProducts, setAllProducts] = useState([]);
@@ -17,7 +19,6 @@ export default function PageVendedor() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showNotification, setShowNotification] = useState("");
 
   // State for Modal
@@ -242,7 +243,7 @@ export default function PageVendedor() {
     }
   };
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
@@ -274,7 +275,7 @@ export default function PageVendedor() {
                 className="btn-exit-vendedor"
                 onClick={() => {
                   logout();
-                  navigate("/login");
+                  navigate("/");
                 }}
               >
                 ✖ Salir
