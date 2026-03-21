@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
-import DivPromo from '../divPromo/divPromo';
+
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
 const getItemId = (item) => item._id || item.id;
@@ -16,34 +16,9 @@ const PagePay = () => {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
 
-    const [allProducts, setAllProducts] = useState([]);
-    const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-    useEffect(() => {
-        const fetchAllProducts = async () => {
-            try {
-                const response = await api.get('/products');
-                if (response.data.success) {
-                    setAllProducts(response.data.data);
-                }
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            }
-        };
-        fetchAllProducts();
-    }, []);
 
-    const handlePromoAddToCart = (product) => {
-        const discountedProduct = {
-            ...product,
-            originalPrice: product.price,
-            price: Math.floor(product.price * 0.90),
-            isPromo: true
-        };
-        addToCart(discountedProduct);
-    };
-
-    // ============================================
+    const [paymentSuccess, setPaymentSuccess] = useState(false);    // ============================================
     // NAVEGAR A LA PASARELA DE PAGO
     // ============================================
 
@@ -153,8 +128,10 @@ const PagePay = () => {
                     cartCount={cartCount}
                 />
             </div>
+
             <div className={`pay-container ${!isDarkMode ? 'light-mode' : ''}`}>
                 <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+
 
                 {/* Header / Breadcrumbs */}
                 <div className="pay-header-simple">
