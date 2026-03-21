@@ -3,6 +3,7 @@ import "./pageVendedor.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useTheme } from "../../context/ThemeContext";
 import api from "../../services/api";
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
@@ -10,7 +11,10 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 export default function PageVendedor() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const { addToCart, cartCount } = useCart();
+
+  const { addToCart } = useCart();
+  const { isDarkMode, toggleTheme } = useTheme();
+
 
   const [products, setProducts] = useState([]);
   //const [allProducts, setAllProducts] = useState([]);
@@ -18,7 +22,6 @@ export default function PageVendedor() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showNotification, setShowNotification] = useState("");
 
   // State for Modal
@@ -233,7 +236,7 @@ export default function PageVendedor() {
     }
   };
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
@@ -245,49 +248,58 @@ export default function PageVendedor() {
   });
 
   return (
-    <>
-      <div className="navbar-secundario">
-        <NavbarSecundario
-          toggleTheme={toggleTheme}
-          isDarkMode={isDarkMode}
-          user={user}
-          logout={logout}
-          cartCount={cartCount}
-          // Aquí le pasamos la instrucción especial solo para la vista de vendedor:
-          // Al hacer clic en inicio/logo, deslogueará al usuario y lo mandará al home
-          onInicio={() => {
-            logout();
-            navigate("/");
-          }}
-        />
-      </div>
-      <div className={`principal-container ${!isDarkMode ? "light-mode" : ""}`}>
-        {showNotification && (
-          <div className="notification">{showNotification}</div>
-        )}
 
-        <div className="main-container">
-          <section className="products-section">
-            <div className="section-header">
-              <h2>
-                Mis Productos{" "}
-                {selectedCategory !== "Todos" && `— ${selectedCategory}`}
-              </h2>
-              <div className="header-actions">
-                <button
-                  className="btn-exit-vendedor"
-                  onClick={() => {
-                    logout();
-                    navigate("/login");
-                  }}
-                >
-                  ✖ Salir
-                </button>
-                <p>{filteredProducts.length} productos publicados</p>
-                <button className="add-btn-vendedor" onClick={openAddModal}>
-                  ➕ Nuevo Producto
-                </button>
-              </div>
+    <div className={`principal-container ${!isDarkMode ? "light-mode" : ""}`}>
+      {showNotification && (
+        <div className="notification">{showNotification}</div>
+      )}
+      <DivPromo
+        //products={allProducts}
+        handlePromoAddToCart={handlePromoAddToCart}
+      />
+      <div className="main-container">
+        <section className="products-section">
+          <div className="section-header">
+            <h2>
+              Mis Productos{" "}
+              {selectedCategory !== "Todos" && `— ${selectedCategory}`}
+            </h2>
+            <div className="header-actions">
+              <button
+                className="btn-exit-vendedor"
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
+              >
+                ✖ Salir
+              </button>
+              <p>{filteredProducts.length} productos publicados</p>
+              <button className="add-btn-vendedor" onClick={openAddModal}>
+                ➕ Nuevo Producto
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="loading-container">
+              <div className="spinner"></div>
+              <p>Cargando tus productos...</p>
+            </div>
+          ) : error ? (
+            <div className="empty-state">
+              <p>⚠️ {error}</p>
+              <button className="add-btn" onClick={fetchMyProducts}>
+                Reintentar
+              </button>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="empty-state">
+              <p>📦 No tienes productos en esta categoría</p>
+              <button className="add-btn" onClick={openAddModal}>
+                ➕ Agregar Producto
+              </button>
+
             </div>
 
             {loading ? (

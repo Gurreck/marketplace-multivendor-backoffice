@@ -3,6 +3,7 @@ import './paymentGateway.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
 
@@ -12,7 +13,8 @@ const PaymentGateway = () => {
 
 
     const { clearCart, cartItems, cartTotal, cartCount } = useCart();  // agregar cartCount
-    const { user } = useAuth();  // agregar esta línea nueva
+    const { user, logout } = useAuth();  // agregar esta línea nueva
+    const { isDarkMode, toggleTheme } = useTheme();
 
     // Get selected items and total from navigation state
     const selectedItems = location.state?.selectedItems || [];
@@ -368,12 +370,12 @@ const PaymentGateway = () => {
     return (
 
         <>
-            <div className="navbar-secundario">
+            <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
                 <NavbarSecundario
-                    toggleTheme={() => { }}
-                    isDarkMode={false}
+                    toggleTheme={toggleTheme}
+                    isDarkMode={isDarkMode}
                     user={user}
-                    logout={() => { }}
+                    logout={logout}
                     cartCount={cartCount}
                 />
             </div>
@@ -381,7 +383,7 @@ const PaymentGateway = () => {
 
 
 
-            <div className="gateway-container">
+            <div className={`gateway-container ${!isDarkMode ? 'light-mode' : ''}`}>
                 {/* Header */}
 
 

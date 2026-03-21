@@ -3,6 +3,7 @@ import './pageViewProduct.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
@@ -12,8 +13,9 @@ const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
  
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, logout } = useAuth();
     const { addToCart, cartCount } = useCart();
+    const { isDarkMode, toggleTheme } = useTheme();
 
  
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -89,16 +91,16 @@ const PageViewProduct = () => {
                 }}
                 mensaje="Debes iniciar sesión para agregar productos al carrito"
             />
-            <div className="navbar-secundario">
+            <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
                 <NavbarSecundario
-                    toggleTheme={() => { }}
-                    isDarkMode={false}
+                    toggleTheme={toggleTheme}
+                    isDarkMode={isDarkMode}
                     user={user}
-                    logout={() => { }}
+                    logout={logout}
                     cartCount={cartCount}
                 />
             </div>
-            <div className="product-page-container">
+            <div className={`product-page-container ${!isDarkMode ? 'light-mode' : ''}`}>
                 {showNotification && (
                     <div className="notification">
                         ✓ {showNotification}

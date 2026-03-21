@@ -54,11 +54,16 @@
     background: rgba(255,255,255,0.06);
     border: 1px solid var(--nexora-border);
     border-radius: 8px;
-    color: white;
+    color: var(--nexora-text);
     font-size: 1rem;
     margin-bottom: 0;
     transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
+}
+
+.light-mode .gateway-address-input {
+    background: #ffffff;
+    color: #1f2937;
 }
 
 .gateway-address-input:focus {
@@ -95,6 +100,10 @@
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
     color: var(--nexora-text);
+}
+
+.light-mode.gateway-container {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
 }
 
 .gateway-header {

@@ -1,13 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
 import './NavbarPrincipal.css';
 
 export default function NavbarPrincipal({
     searchTerm,
     setSearchTerm,
-    toggleTheme,
-    isDarkMode,
     user,
     logout,
     cartCount,
@@ -16,6 +15,12 @@ export default function NavbarPrincipal({
     setSelectedCategory
 }) {
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useTheme();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <header className="header">
@@ -62,10 +67,7 @@ export default function NavbarPrincipal({
                     >
                         🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                     </button>
-                    <button className="logout-btn" onClick={() => {
-                        logout();
-                        navigate('/');
-                    }}>
+                    <button className="logout-btn" onClick={handleLogout}>
                         ✖ Salir
                     </button>
                 </div>
