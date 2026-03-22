@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
+import { commentService } from '../../services/commentService';
 
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
@@ -23,12 +24,37 @@ const PageViewProduct = () => {
     const [loading, setLoading] = useState(true);
     const [similarProducts, setSimilarProducts] = useState([]);
 
+    // ESTADO PARA COMENTARIOS (desde backend)
+    const [comments, setComments] = useState([]);
+    const [averageRating, setAverageRating] = useState(0);
+    const [loadingComments, setLoadingComments] = useState(true);
+
+    const [newComment, setNewComment] = useState("");
+    const [newRating, setNewRating] = useState(5);
+
     const [showNotification, setShowNotification] = useState('');
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
         fetchProductDetail();
+        fetchComments();
     }, [id]);
+
+    // Función para cargar comentarios desde el backend
+    const fetchComments = async () => {
+        try {
+            setLoadingComments(true);
+            const response = await commentService.getCommentsByProduct(id);
+            if (response.data.success) {
+                setComments(response.data.data);
+                setAverageRating(response.data.averageRating);
+            }
+        } catch (error) {
+            console.error("Error fetching comments:", error);
+        } finally {
+            setLoadingComments(false);
+        }
+    };
 
 
     const fetchProductDetail = async () => {
@@ -70,6 +96,35 @@ const PageViewProduct = () => {
         setCurrentImageIndex((prev) =>
             prev === selectedProduct.images.length - 1 ? 0 : prev + 1
         );
+    };
+
+    const handleSubmitComment = async () => {
+        if (newComment.trim() === "") return;
+        
+        if (!isAuthenticated) {
+            setShowLoginModal(true);
+            return;
+        }
+        
+        try {
+            const response = await commentService.createComment({
+                productId: id,
+                rating: newRating,
+                text: newComment,
+            });
+            
+            if (response.data.success) {
+                setNewComment("");
+                setNewRating(5);
+                fetchComments(); // Recargar comentarios
+                setShowNotification("Comentario publicado exitosamente");
+                setTimeout(() => setShowNotification(""), 3000);
+            }
+        } catch (error) {
+            console.error("Error creating comment:", error);
+            setShowNotification("Error al publicar comentario");
+            setTimeout(() => setShowNotification(""), 3000);
+        }
     };
 
     if (loading) return (
@@ -143,6 +198,76 @@ const PageViewProduct = () => {
                                 ))}
                             </div>
                         )}
+
+                        {/* SECCIÓN DE COMENTARIOS - Debajo de la imagen */}
+                        <div className="comments-section">
+                            <div className="comments-header">
+                                <h3>💬 Opiniones de Clientes</h3>
+                                <div className="rating-summary">
+                                    <span className="rating-number">{averageRating || "0"}</span>
+                                    <div className="rating-stars">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span key={i} className={i < Math.round(averageRating || 0) ? "star filled" : "star"}>★</span>
+                                        ))}
+                                    </div>
+                                    <span className="rating-count">({comments.length} comentarios)</span>
+                                </div>
+                            </div>
+
+                            {/* Formulario para nuevo comentario */}
+                            <div className="comment-form">
+                                <div className="rating-select">
+                                    <label>Tu calificación:</label>
+                                    <div className="stars-input">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <span 
+                                                key={star}
+                                                className={star <= newRating ? "star active" : "star"}
+                                                onClick={() => setNewRating(star)}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <textarea
+                                    className="comment-input"
+                                    placeholder="Escribe tu opinión sobre el producto..."
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                />
+                                <button className="comment-submit-btn" onClick={handleSubmitComment}>
+                                    Publicar Comentario
+                                </button>
+                            </div>
+
+                            {/* Lista de comentarios */}
+                            <div className="comments-list">
+                                {loadingComments ? (
+                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Cargando comentarios...</p>
+                                ) : comments.length === 0 ? (
+                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+                                ) : (
+                                    comments.map((comment) => (
+                                        <div key={comment._id} className="comment-item">
+                                            <div className="comment-header">
+                                                <img src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} alt={comment.user?.nombre || "Usuario"} className="comment-avatar" />
+                                                <div className="comment-info">
+                                                    <span className="comment-user">{comment.user?.nombre || "Usuario"}</span>
+                                                    <span className="comment-date">{new Date(comment.createdAt).toLocaleDateString("es-CR")}</span>
+                                                </div>
+                                                <div className="comment-rating">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <span key={i} className={i < comment.rating ? "star filled" : "star"}>★</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="comment-text">{comment.text}</p>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="info-section">
