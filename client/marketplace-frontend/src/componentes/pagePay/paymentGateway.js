@@ -704,29 +704,25 @@ const PaymentGateway = () => {
                                     <div className="gateway-comments-loading">Cargando comentarios...</div>
                                 ) : selectedProductComments.length === 0 ? (
                                     <div className="gateway-comments-empty">
-                                        <span>💬</span>
+                                       
                                         <p>Aún no hay comentarios para este producto.</p>
-                                        <p>¡Sé el primero en opinar!</p>
+                                        
                                     </div>
                                 ) : (
                                     <div className="gateway-comments-list">
                                         {selectedProductComments.map((comment) => (
                                             <div key={comment._id} className="gateway-comment-item">
                                                 <div className="gateway-comment-header">
-                                                    <img 
-                                                        src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} 
-                                                        alt={comment.user?.nombre || "Usuario"} 
-                                                        className="gateway-comment-avatar"
-                                                    />
+                                                    
                                                     <div className="gateway-comment-info">
-                                                        <span className="gateway-comment-user">{comment.user?.nombre || "Usuario"}</span>
+                                                        <span className="gateway-comment-user">{comment.user?.nombre || "Usuario "}</span>
                                                         <span className="gateway-comment-date">
                                                             {new Date(comment.createdAt).toLocaleDateString("es-CR")}
                                                         </span>
                                                     </div>
                                                     <div className="gateway-comment-rating">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <span key={i} className={i < comment.rating ? "star filled" : "star"}>★</span>
+                                                            <span key={i} className={i < comment.rating ? "star filled" : " star "}>★</span>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -738,12 +734,7 @@ const PaymentGateway = () => {
                             </div>
 
                             <div className="gateway-comments-modal-footer">
-                                <button 
-                                    className="gateway-comments-modal-btn"
-                                    onClick={() => setShowCommentsModal(false)}
-                                >
-                                    Cerrar
-                                </button>
+                                
                             </div>
                         </div>
                     </div>
