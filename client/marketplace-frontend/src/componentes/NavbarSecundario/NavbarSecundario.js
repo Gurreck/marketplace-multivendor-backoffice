@@ -12,8 +12,10 @@ export default function NavbarSecundario({
 
     cartCount,
     // Propiedad opcional para personalizar qué hace el botón Inicio (usada en pageVendedor)
-    onInicio
-
+    onInicio,
+    // Bloquear el carrito en la página de vendedor
+    disableCart,
+    disableUserMenu
 }) {
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
@@ -56,18 +58,25 @@ export default function NavbarSecundario({
                     >
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
-                    <button className="user-menu" onClick={() => {
-                        if (!user) {
-                            navigate('/login');
-                        } else if (user?.role === 'vendedor') {
-                            navigate('/vendedor/dashboard');
-                        }
-                    }}>
+                    <div className="user-menu" 
+                        onClick={() => {
+                            if (disableUserMenu) return;
+                            if (!user) {
+                                navigate('/login');
+                            } else if (user?.role === 'vendedor') {
+                                navigate('/vendedor/dashboard');
+                            }
+                        }}
+                        style={disableUserMenu ? { cursor: 'default' } : {}}
+                    >
                         👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
-                    </button>
+                    </div>
                     <button
                         className="cart-btn"
-                        onClick={() => navigate('/checkout')}
+                        onClick={() => disableCart ? null : navigate('/checkout')}
+                        disabled={disableCart}
+                        style={disableCart ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                        title={disableCart ? "Carrito desactivado para vendedores" : ""}
                     >
                         🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                     </button>

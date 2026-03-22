@@ -130,7 +130,7 @@ const PagePay = () => {
             </div>
 
             <div className={`pay-container ${!isDarkMode ? 'light-mode' : ''}`}>
-                <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} />
+                {/* <DivPromo products={allProducts} handlePromoAddToCart={handlePromoAddToCart} /> */}
 
 
                 {/* Header / Breadcrumbs */}
