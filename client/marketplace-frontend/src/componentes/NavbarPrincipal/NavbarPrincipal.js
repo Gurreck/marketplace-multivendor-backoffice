@@ -23,18 +23,18 @@ export default function NavbarPrincipal({
     };
 
     return (
-        <header className="header">
-            <div className="header-top">
-                <div className="header-left">
-                    <div className="logo" onClick={() => navigate('/')}>
-                        <img src={logo} alt="Nexora Logo" className="logo-img-header" />
-                        <h1 className="logo-text">Nexora</h1>
+        <header className="encabezado">
+            <div className="parte-superior-encabezado">
+                <div className="izquierda-encabezado">
+                    <div className="logotipo" onClick={() => navigate('/')}>
+                        <img src={logo} alt="Nexora Logo" className="imagen-logo-encabezado" />
+                        <h1 className="texto-logo">Nexora</h1>
                     </div>
                 </div>
 
-                <div className="header-center">
-                    <div className="search-bar">
-                        <span className="search-icon">🔍</span>
+                <div className="centro-encabezado">
+                    <div className="barra-busqueda">
+                        <span className="icono-busqueda">🔍</span>
                         <input
                             type="text"
                             placeholder="Busca productos..."
@@ -44,15 +44,15 @@ export default function NavbarPrincipal({
                     </div>
                 </div>
 
-                <div className="header-right">
+                <div className="derecha-encabezado">
                     <button
-                        className="theme-toggle-header"
+                        className="alternar-tema-encabezado"
                         onClick={toggleTheme}
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
-                    <button className="user-menu" onClick={() => {
+                    <button className="menu-usuario" onClick={() => {
                         if (!user) {
                             navigate('/login');
                         } else if (user?.role === 'vendedor') {
@@ -62,22 +62,22 @@ export default function NavbarPrincipal({
                         👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </button>
                     <button
-                        className="cart-btn"
+                        className="boton-carrito"
                         onClick={() => navigate('/checkout')}
                     >
-                        🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                        🛒 {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
                     </button>
-                    <button className="logout-btn" onClick={handleLogout}>
+                    <button className="boton-salir" onClick={handleLogout}>
                         ✖ Salir
                     </button>
                 </div>
             </div>
 
-            <div className="categories-bar">
+            <div className="barra-categorias">
                 {categories.map((category) => (
                     <button
                         key={category}
-                        className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+                        className={`boton-categoria ${selectedCategory === category ? 'activo' : ''}`}
                         onClick={() => setSelectedCategory(category)}
                     >
                         {category}

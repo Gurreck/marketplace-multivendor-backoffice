@@ -80,8 +80,8 @@ export default function Principal() {
   };
 
   return (
-    <div className={`principal-container ${!isDarkMode ? 'light-mode' : ''}`}>
-      {showNotification && <div className="notification">{showNotification}</div>}
+    <div className={`contenedor-principal ${!isDarkMode ? 'modo-claro' : ''}`}>
+      {showNotification && <div className="notificacion">{showNotification}</div>}
 
       <ModalLogin 
         isOpen={showLoginModal} 
@@ -108,42 +108,42 @@ export default function Principal() {
 
       <DivPromo products={products} handlePromoAddToCart={handlePromoAddToCart} />
 
-      <div className="main-container">
-        <section className="products-section">
-          <div className="section-header">
+      <div className="contenedor-mayor">
+        <section className="seccion-productos">
+          <div className="encabezado-seccion">
             <h2>{selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}</h2>
             <p>{filteredProducts.length} productos</p>
           </div>
 
           {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
+            <div className="contenedor-carga">
+              <div className="indicador-carga"></div>
               <p>Cargando productos...</p>
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="products-grid">
+            <div className="rejilla-productos">
               {filteredProducts.map((product) => (
-                <div key={product._id || product.id} className="product-card">
-                  <div className="product-image" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>
-                    <img src={product.images[0]?.url || "https://via.placeholder.com/300"} alt={product.name} className="product-real-image" />
-                    <div className="product-badge">{product.vendor?.nombre || product.vendor}</div>
+                <div key={product._id || product.id} className="tarjeta-producto">
+                  <div className="imagen-producto" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>
+                    <img src={product.images[0]?.url || "https://via.placeholder.com/300"} alt={product.name} className="imagen-real-producto" />
+                    <div className="etiqueta-producto">{product.vendor?.nombre || product.vendor}</div>
                   </div>
 
-                  <div className="product-info">
-                    <h3 className="product-name" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>{product.name}</h3>
-                    <p className="product-short-desc">{product.description?.substring(0, 60)}...</p>
-                    <p className="product-vendor">vendedor: {product.vendor?.nombre || product.vendor}</p>
+                  <div className="informacion-producto">
+                    <h3 className="nombre-producto" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>{product.name}</h3>
+                    <p className="descripcion-corta-producto">{product.description?.substring(0, 60)}...</p>
+                    <p className="vendedor-producto">vendedor: {product.vendor?.nombre || product.vendor}</p>
 
-                    <div className="product-footer">
-                      <span className="product-price">₡{product.price.toLocaleString()}</span>
-                      <button className="add-btn" onClick={() => handleAddToCart(product)}>➕ Agregar</button>
+                    <div className="pie-producto">
+                      <span className="precio-producto">₡{product.price.toLocaleString()}</span>
+                      <button className="boton-agregar" onClick={() => handleAddToCart(product)}>➕ Agregar</button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="empty-state">
+            <div className="estado-vacio">
               <p>😔 No se encontraron productos</p>
             </div>
           )}
