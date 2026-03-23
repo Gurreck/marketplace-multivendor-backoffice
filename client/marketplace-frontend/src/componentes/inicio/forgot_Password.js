@@ -5,41 +5,48 @@ import { useNavigate } from 'react-router-dom';
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(true);
 
+    // ===== ESTADO =====
+    const [email, setEmail] = useState(''); // Correo para recuperación
+    const [loading, setLoading] = useState(false); // Estado de carga de la petición
+    const [isDarkMode, setIsDarkMode] = useState(true); // Tema local de la página
+    const [message, setMessage] = useState(''); // Mensaje de éxito
+    const [error, setError] = useState(''); // Mensaje de error
+
+    // ===== UTILIDADES =====
+    /**
+     * Alterna el tema entre claro y oscuro
+     */
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
     };
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Procesa la solicitud de recuperación de contraseña
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setMessage('');
         setLoading(true);
 
+        // Validación básica de email
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            alert('Por favor, ingresa un email válido');
+            setError('Por favor, ingresa un email válido');
             setLoading(false);
             return;
         }
 
-        // Simulación de envío de correo
+        // Simulación de envío de correo (integrar con API en el futuro)
         setTimeout(() => {
             console.log('Recuperar contraseña para:', email);
-            alert(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
             setMessage(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
             setLoading(false);
-            // The snippet does not navigate to login immediately after success message,
-            // but the original code did. Keeping the original behavior for now,
-            // but the snippet implies the message should be shown first.
-            // For now, I'll keep the navigate after the message is set.
-            // If the user wants to navigate after a delay, that's a separate instruction.
-            // For now, the snippet doesn't show navigation after success, so I'll remove it from here.
-            // The snippet has a button to navigate back to login.
-            // navigate('/login'); // Removed this line as per snippet's implied flow
         }, 1500);
     };
 
+    // ===== RENDERIZADO =====
     return (
         <div className={`contenedor-olvido ${!isDarkMode ? 'modo-claro' : ''}`}>
             <div className="tarjeta-olvido">

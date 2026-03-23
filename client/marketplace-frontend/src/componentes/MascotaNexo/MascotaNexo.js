@@ -3,16 +3,21 @@ import { useLocation } from "react-router-dom";
 import Nexo from "../../resource/MascotaNexo/Nexo.svg";
 import "./MascotaNexo.css";
 
+/**
+ * Componente Mascota (Nexo)
+ * Proporciona mensajes de ayuda y consejos dinámicos según la página en la que se encuentre el usuario.
+ */
 export default function Mascota() {
-
   const location = useLocation();
 
-  const [visible, setVisible] = useState(true);
-  const [indiceMensaje, setIndiceMensaje] = useState(0);
+  // ===== ESTADO =====
+  const [visible, setVisible] = useState(true); // Controla si la mascota está expandida o minimizada
+  const [indiceMensaje, setIndiceMensaje] = useState(0); // Índice del mensaje actual en el carrusel de consejos
 
+  // ===== CONFIGURACIÓN DE MENSAJES =====
   let mensajes = [];
 
-  // mensajes por página
+  // Definición de mensajes dinámicos según la ruta actual (pathname)
   if (location.pathname === "/login") {
     mensajes = [
       "No compartas tu contraseña con nadie",
@@ -84,7 +89,6 @@ export default function Mascota() {
     ];
   }
 
-
   else if (location.pathname === "/admin/dashboard") {
     mensajes = [
       "Aquí puedes administrar la plataforma",
@@ -102,11 +106,15 @@ export default function Mascota() {
     ];
   }
 
-const cambiarMensaje = () => {
-  setIndiceMensaje((indiceMensaje + 1) % mensajes.length);
-};
+  // ===== MANEJADORES DE EVENTOS =====
+  /**
+   * Cambia al siguiente mensaje disponible en la lista actual
+   */
+  const cambiarMensaje = () => {
+    setIndiceMensaje((indiceMensaje + 1) % mensajes.length);
+  };
 
-  // 🔹 si está oculta mostramos solo botón para abrir
+  // ===== RENDERIZADO CONDICIONAL (MINIMIZADO) =====
   if (!visible) {
     return (
       <button
@@ -118,6 +126,7 @@ const cambiarMensaje = () => {
     );
   }
 
+  // ===== RENDERIZADO PRINCIPAL =====
   return (
     <div className="contenedor-mascota">
 
@@ -135,6 +144,7 @@ const cambiarMensaje = () => {
         <button
             className="mascota-ayuda"
             onClick={cambiarMensaje}
+            title="Ver otro consejo"
         >
             ?
         </button>
@@ -142,6 +152,7 @@ const cambiarMensaje = () => {
         <button
             className="mascota-ocultar"
             onClick={() => setVisible(false)}
+            title="Ocultar asistente"
         >
             —
         </button>

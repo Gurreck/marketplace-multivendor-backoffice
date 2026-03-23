@@ -9,6 +9,7 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
 
 const PaymentGateway = () => {
+    // ===== NAVEGACIÓN Y CONTEXTO =====
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -21,6 +22,8 @@ const PaymentGateway = () => {
     const selectedItems = location.state?.selectedItems || [];
     const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
     const selectedCount = location.state?.selectedCount || cartItems.length;
+
+    // ===== ESTADO DE TARJETA =====
 
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -38,6 +41,8 @@ const PaymentGateway = () => {
     const [selectedProductComments, setSelectedProductComments] = useState([]);
     const [selectedProductInfo, setSelectedProductInfo] = useState(null);
     const [loadingProductComments, setLoadingProductComments] = useState(false);
+
+    // ===== CARGA DE DATOS Y COMENTARIOS =====
 
     // Función para obtener comentarios de un producto
     const fetchProductComments = async (product) => {
@@ -62,7 +67,7 @@ const PaymentGateway = () => {
         }
     };
 
-    // Estados para dirección de envío
+    // ===== DIRECCIÓN DE ENVÍO =====
     const [address, setAddress] = useState({
         pais: '',
         provincia: '',
@@ -108,6 +113,10 @@ const PaymentGateway = () => {
     // ============================================
     // VALIDACIÓN REAL DE TARJETAS (ALGORITMO DE LUHN)
     // ============================================
+
+    /**
+     * Algoritmo de Luhn (Mod 10) para validación de números de tarjeta
+     */
 
     // Algoritmo de Luhn (Mod 10) - El mismo usado en la vida real
     const luhnCheck = (cardNumber) => {
@@ -397,6 +406,7 @@ const PaymentGateway = () => {
         navigate('/');
     };
 
+    // ===== RENDERIZADO PRINCIPAL =====
     return (
 
         <>
