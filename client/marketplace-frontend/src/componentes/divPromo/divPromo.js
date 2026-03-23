@@ -25,31 +25,33 @@ export default function DivPromo({ products, handlePromoAddToCart }) {
     if (promoProducts.length === 0) return null;
 
     return (
-        <section className="promo-banner">
-            <div className="promo-content">
-                <div className="promo-text-side">
-                    <p className="promo-subtitle">— Bueno, Bonito, Barato —</p>
-                    <h2 className="promo-title">HASTA <span className="highlight">10% EN PRODUCTOS</span></h2>
+        <div className="transversal-promociones">
+            <div className="contenido-promocional">
+                <div className="lado-texto-promo">
+                    <span className="subtitulo-promo">OFERTAS DE TEMPORADA</span>
+                    <h2 className="titulo-promo">
+                        Tecnología que <span className="resaltado">Impacta</span>
+                    </h2>
                 </div>
 
-                <div className="promo-products-side">
+                <div className="lado-productos-promo">
                     {promoProducts.map((product, index) => (
-                        <div
-                            key={`${product._id || product.id}-${index}`}
-                            className="promo-mini-card clickeable"
-                            onClick={() => handlePromoAddToCart(product)}
-                        >
-                            <div className="mini-card-image">
-                                <img src={product.images[0]} alt={product.name} />
+                            <div 
+                                key={product._id} 
+                                className="mini-tarjeta-promo pulsable"
+                                onClick={() => handlePromoAddToCart(product)}
+                            >
+                                <div className="imagen-mini-tarjeta">
+                                    <img src={product.images[0]} alt={product.name} />
+                                </div>
+                                <div className="pie-mini-tarjeta">
+                                    <span className="precio-original-mini">₡{(product.price * 1.4).toLocaleString()}</span>
+                                    <span className="precio-mini">₡{product.price.toLocaleString()}</span>
+                                </div>
                             </div>
-                            <div className="mini-card-footer">
-                                <span className="mini-price-original">₡ {product.price.toLocaleString()}</span>
-                                <span className="mini-price">₡ {Math.floor(product.price * 0.90).toLocaleString()}</span>
-                            </div>
-                        </div>
                     ))}
                 </div>
             </div>
-        </section>
+        </div>
     );
 }

@@ -146,7 +146,7 @@ const PageViewProduct = () => {
                 }}
                 mensaje="Debes iniciar sesión para agregar productos al carrito"
             />
-            <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
+            <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
                 <NavbarSecundario
                     toggleTheme={toggleTheme}
                     isDarkMode={isDarkMode}
@@ -155,9 +155,9 @@ const PageViewProduct = () => {
                     cartCount={cartCount}
                 />
             </div>
-            <div className={`product-page-container ${!isDarkMode ? 'light-mode' : ''}`}>
+            <div className={`contenedor-pagina-producto ${!isDarkMode ? 'modo-claro' : ''}`}>
                 {showNotification && (
-                    <div className="notification">
+                    <div className="notificacion">
                         ✓ {showNotification}
                     </div>
                 )}
@@ -166,31 +166,31 @@ const PageViewProduct = () => {
 
 
 
-            <div className="product-page-content">
+            <div className="contenido-pagina-producto">
 
-                <div className="main-content-layout">
-                    <div className="image-section">
-                        <div className="main-image-container">
+                <div className="diseno-contenido-principal">
+                    <div className="seccion-imagen">
+                        <div className="contenedor-imagen-principal">
                             <img
                                 src={selectedProduct.images[currentImageIndex]?.url || "https://via.placeholder.com/600"}
                                 alt={selectedProduct.name}
-                                className="product-main-image"
+                                className="imagen-principal-producto"
                             />
 
                             {selectedProduct.images.length > 1 && (
                                 <>
-                                    <button className="image-nav-btn prev" onClick={goToPreviousImage}>◀</button>
-                                    <button className="image-nav-btn next" onClick={goToNextImage}>▶</button>
+                                    <button className="boton-navegacion-imagen prev" onClick={goToPreviousImage}>◀</button>
+                                    <button className="boton-navegacion-imagen next" onClick={goToNextImage}>▶</button>
                                 </>
                             )}
                         </div>
 
                         {selectedProduct.images.length > 1 && (
-                            <div className="image-thumbnails">
+                            <div className="miniaturas-imagenes">
                                 {selectedProduct.images.map((image, index) => (
                                     <div
                                         key={index}
-                                        className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                                        className={`miniatura ${index === currentImageIndex ? 'active' : ''}`}
                                         onClick={() => setCurrentImageIndex(index)}
                                     >
                                         <img src={image.url || "https://via.placeholder.com/120"} alt={`Vista ${index + 1}`} />
@@ -200,29 +200,29 @@ const PageViewProduct = () => {
                         )}
 
                         {/* SECCIÓN DE COMENTARIOS - Debajo de la imagen */}
-                        <div className="comments-section">
-                            <div className="comments-header">
+                        <div className="seccion-comentarios">
+                            <div className="encabezado-comentarios">
                                 <h3>💬 Opiniones de Clientes</h3>
-                                <div className="rating-summary">
-                                    <span className="rating-number">{averageRating || "0"}</span>
-                                    <div className="rating-stars">
+                                <div className="resumen-calificacion">
+                                    <span className="numero-calificacion">{averageRating || "0"}</span>
+                                    <div className="estrellas-calificacion">
                                         {[...Array(5)].map((_, i) => (
-                                            <span key={i} className={i < Math.round(averageRating || 0) ? "star filled" : "star"}>★</span>
+                                            <span key={i} className={i < Math.round(averageRating || 0) ? "estrella llena" : "estrella"}>★</span>
                                         ))}
                                     </div>
-                                    <span className="rating-count">({comments.length} comentarios)</span>
+                                    <span className="conteo-calificacion">({comments.length} comentarios)</span>
                                 </div>
                             </div>
 
                             {/* Formulario para nuevo comentario */}
-                            <div className="comment-form">
-                                <div className="rating-select">
+                            <div className="formulario-comentario">
+                                <div className="seleccion-calificacion">
                                     <label>Tu calificación:</label>
-                                    <div className="stars-input">
+                                    <div className="entrada-estrellas">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span 
                                                 key={star}
-                                                className={star <= newRating ? "star active" : "star"}
+                                                className={star <= newRating ? "estrella activo" : "estrella"}
                                                 onClick={() => setNewRating(star)}
                                             >
                                                 ★
@@ -231,38 +231,38 @@ const PageViewProduct = () => {
                                     </div>
                                 </div>
                                 <textarea
-                                    className="comment-input"
+                                    className="entrada-comentario"
                                     placeholder="Escribe tu opinión sobre el producto..."
                                     value={newComment}
                                     onChange={(e) => setNewComment(e.target.value)}
                                 />
-                                <button className="comment-submit-btn" onClick={handleSubmitComment}>
+                                <button className="boton-enviar-comentario" onClick={handleSubmitComment}>
                                     Publicar Comentario
                                 </button>
                             </div>
 
                             {/* Lista de comentarios */}
-                            <div className="comments-list">
+                            <div className="lista-comentarios">
                                 {loadingComments ? (
                                     <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Cargando comentarios...</p>
                                 ) : comments.length === 0 ? (
                                     <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
                                 ) : (
                                     comments.map((comment) => (
-                                        <div key={comment._id} className="comment-item">
-                                            <div className="comment-header">
-                                                <img src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} alt={comment.user?.nombre || "Usuario"} className="comment-avatar" />
-                                                <div className="comment-info">
-                                                    <span className="comment-user">{comment.user?.nombre || "Usuario"}</span>
-                                                    <span className="comment-date">{new Date(comment.createdAt).toLocaleDateString("es-CR")}</span>
+                                        <div key={comment._id} className="item-comentario">
+                                            <div className="encabezado-comentario">
+                                                <img src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} alt={comment.user?.nombre || "Usuario"} className="avatar-comentario" />
+                                                <div className="informacion-comentario">
+                                                    <span className="usuario-comentario">{comment.user?.nombre || "Usuario"}</span>
+                                                    <span className="fecha-comentario">{new Date(comment.createdAt).toLocaleDateString("es-CR")}</span>
                                                 </div>
-                                                <div className="comment-rating">
+                                                <div className="calificacion-comentario">
                                                     {[...Array(5)].map((_, i) => (
-                                                        <span key={i} className={i < comment.rating ? "star filled" : "star"}>★</span>
+                                                        <span key={i} className={i < comment.rating ? "estrella llena" : "estrella"}>★</span>
                                                     ))}
                                                 </div>
                                             </div>
-                                            <p className="comment-text">{comment.text}</p>
+                                            <p className="texto-comentario">{comment.text}</p>
                                         </div>
                                     ))
                                 )}
@@ -270,31 +270,31 @@ const PageViewProduct = () => {
                         </div>
                     </div>
 
-                    <div className="info-section">
-                        <h1 className="product-name">{selectedProduct.name}</h1>
+                    <div className="seccion-informacion">
+                        <h1 className="nombre-producto">{selectedProduct.name}</h1>
 
-                        <div className="description-box">
+                        <div className="caja-descripcion">
                             <h3>Descripción</h3>
                             <p>{selectedProduct.description}</p>
                         </div>
 
-                        <div className="category-tag">
+                        <div className="etiqueta-categoria">
                             Categoría: <strong>{selectedProduct.category}</strong>
                         </div>
 
-                        <div className="product-meta">
-                            <div className="vendor">
+                        <div className="meta-producto">
+                            <div className="vendedor">
                                 Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
                             </div>
                         </div>
 
-                        <div className="price-tag">
-                            <span className="product-price"> ₡ {selectedProduct.price.toLocaleString()}</span>
+                        <div className="etiqueta-precio">
+                            <span className="precio-producto"> ₡ {selectedProduct.price.toLocaleString()}</span>
                         </div>
 
-                        <div className="action-buttons">
+                        <div className="botones-accion">
                             <button
-                                className="add-to-cart-btn"
+                                className="boton-agregar-carrito"
                                 onClick={() => {
                                     if (!isAuthenticated) {
                                         setShowLoginModal(true);
@@ -315,25 +315,25 @@ const PageViewProduct = () => {
 
                         {/* Productos Similares */}
                         {similarProducts.length > 0 && (
-                            <div className="similar-products-section">
+                            <div className="seccion-productos-similares">
                                 <h3>🔍 Productos Similares</h3>
-                                <div className="similar-products-grid">
+                                <div className="cuadricula-productos-similares">
                                     {similarProducts.map((product) => (
                                         <div
                                             key={product._id}
-                                            className="similar-product-card"
+                                            className="tarjeta-producto-similar"
                                             onClick={() => {
                                                 navigate(`/product/${product._id}`);
                                                 setCurrentImageIndex(0);
                                                 window.scrollTo(0, 0);
                                             }}
                                         >
-                                            <div className="similar-image">
+                                            <div className="imagen-similar">
                                                 <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />
                                             </div>
-                                            <div className="similar-info">
-                                                <p className="similar-name">{product.name}</p>
-                                                <p className="similar-price">₡{product.price.toLocaleString()}</p>
+                                            <div className="informacion-similar">
+                                                <p className="nombre-similar">{product.name}</p>
+                                                <p className="precio-similar">₡{product.price.toLocaleString()}</p>
                                             </div>
                                         </div>
                                     ))}

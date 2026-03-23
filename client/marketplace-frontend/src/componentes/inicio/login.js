@@ -51,100 +51,97 @@ export default function Login({ onRegisterClick, onForgotClick }) {
   };
 
   return (
-    <div className={`login-container ${!isDarkMode ? 'light-mode' : ''}`}>
-      <div className="login-card">
-        <button
-          className="theme-toggle"
+    <div className={`contenedor-inicio-sesion ${!isDarkMode ? 'modo-claro' : ''}`}>
+      <div className="tarjeta-inicio-sesion">
+        <button 
+          className="alternador-tema" 
           onClick={toggleTheme}
           title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
           {isDarkMode ? '☀️' : '🌙'}
         </button>
 
-        <div className="login-icon">
-          <img src={logo} alt="Nexora Logo" className="logo-img" />
+        <div className="icono-inicio-sesion">
+          <img src={logo} alt="Nexora Logo" className="imagen-logotipo" />
         </div>
 
-        <h1 className="login-title">Nexora</h1>
-        <p className="login-subtitle">Inicia sesión en tu cuenta</p>
+        <h2 className="titulo-inicio-sesion">Bienvenido a Nexora</h2>
+        <p className="subtitulo-inicio-sesion">Tu marketplace premium</p>
 
-        {error && <div className="login-error">{error}</div>}
+        {error && (
+          <div className="error-inicio-sesion">
+            <span>⚠️</span> {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">
-              <span className="label-icon">📧</span> Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              placeholder="tú@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              required
-              autoComplete="email"
-            />
+        <form onSubmit={handleSubmit} className="formulario-inicio-sesion"> {/* Changed onSubmit to handleSubmit to match the function name */}
+          <div className="grupo-formulario">
+            <label>Correo Electrónico</label>
+            <div className="contenedor-entrada-icono">
+              <span className="icono-etiqueta">📧</span>
+              <input
+                type="email"
+                id="email" // Kept original id
+                placeholder="ejemplo@correo.com" // Changed placeholder
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading} // Kept original disabled state
+                required
+                autoComplete="email" // Kept original autocomplete
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">
-              <span className="label-icon">🔐</span> Contraseña
-            </label>
-            <div className="password-input-container">
-              <input 
-                type={showPassword ? "text" : "password"}
-                id="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-                autoComplete="current-password"
-              />
+          <div className="grupo-formulario">
+            <label>Contraseña</label>
+            <div className="contenedor-entrada-icono">
+              <span className="icono-etiqueta">🔒</span>
+              <div className="contenedor-entrada-contrasena">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password" // Kept original id
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading} // Kept original disabled state
+                  required
+                  autoComplete="current-password" // Kept original autocomplete
+                />
+                <button
+                  type="button"
+                  className="boton-alternar-contrasena"
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} // Kept original title
+                >
+                  {showPassword ? "👁️" : "🙈"} {/* Changed icons */}
+                </button>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '8px' }}>
               <button
                 type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                className="boton-enlace-olvido"
+                onClick={() => navigate('/forgot-password')}
               >
-                  {showPassword ? (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                      <line x1="1" y1="1" x2="23" y2="23"/>
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  )}
+                ¿Olvidaste tu contraseña?
               </button>
             </div>
           </div>
 
           <button
-            type="button"
-            className="forgot-link-btn"
-            onClick={() => navigate('/forgot-password')}
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-
-          <button
             type="submit"
-            className="login-button"
+            className={`boton-inicio-sesion ${loading ? 'cargando' : ''}`}
             disabled={loading}
           >
             {loading ? '⏳ Iniciando sesión...' : '➕ Iniciar Sesión'}
           </button>
         </form>
 
-        <div className="login-footer">
+        <div className="pie-inicio-sesion">
           <span>¿No tienes cuenta? </span>
           <button
             type="button"
-            className="link-button"
+            className="boton-enlace"
             onClick={() => navigate('/register')}
           >
             Regístrate aquí

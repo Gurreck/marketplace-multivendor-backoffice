@@ -12,7 +12,7 @@
     --btn-bg: rgba(0, 148, 255, 0.3);
 }
 
-.light-mode {
+.modo-claro {
     --nexora-blue: #0369a1;
     --nexora-cyan: #0284c7;
     --nexora-dark: #f0f9ff;
@@ -26,7 +26,7 @@
     --btn-bg: rgba(14, 165, 233, 0.2);
 }
 
-.principal-container {
+.contenedor-principal-vendedor {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -36,7 +36,7 @@
 }
 
 /* Notificación */
-.notification {
+.notificacion {
     position: fixed;
     top: 20px;
     right: 20px;
@@ -61,7 +61,7 @@
     }
 }
 
-.main-container {
+.contenedor-principal-productos {
     display: flex;
     flex: 1;
     gap: 20px;
@@ -71,43 +71,43 @@
     width: 100%;
 }
 
-.products-section {
+.seccion-productos {
     flex: 1;
     min-width: 0;
 }
 
-.section-header {
+.encabezado-seccion {
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.header-actions {
+.acciones-encabezado {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.section-header h2 {
+.encabezado-seccion h2 {
     color: var(--nexora-blue);
     font-size: 28px;
 }
 
-.section-header p {
+.encabezado-seccion p {
     color: #9ca3af;
     font-size: 14px;
 }
 
 /* Grid matching Principal Page */
-.products-grid {
+.cuadricula-productos {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 15px;
 }
 
 /* Product Card matching Principal */
-.product-card {
+.tarjeta-producto {
     background: var(--card-bg);
     border: 1px solid var(--nexora-border);
     border-radius: 12px;
@@ -118,13 +118,13 @@
     height: 100%;
 }
 
-.product-card:hover {
+.tarjeta-producto:hover {
     border-color: var(--nexora-blue);
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.product-image {
+.imagen-producto {
     position: relative;
     background: #fff;
     display: flex;
@@ -134,18 +134,18 @@
     overflow: hidden;
 }
 
-.product-real-image {
+.imagen-real-producto {
     width: 100%;
     height: 100%;
     object-fit: contain;
     transition: transform 0.3s ease;
 }
 
-.product-card:hover .product-real-image {
+.tarjeta-producto:hover .imagen-real-producto {
     transform: scale(1.05);
 }
 
-.product-badge {
+.etiqueta-producto {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -158,7 +158,7 @@
     border: 1px solid rgba(0, 148, 255, 0.5);
 }
 
-.product-info {
+.informacion-producto {
     padding: 12px;
     flex: 1;
     display: flex;
@@ -166,7 +166,7 @@
     gap: 6px;
 }
 
-.product-name {
+.nombre-producto {
     color: var(--nexora-text);
     font-size: 1.3rem;
     font-weight: 700;
@@ -180,7 +180,7 @@
     min-height: 2.6em;
 }
 
-.product-short-desc {
+.descripcion-corta-producto {
     color: #9ca3af;
     font-size: 16px;
     margin: 8px 0 0 0;
@@ -188,25 +188,25 @@
     min-height: 24px;
 }
 
-.card-meta {
+.meta-tarjeta {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 5px;
 }
 
-.product-price {
+.precio-producto {
     color: #10b981;
     font-size: 1.5rem;
     font-weight: 800;
 }
 
-.card-stock {
+.existencias-tarjeta {
     font-size: 16px;
     color: #9ca3af;
 }
 
-.btn-exit-vendedor {
+.boton-salir-vendedor {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--nexora-border);
     color: var(--nexora-text);
@@ -220,14 +220,14 @@
     gap: 8px;
 }
 
-.btn-exit-vendedor:hover {
+.boton-salir-vendedor:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: var(--nexora-blue);
     transform: translateY(-2px);
 }
 
 /* Specific Vendor Actions */
-.add-btn-vendedor {
+.boton-agregar-vendedor {
     background: linear-gradient(135deg, var(--nexora-blue) 0%, var(--nexora-cyan) 100%);
     color: white;
     border: none;
@@ -239,19 +239,19 @@
     box-shadow: 0 4px 15px rgba(0, 148, 255, 0.4);
 }
 
-.add-btn-vendedor:hover {
+.boton-agregar-vendedor:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 148, 255, 0.6);
 }
 
-.product-footer-vendedor {
+.pie-pagina-producto-vendedor {
     display: flex;
     gap: 8px;
     margin-top: 15px;
 }
 
-.btn-edit,
-.btn-delete {
+.boton-editar,
+.boton-eliminar {
     flex: 1;
     padding: 8px;
     border-radius: 8px;
@@ -263,20 +263,20 @@
     transition: all 0.2s ease;
 }
 
-.btn-edit:hover {
+.boton-editar:hover {
     background: rgba(16, 185, 129, 0.2);
     border-color: #10b981;
     color: #10b981;
 }
 
-.btn-delete:hover {
+.boton-eliminar:hover {
     background: rgba(239, 68, 68, 0.2);
     border-color: #ef4444;
     color: #ef4444;
 }
 
 /* Modal Styles maintained and polished */
-.modal-overlay {
+.capa-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -291,7 +291,7 @@
     padding: 20px;
 }
 
-.modal-content {
+.contenido-modal {
     background: var(--nexora-deep);
     border: 1px solid var(--nexora-border);
     border-radius: 24px;
@@ -303,18 +303,18 @@
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
 }
 
-.modal-header {
+.encabezado-modal {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
 }
 
-.modal-header h2 {
+.encabezado-modal h2 {
     color: var(--nexora-blue);
 }
 
-.close-modal {
+.cerrar-modal {
     background: transparent;
     border: none;
     color: #9ca3af;
@@ -322,14 +322,14 @@
     cursor: pointer;
 }
 
-.product-form {
+.formulario-producto {
     display: grid;
     gap: 20px;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select {
+.grupo-formulario input,
+.grupo-formulario textarea,
+.grupo-formulario select {
     background: var(--input-bg);
     border: 1px solid var(--nexora-border);
     border-radius: 12px;
@@ -338,7 +338,7 @@
     outline: none;
 }
 
-.form-row {
+.fila-formulario {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
@@ -355,7 +355,7 @@
 }
 
 /* ===== File Upload Styles ===== */
-.file-upload-area {
+.area-carga-archivos {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -363,7 +363,7 @@
     margin-top: 10px;
 }
 
-.btn-file-upload {
+.boton-carga-archivos {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -378,27 +378,27 @@
     transition: all 0.3s ease;
 }
 
-.btn-file-upload:hover {
+.boton-carga-archivos:hover {
     background: rgba(0, 148, 255, 0.15);
     border-color: var(--nexora-blue);
 }
 
-.file-upload-hint {
+.sugerencia-carga-archivos {
     font-size: 0.8rem;
     color: #6b7280;
 }
 
-.image-previews-container {
+.contenedor-vistas-previas-imagenes {
     margin-bottom: 12px;
 }
 
-.image-previews-grid {
+.cuadricula-vistas-previas-imagenes {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.image-preview-item {
+.item-vista-previa-imagen {
     position: relative;
     width: 90px;
     height: 90px;
@@ -407,13 +407,13 @@
     border: 2px solid var(--nexora-border);
 }
 
-.image-preview-item img {
+.item-vista-previa-imagen img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.btn-remove-preview {
+.boton-quitar-vista-previa {
     position: absolute;
     top: 2px;
     right: 2px;
@@ -432,17 +432,17 @@
     padding: 0;
 }
 
-.btn-remove-preview:hover {
+.boton-quitar-vista-previa:hover {
     background: #dc2626;
 }
 
-.form-actions-modal {
+.acciones-formulario-modal {
     display: flex;
     gap: 15px;
 }
 
-.btn-secondary-modal,
-.btn-primary-modal {
+.boton-secundario-modal,
+.boton-primario-modal {
     flex: 1;
     padding: 12px;
     border-radius: 12px;
@@ -450,25 +450,25 @@
     font-weight: 600;
 }
 
-.btn-primary-modal {
+.boton-primario-modal {
     background: var(--nexora-blue);
     color: white;
     border: none;
 }
 
-.btn-secondary-modal {
+.boton-secundario-modal {
     background: transparent;
     border: 1px solid var(--nexora-border);
     color: #9ca3af;
 }
 
-/* Spinner */
-.loading-container {
+/* indicador-carga */
+.contenedor-carga {
     text-align: center;
     padding: 50px;
 }
 
-.spinner {
+.indicador-carga {
     width: 40px;
     height: 40px;
     border: 4px solid rgba(0, 148, 255, 0.1);
@@ -485,29 +485,29 @@
 }
 
 @media (max-width: 1200px) {
-    .products-grid {
+    .cuadricula-productos {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
 @media (max-width: 992px) {
-    .products-grid {
+    .cuadricula-productos {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .products-grid {
+    .cuadricula-productos {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .form-row {
+    .fila-formulario {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
-    .products-grid {
+    .cuadricula-productos {
         grid-template-columns: 1fr;
     }
 }
