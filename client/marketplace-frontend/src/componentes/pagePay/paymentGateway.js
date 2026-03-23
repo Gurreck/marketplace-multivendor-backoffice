@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { commentService } from '../../services/commentService';
 import './paymentGateway.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -31,6 +32,35 @@ const PaymentGateway = () => {
     const [lastFourDigits, setLastFourDigits] = useState('');
     const [cardType, setCardType] = useState(null);
     const [showCvv, setShowCvv] = useState(false);
+
+    // Estado para el modal de comentarios
+    const [showCommentsModal, setShowCommentsModal] = useState(false);
+    const [selectedProductComments, setSelectedProductComments] = useState([]);
+    const [selectedProductInfo, setSelectedProductInfo] = useState(null);
+    const [loadingProductComments, setLoadingProductComments] = useState(false);
+
+    // Función para obtener comentarios de un producto
+    const fetchProductComments = async (product) => {
+        setLoadingProductComments(true);
+        try {
+            const productId = product._id || product.id;
+            const response = await commentService.getCommentsByProduct(productId);
+            if (response.data.success) {
+                setSelectedProductComments(response.data.data);
+                setSelectedProductInfo({
+                    name: product.name,
+                    image: product.images?.[0] || product.image,
+                    averageRating: response.data.averageRating,
+                    totalComments: response.data.count
+                });
+                setShowCommentsModal(true);
+            }
+        } catch (error) {
+            console.error("Error fetching product comments:", error);
+        } finally {
+            setLoadingProductComments(false);
+        }
+    };
 
     // Estados para dirección de envío
     const [address, setAddress] = useState({
@@ -388,78 +418,112 @@ const PaymentGateway = () => {
 
 
                 <div className="gateway-main-content">
-                    {/* Address Section */}
-                    <div className="dirección-de-paquetes dirección-de-paquetes-right">
-                        <h3 className="gateway-address-title">📦 Dirección de envío</h3>
-                        <div className="gateway-address-form">
-                            <input
-                                type="text"
-                                className={`gateway-address-input ${addressErrors.pais ? 'input-error' : ''}`}
-                                name="pais"
-                                placeholder="País"
-                                value={address.pais}
-                                onChange={handleAddressChange}
-                                required
-                            />
-                            {addressErrors.pais && <span className="gateway-address-error-message">{addressErrors.pais}</span>}
-                            <input
-                                type="text"
-                                className={`gateway-address-input ${addressErrors.provincia ? 'input-error' : ''}`}
-                                name="provincia"
-                                placeholder="Provincia"
-                                value={address.provincia}
-                                onChange={handleAddressChange}
-                                required
-                            />
-                            {addressErrors.provincia && <span className="gateway-address-error-message">{addressErrors.provincia}</span>}
-                            <input
-                                type="text"
-                                className={`gateway-address-input ${addressErrors.ciudad ? 'input-error' : ''}`}
-                                name="ciudad"
-                                placeholder="Ciudad"
-                                value={address.ciudad}
-                                onChange={handleAddressChange}
-                                required
-                            />
-                            {addressErrors.ciudad && <span className="gateway-address-error-message">{addressErrors.ciudad}</span>}
-                            <input
-                                type="text"
-                                className={`gateway-address-input ${addressErrors.codigoPostal ? 'input-error' : ''}`}
-                                name="codigoPostal"
-                                placeholder="Código Postal"
-                                value={address.codigoPostal}
-                                onChange={handleAddressChange}
-                                required
-                            />
-                            {addressErrors.codigoPostal && <span className="gateway-address-error-message">{addressErrors.codigoPostal}</span>}
-                            <textarea
-                                className={`gateway-address-input ${addressErrors.direccion ? 'input-error' : ''}`}
-                                name="direccion"
-                                placeholder="Dirección exacta"
-                                value={address.direccion}
-                                onChange={handleAddressChange}
-                                required
-                                rows={4}
-                            />
-                            {addressErrors.direccion && <span className="gateway-address-error-message">{addressErrors.direccion}</span>}
-                            <button
-                                type="button"
-                                className="guardar-direccion-btn"
-                                onClick={handleSaveAddress}
-                            >
-                                Guardar dirección
-                            </button>
+                    {/* TWO COLUMN LAYOUT: Address (with Reviews at bottom) + Payment */}
+                    <div className="gateway-two-column-layout">
+                    {/* Left Column: Address + Reviews at bottom */}
+                    <div className="gateway-left-column">
+                        <div className="dirección-de-paquetes dirección-de-paquetes-right">
+                            <h3 className="gateway-address-title">📦 Dirección de envío</h3>
+                            <div className="gateway-address-form">
+                                <input
+                                    type="text"
+                                    className={`gateway-address-input ${addressErrors.pais ? 'input-error' : ''}`}
+                                    name="pais"
+                                    placeholder="País"
+                                    value={address.pais}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                                {addressErrors.pais && <span className="gateway-address-error-message">{addressErrors.pais}</span>}
+                                <input
+                                    type="text"
+                                    className={`gateway-address-input ${addressErrors.provincia ? 'input-error' : ''}`}
+                                    name="provincia"
+                                    placeholder="Provincia"
+                                    value={address.provincia}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                                {addressErrors.provincia && <span className="gateway-address-error-message">{addressErrors.provincia}</span>}
+                                <input
+                                    type="text"
+                                    className={`gateway-address-input ${addressErrors.ciudad ? 'input-error' : ''}`}
+                                    name="ciudad"
+                                    placeholder="Ciudad"
+                                    value={address.ciudad}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                                {addressErrors.ciudad && <span className="gateway-address-error-message">{addressErrors.ciudad}</span>}
+                                <input
+                                    type="text"
+                                    className={`gateway-address-input ${addressErrors.codigoPostal ? 'input-error' : ''}`}
+                                    name="codigoPostal"
+                                    placeholder="Código Postal"
+                                    value={address.codigoPostal}
+                                    onChange={handleAddressChange}
+                                    required
+                                />
+                                {addressErrors.codigoPostal && <span className="gateway-address-error-message">{addressErrors.codigoPostal}</span>}
+                                <textarea
+                                    className={`gateway-address-input ${addressErrors.direccion ? 'input-error' : ''}`}
+                                    name="direccion"
+                                    placeholder="Dirección exacta"
+                                    value={address.direccion}
+                                    onChange={handleAddressChange}
+                                    required
+                                    rows={4}
+                                />
+                                {addressErrors.direccion && <span className="gateway-address-error-message">{addressErrors.direccion}</span>}
+                                <button
+                                    type="button"
+                                    className="guardar-direccion-btn"
+                                    onClick={handleSaveAddress}
+                                >
+                                    Guardar dirección
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Reviews Section - Inside Address Column at Bottom */}
+                        <div className="gateway-reviews-in-address">
+                            <h3 className="gateway-reviews-title">📝 Reseñas de Productos</h3>
+                            <p className="gateway-reviews-subtitle">
+                                Ver opiniones de otros compradores
+                            </p>
+                            
+                            <div className="gateway-reviews-products-list">
+                                {selectedItems.map((item, index) => (
+                                    <div key={item._id || item.id || index} className="gateway-review-product-card">
+                                        <img 
+                                            src={item.images?.[0] || item.image || "https://via.placeholder.com/60"} 
+                                            alt={item.name} 
+                                            className="gateway-review-product-image"
+                                        />
+                                        <div className="gateway-review-product-info">
+                                            <span className="gateway-review-product-name">{item.name}</span>
+                                            <button 
+                                                className="gateway-review-btn"
+                                                onClick={() => fetchProductComments(item)}
+                                            >
+                                                💬 Ver reseñas
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Payment Form Section */}
-                    <div className="pasarela-de-pago">
-                        <h2 className="gateway-payment-title">
-                            💳 Completar Pago
-                        </h2>
-                        <p className="gateway-payment-subtitle">
-                            Ingresa los datos de tu tarjeta para completar la compra
-                        </p>
+                    {/* Right Column: Payment Form */}
+                    <div className="gateway-right-column">
+                        <div className="pasarela-de-pago">
+                            <h2 className="gateway-payment-title">
+                                💳 Completar Pago
+                            </h2>
+                            <p className="gateway-payment-subtitle">
+                                Ingresa los datos de tu tarjeta para completar la compra
+                            </p>
 
                         <form onSubmit={handleSubmit}>
                             {/* Card Preview */}
@@ -598,8 +662,92 @@ const PaymentGateway = () => {
                             </p>
                         </div>
                     </div>
+                    </div>
+                    </div>
                     {/* Se eliminó el gateway-order-summary */}
                 </div>
+
+                {/* Modal de Comentarios del Producto */}
+                {showCommentsModal && (
+                    <div className="gateway-comments-modal-overlay" onClick={() => setShowCommentsModal(false)}>
+                        <div className="gateway-comments-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="gateway-comments-modal-header">
+                                <div className="gateway-comments-modal-product-info">
+                                    <img 
+                                        src={selectedProductInfo?.image || "https://via.placeholder.com/80"} 
+                                        alt={selectedProductInfo?.name} 
+                                        className="gateway-comments-modal-product-image"
+                                    />
+                                    <div>
+                                        <h3>{selectedProductInfo?.name}</h3>
+                                        <div className="gateway-comments-modal-rating">
+                                            <span className="rating-number">{selectedProductInfo?.averageRating || "0"}</span>
+                                            <div className="rating-stars">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <span key={i} className={i < Math.round(selectedProductInfo?.averageRating || 0) ? "star filled" : "star"}>★</span>
+                                                ))}
+                                            </div>
+                                            <span className="rating-count">({selectedProductInfo?.totalComments || 0} comentarios)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button 
+                                    className="gateway-comments-modal-close"
+                                    onClick={() => setShowCommentsModal(false)}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="gateway-comments-modal-body">
+                                {loadingProductComments ? (
+                                    <div className="gateway-comments-loading">Cargando comentarios...</div>
+                                ) : selectedProductComments.length === 0 ? (
+                                    <div className="gateway-comments-empty">
+                                        <span>💬</span>
+                                        <p>Aún no hay comentarios para este producto.</p>
+                                        <p>¡Sé el primero en opinar!</p>
+                                    </div>
+                                ) : (
+                                    <div className="gateway-comments-list">
+                                        {selectedProductComments.map((comment) => (
+                                            <div key={comment._id} className="gateway-comment-item">
+                                                <div className="gateway-comment-header">
+                                                    <img 
+                                                        src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} 
+                                                        alt={comment.user?.nombre || "Usuario"} 
+                                                        className="gateway-comment-avatar"
+                                                    />
+                                                    <div className="gateway-comment-info">
+                                                        <span className="gateway-comment-user">{comment.user?.nombre || "Usuario"}</span>
+                                                        <span className="gateway-comment-date">
+                                                            {new Date(comment.createdAt).toLocaleDateString("es-CR")}
+                                                        </span>
+                                                    </div>
+                                                    <div className="gateway-comment-rating">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <span key={i} className={i < comment.rating ? "star filled" : "star"}>★</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="gateway-comment-text">{comment.text}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="gateway-comments-modal-footer">
+                                <button 
+                                    className="gateway-comments-modal-btn"
+                                    onClick={() => setShowCommentsModal(false)}
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Success Modal */}
                 {showSuccessModal && (

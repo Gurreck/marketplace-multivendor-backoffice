@@ -1,0 +1,113 @@
+const Comment = require("../models/Comment");
+const Product = require("../models/Product");
+
+// @desc    Crear un comentario
+// @route   POST /api/comments
+// @access  Private (solo clientes)
+const createComment = async (req, res) => {
+  try {
+    const { productId, rating, text } = req.body;
+
+    // Verificar que el producto existe
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Producto no encontrado",
+      });
+    }
+
+    const comment = await Comment.create({
+      product: productId,
+      user: req.user.id,
+      rating,
+      text,
+    });
+
+    // Populate para devolver datos del usuario
+    await comment.populate("user", "nombre");
+
+    res.status(201).json({
+      success: true,
+      data: comment,
+    });
+  } catch (error) {
+    console.error("Error en createComment:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Obtener comentarios de un producto
+// @route   GET /api/comments/product/:productId
+// @access  Public
+const getCommentsByProduct = async (req, res) => {
+  try {
+    const comments = await Comment.find({ product: req.params.productId })
+      .populate("user", "nombre")
+      .sort({ createdAt: -1 });
+
+    // Calcular promedio de rating
+    const avgRating = comments.length > 0
+      ? (comments.reduce((sum, c) => sum + c.rating, 0) / comments.length).toFixed(1)
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      data: comments,
+      averageRating: avgRating,
+      count: comments.length,
+    });
+  } catch (error) {
+    console.error("Error en getCommentsByProduct:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Eliminar un comentario
+// @route   DELETE /api/comments/:id
+// @access  Private (solo quien lo creó o admin)
+const deleteComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comentario no encontrado",
+      });
+    }
+
+    // Solo el autor o admin puede eliminar
+    if (comment.user.toString() !== req.user.id && req.user.role !== "administrador") {
+      return res.status(403).json({
+        success: false,
+        message: "No autorizado",
+      });
+    }
+
+    await comment.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Comentario eliminado",
+    });
+  } catch (error) {
+    console.error("Error en deleteComment:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  createComment,
+  getCommentsByProduct,
+  deleteComment,
+};

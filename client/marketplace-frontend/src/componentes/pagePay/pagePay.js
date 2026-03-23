@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
+import { commentService } from '../../services/commentService';
 
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
@@ -15,6 +16,10 @@ const PagePay = () => {
     const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart, addToCart, cartCount } = useCart();
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
+
+    // Estado para comentarios de productos
+    const [productComments, setProductComments] = useState({});
+    const [loadingComments, setLoadingComments] = useState(true);
 
 
 
@@ -51,6 +56,45 @@ const PagePay = () => {
             initial[getItemId(item)] = true;
         });
         setSelectedItems(initial);
+    }, [cartItems.length]);
+
+    // Función para cargar comentarios de un producto
+    const fetchProductComments = async (productId) => {
+        try {
+            const response = await commentService.getCommentsByProduct(productId);
+            if (response.data.success) {
+                return {
+                    averageRating: response.data.averageRating,
+                    count: response.data.count
+                };
+            }
+        } catch (error) {
+            console.error("Error fetching comments:", error);
+        }
+        return { averageRating: 0, count: 0 };
+    };
+
+    // Cargar comentarios de todos los productos del carrito
+    useEffect(() => {
+        const loadAllComments = async () => {
+            if (cartItems.length === 0) {
+                setLoadingComments(false);
+                return;
+            }
+            
+            setLoadingComments(true);
+            const commentsData = {};
+            
+            for (const item of cartItems) {
+                const productId = item._id || item.id;
+                commentsData[productId] = await fetchProductComments(productId);
+            }
+            
+            setProductComments(commentsData);
+            setLoadingComments(false);
+        };
+        
+        loadAllComments();
     }, [cartItems.length]);
 
     // Cálculos
@@ -175,6 +219,30 @@ const PagePay = () => {
                                         </div>
                                         <div className="item-details-box">
                                             <h4 className="item-name-checkout">{item.name}</h4>
+                                            
+                                            {/* Sección de comentarios y rating del producto */}
+                                            {loadingComments ? (
+                                                <div className="item-rating-loading">Cargando...</div>
+                                            ) : productComments[item._id || item.id]?.count > 0 ? (
+                                                <div className="item-rating-section">
+                                                    <div className="item-rating-stars">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <span key={i} className={i < Math.round(productComments[item._id || item.id]?.averageRating || 0) ? "star filled" : "star"}>★</span>
+                                                        ))}
+                                                    </div>
+                                                    <span className="item-rating-number">
+                                                        {productComments[item._id || item.id]?.averageRating || "0"}
+                                                    </span>
+                                                    <span className="item-rating-count">
+                                                        ({productComments[item._id || item.id]?.count || 0} opiniones)
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div className="item-no-comments">
+                                                    <span>⭐</span> Este producto aún no tiene comentarios
+                                                </div>
+                                            )}
+                                            
                                             <p className="item-vendor-checkout">Nexora Premium</p>
                                             <div className="item-pricing-row">
                                                 {item.originalPrice ? (
