@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema({
     codigoPostal: { type: String },
     direccion: { type: String }
   },
+  activo: {
+    type: Boolean,
+    default: true,
+  },
+}, {
+  timestamps: true,
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {

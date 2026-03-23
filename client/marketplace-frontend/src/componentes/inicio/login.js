@@ -19,10 +19,10 @@ export default function Login({ onRegisterClick, onForgotClick }) {
     setIsDarkMode(!isDarkMode);
   };
 
-  const redirectByRole = (role) => {
-    switch (role) {
+  const redirigirPorRol = (rol) => {
+    switch (rol) {
       case 'administrador':
-        return '/admin';
+        return '/admin/dashboard';
       case 'vendedor':
         return '/vendedor';        
       case 'cliente':
@@ -39,7 +39,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
 
     try {
       const userData = await login(email, password);
-      navigate(redirectByRole(userData.role));
+      navigate(redirigirPorRol(userData.role));
     } catch (err) {
       setError(
         err.response?.data?.message ||
