@@ -17,16 +17,15 @@ const PagePay = () => {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
 
-    // Estado para comentarios de productos
-    const [productComments, setProductComments] = useState({});
-    const [loadingComments, setLoadingComments] = useState(true);
-
-
-
-    const [paymentSuccess, setPaymentSuccess] = useState(false);    // ============================================
-    // NAVEGAR A LA PASARELA DE PAGO
-    // ============================================
-
+    // ===== ESTADO =====
+    const [productComments, setProductComments] = useState({}); // Comentarios por producto
+    const [loadingComments, setLoadingComments] = useState(true); // Estado de carga de comentarios
+    const [paymentSuccess, setPaymentSuccess] = useState(false); // Estado de éxito del pago
+    const [selectedItems, setSelectedItems] = useState({}); // Items seleccionados en el carrito
+    // ===== NAVEGACIÓN Y PAGOS =====
+    /**
+     * Redirige a la pasarela de pago con los productos seleccionados
+     */
     const handleProceedToPayment = () => {
         if (selectedCount === 0) {
             alert('Por favor selecciona al menos un producto');
@@ -46,10 +45,10 @@ const PagePay = () => {
         });
     };
 
-    // Estado para items seleccionados
-    const [selectedItems, setSelectedItems] = useState({});
-
-    // Inicializar selección (todos seleccionados al cargar)
+    // ===== EFECTOS Y CARGA DE DATOS =====
+    /**
+     * Inicializa la selección marcando todos los productos del carrito por defecto
+     */
     useEffect(() => {
         const initial = {};
         cartItems.forEach(item => {
@@ -58,7 +57,9 @@ const PagePay = () => {
         setSelectedItems(initial);
     }, [cartItems.length]);
 
-    // Función para cargar comentarios de un producto
+    /**
+     * Obtiene los comentarios y calificación de un producto específico
+     */
     const fetchProductComments = async (productId) => {
         try {
             const response = await commentService.getCommentsByProduct(productId);
@@ -74,7 +75,9 @@ const PagePay = () => {
         return { averageRating: 0, count: 0 };
     };
 
-    // Cargar comentarios de todos los productos del carrito
+    /**
+     * Carga de forma asíncrona todos los comentarios de los productos presentes en el carrito
+     */
     useEffect(() => {
         const loadAllComments = async () => {
             if (cartItems.length === 0) {
@@ -97,14 +100,10 @@ const PagePay = () => {
         loadAllComments();
     }, [cartItems.length]);
 
-    // Cálculos
-    const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
-    const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
-
-    const selectedSubtotal = cartItems.reduce((acc, item) => {
-        return selectedItems[getItemId(item)] ? acc + (item.price * item.quantity) : acc;
-    }, 0);
-
+    // ===== ACCIONES DEL CARRITO =====
+    /**
+     * Alterna la selección de un item individual
+     */
     const toggleSelection = (id) => {
         setSelectedItems(prev => ({
             ...prev,
@@ -112,6 +111,9 @@ const PagePay = () => {
         }));
     };
 
+    /**
+     * Alterna entre seleccionar todos los items o ninguno
+     */
     const toggleSelectAll = () => {
         if (isAllSelected) {
             setSelectedItems({});
@@ -124,6 +126,9 @@ const PagePay = () => {
         }
     };
 
+    /**
+     * Remueve un item del carrito y de la lista de seleccionados
+     */
     const handleRemove = (id) => {
         removeFromCart(id);
         const newSelected = { ...selectedItems };
@@ -135,6 +140,16 @@ const PagePay = () => {
         e.preventDefault();
         handleProceedToPayment();
     };
+
+    // ===== LÓGICA DE CÁLCULO =====
+    const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
+    const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
+
+    const selectedSubtotal = cartItems.reduce((acc, item) => {
+        return selectedItems[getItemId(item)] ? acc + (item.price * item.quantity) : acc;
+    }, 0);
+
+    // ===== RENDERIZADO PRINCIPAL =====
 
     if (paymentSuccess) {
         return (

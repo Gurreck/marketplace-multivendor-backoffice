@@ -11,22 +11,20 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 export default function PageVendedor() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-
   const { addToCart, cartCount } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
 
+  // ===== ESTADO Y COMPONENTES =====
+  const [products, setProducts] = useState([]); // Lista de productos del vendedor
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Manejo de errores
+  const [searchTerm, setSearchTerm] = useState(""); // Término de búsqueda
+  const [selectedCategory, setSelectedCategory] = useState("Todos"); // Categoría seleccionada
+  const [showNotification, setShowNotification] = useState(""); // Mensajes de notificación
 
-  const [products, setProducts] = useState([]);
-  //const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [showNotification, setShowNotification] = useState("");
-
-  // State for Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  // ===== ESTADO DEL MODAL Y FORMULARIO =====
+  const [isModalOpen, setIsModalOpen] = useState(false); // Control del modal
+  const [editingProduct, setEditingProduct] = useState(null); // Producto en edición (null si es nuevo)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -35,9 +33,11 @@ export default function PageVendedor() {
     brand: "",
     stock: "",
   });
-  const [imageFiles, setImageFiles] = useState([]); // Archivos seleccionados
-  const [imagePreviews, setImagePreviews] = useState([]); // Vista previa de imágenes
-  const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)
+  const [imageFiles, setImageFiles] = useState([]); // Archivos de imagen seleccionados para subir
+  const [imagePreviews, setImagePreviews] = useState([]); // Vistas previas de nuevas imágenes
+  const [existingImages, setExistingImages] = useState([]); // Imágenes que ya tiene el producto en el servidor
+
+  // ===== CONFIGURACIÓN Y CATÁLOGOS =====
 
   const categories = [
     "Todos",
@@ -51,11 +51,14 @@ export default function PageVendedor() {
     "Accesorios",
   ];
 
+  // ===== CARGA DE DATOS =====
   useEffect(() => {
     fetchMyProducts();
-    //fetchAllProducts();
   }, []);
 
+  /**
+   * Obtiene los productos del vendedor autenticado
+   */
   const fetchMyProducts = async () => {
     try {
       setLoading(true);
@@ -79,6 +82,10 @@ export default function PageVendedor() {
 
 
 
+  // ===== MANEJO DE FORMULARIO E IMÁGENES =====
+  /**
+   * Actualiza el estado del formulario al escribir en los inputs
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -87,6 +94,9 @@ export default function PageVendedor() {
     });
   };
 
+  /**
+   * Maneja la selección de archivos de imagen y genera vistas previas
+   */
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -122,6 +132,10 @@ export default function PageVendedor() {
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // ===== ACCIONES DE MODAL =====
+  /**
+   * Prepara el modal para agregar un nuevo producto
+   */
   const openAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -138,6 +152,9 @@ export default function PageVendedor() {
     setIsModalOpen(true);
   };
 
+  /**
+   * Prepara el modal para editar un producto existente
+   */
   const openEditModal = (product) => {
     setEditingProduct(product);
     setFormData({
@@ -154,6 +171,10 @@ export default function PageVendedor() {
     setIsModalOpen(true);
   };
 
+  // ===== PERSISTENCIA Y API =====
+  /**
+   * Envía los datos del producto (crear o editar) al servidor
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -219,6 +240,9 @@ export default function PageVendedor() {
     }
   };
 
+  /**
+   * Elimina un producto tras confirmación del usuario
+   */
   const handleDelete = async (id) => {
     if (
       window.confirm("¿Estás seguro de que quieres eliminar este producto?")
@@ -236,8 +260,7 @@ export default function PageVendedor() {
     }
   };
 
-
-
+  // ===== LÓGICA DE FILTRADO =====
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === "Todos" || product.category === selectedCategory;
@@ -247,6 +270,7 @@ export default function PageVendedor() {
     return matchesCategory && matchesSearch;
   });
 
+  // ===== RENDERIZADO PRINCIPAL =====
   return (
     <>
       <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>

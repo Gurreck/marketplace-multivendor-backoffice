@@ -7,23 +7,32 @@ import { useAuth } from '../../context/AuthContext';
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useAuth();
+
+    // ===== ESTADO =====
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
         role: 'cliente'
-    });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    }); // Datos del formulario
+    const [error, setError] = useState(''); // Mensajes de error
+    const [loading, setLoading] = useState(false); // Estado de carga (submitting)
+    const [isDarkMode, setIsDarkMode] = useState(true); // Tema local
+    const [showPassword, setShowPassword] = useState(false); // Visibilidad contraseña
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Visibilidad confirmación
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Alterna el tema entre claro y oscuro
+     */
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
     };
 
+    /**
+     * Actualiza el estado del formulario al escribir
+     */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -32,6 +41,9 @@ export default function Register() {
         }));
     };
 
+    /**
+     * Procesa el registro del usuario
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -63,16 +75,11 @@ export default function Register() {
         }
 
         try {
-            // Llamar a la API de registro usando el contexto
             await register(formData.name, formData.email, formData.password, formData.role);
-
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
             setError('');
-
-            // Limpiar formulario y volver al login
             setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'cliente' });
             navigate('/login');
-
         } catch (err) {
             setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
             console.error(err);
@@ -80,6 +87,8 @@ export default function Register() {
             setLoading(false);
         }
     }
+
+    // ===== RENDERIZADO =====
     return (
         <div className={`contenedor-registro ${!isDarkMode ? 'modo-claro' : ''}`}>
             <div className="tarjeta-registro">

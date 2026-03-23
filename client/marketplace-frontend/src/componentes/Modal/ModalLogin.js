@@ -1,19 +1,29 @@
 import React from 'react';
 import './ModalLogin.css';
 
+/**
+ * Componente ModalLogin
+ * Muestra un cuadro de diálogo para sugerir al usuario que inicie sesión.
+ * 
+ * @param {boolean} isOpen - Controla si el modal es visible
+ * @param {function} onClose - Función para cerrar el modal
+ * @param {function} onLogin - Función para redirigir/accionar el login
+ * @param {string} mensaje - Mensaje personalizado a mostrar en el cuerpo
+ */
 const ModalLogin = ({ isOpen, onClose, onLogin, mensaje }) => {
+    // Si no está abierto, no renderiza nada
     if (!isOpen) return null;
 
     return (
         <div className="capa-modal" onClick={onClose}>
+            {/* stopPropagation evita que el clic dentro del modal lo cierre */}
             <div className="contenido-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="encabezado-modal">
-                    
-                    <h3>Porfavor inicia sesión</h3>
+                    <h3>Por favor inicia sesión</h3>
                 </div>
                 
                 <div className="cuerpo-modal">
-                    <p>{mensaje || 'Deseas iniciar sesión ahora?'}</p>
+                    <p>{mensaje || '¿Deseas iniciar sesión ahora?'}</p>
                 </div>  
 
                 <div className="pie-modal">

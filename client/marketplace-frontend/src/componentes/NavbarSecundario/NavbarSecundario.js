@@ -4,12 +4,14 @@ import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
 import './NavbarSecunsario.css';
 
+/**
+ * NavbarSecundario
+ * Una versión simplificada de la barra de navegación utilizada en páginas como
+ * el carrito, la vista de producto o el panel de vendedor.
+ */
 export default function NavbarSecundario({
     user,
     logout,
-
-   
-
     cartCount,
     // Propiedad opcional para personalizar qué hace el botón Inicio (usada en pageVendedor)
     onInicio,
@@ -20,22 +22,29 @@ export default function NavbarSecundario({
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Cierra la sesión y redirige al inicio
+     */
     const handleLogout = () => {
         logout();
         navigate('/');
     };
 
-    // Nueva función que intercepta los clics en los botones de "Inicio"
+    /**
+     * Intercepta los clics en el botón "Inicio" para permitir comportamiento personalizado
+     */
     const handleInicio = () => {
         if (onInicio) {
             // Si nos pasaron una función personalizada desde el padre (ej. pageVendedor), la ejecutamos
             onInicio();
         } else {
-            // Si no (ej. en carrito o productos), hace su comportamiento normal: ir a la página principal
+            // Comportamiento normal: ir a la página principal
             navigate('/');
         }
     };
 
+    // ===== RENDERIZADO =====
     return (
         <header className="encabezado">
             <div className="parte-superior-encabezado">
@@ -47,10 +56,12 @@ export default function NavbarSecundario({
                 </div>
 
                 <div className="barra-encabezado">
+                    {/* Botón Inicio con lógica personalizada */}
                     <button className="boton-inicio" onClick={handleInicio}>
                         Inicio
                     </button>
 
+                    {/* Alternar Tema */}
                     <button
                         className="alternar-tema-encabezado"
                         onClick={toggleTheme}
@@ -58,6 +69,8 @@ export default function NavbarSecundario({
                     >
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
+
+                    {/* Menú de Usuario / Login */}
                     <div className="menu-usuario" 
                         onClick={() => {
                             if (disableUserMenu) return;
@@ -65,12 +78,18 @@ export default function NavbarSecundario({
                                 navigate('/login');
                             } else if (user?.role === 'vendedor') {
                                 navigate('/vendedor/dashboard');
+                            } else if (user?.role === 'administrador') {
+                                navigate('/admin/dashboard');
+                            } else {
+                                navigate('/cliente');
                             }
                         }}
                         style={disableUserMenu ? { cursor: 'default' } : {}}
                     >
                         👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </div>
+
+                    {/* Carrito */}
                     <button
                         className="boton-carrito"
                         onClick={() => disableCart ? null : navigate('/checkout')}
@@ -80,13 +99,13 @@ export default function NavbarSecundario({
                     >
                         🛒 {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
                     </button>
-                    <button className="boton-salir" onClick={handleLogout}>
+
+                    {/* Salir */}
+                    <button className="boton-salir" onClick={handleLogout} title="Cerrar sesión">
                         ✖ Salir
                     </button>
                 </div>
             </div>
-
-
         </header>
     );
 }
