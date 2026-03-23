@@ -75,7 +75,7 @@ function App() {
   if (loading) return <div>Cargando...</div>;
 
   return (
-    <div className="App">
+    <div className="Aplicacion">
       <Routes>
 
         {/* ⭐ rutas públicas */}

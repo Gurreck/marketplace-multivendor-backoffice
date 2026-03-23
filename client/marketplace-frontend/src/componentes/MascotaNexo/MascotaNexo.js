@@ -119,7 +119,7 @@ const cambiarMensaje = () => {
   }
 
   return (
-    <div className="mascota-container">
+    <div className="contenedor-mascota">
 
       <img
         src={Nexo}

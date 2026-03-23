@@ -37,28 +37,28 @@ export default function NavbarSecundario({
     };
 
     return (
-        <header className="header">
-            <div className="header-top">
-                <div className="header-Marca">
-                    <div className="logo" onClick={handleInicio}>
-                        <img src={logo} alt="Nexora Logo" className="logo-img-header" />
-                        <h1 className="logo-text">Nexora</h1>
+        <header className="encabezado">
+            <div className="parte-superior-encabezado">
+                <div className="marca-encabezado">
+                    <div className="logotipo" onClick={() => navigate('/')}>
+                        <img src={logo} alt="Nexora Logo" className="imagen-logo-encabezado" />
+                        <h1 className="texto-logo">Nexora</h1>
                     </div>
                 </div>
 
-                <div className="header-barra">
-                    <button className="inicio-btn" onClick={handleInicio}>
+                <div className="barra-encabezado">
+                    <button className="boton-inicio" onClick={handleInicio}>
                         Inicio
                     </button>
 
                     <button
-                        className="theme-toggle-header"
+                        className="alternar-tema-encabezado"
                         onClick={toggleTheme}
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
-                    <div className="user-menu" 
+                    <div className="menu-usuario" 
                         onClick={() => {
                             if (disableUserMenu) return;
                             if (!user) {
@@ -72,15 +72,15 @@ export default function NavbarSecundario({
                         👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </div>
                     <button
-                        className="cart-btn"
+                        className="boton-carrito"
                         onClick={() => disableCart ? null : navigate('/checkout')}
                         disabled={disableCart}
                         style={disableCart ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                         title={disableCart ? "Carrito desactivado para vendedores" : ""}
                     >
-                        🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                        🛒 {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
                     </button>
-                    <button className="logout-btn" onClick={handleLogout}>
+                    <button className="boton-salir" onClick={handleLogout}>
                         ✖ Salir
                     </button>
                 </div>
