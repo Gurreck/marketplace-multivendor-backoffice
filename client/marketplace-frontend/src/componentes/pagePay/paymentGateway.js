@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { commentService } from '../../services/commentService';
+import { orderService } from '../../services/orderService';
 import './paymentGateway.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -277,7 +278,7 @@ const PaymentGateway = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = {};
@@ -299,11 +300,34 @@ const PaymentGateway = () => {
         setIsProcessing(true);
         setErrors({});
 
-        setTimeout(() => {
-            setIsProcessing(false);
-            const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
-            setLastFourDigits(lastFour);
-            setShowSuccessModal(true);
+        // Simular procesamiento de pago
+        setTimeout(async () => {
+            try {
+                // Crear el pedido en el backend después del pago exitoso
+                const orderData = {
+                    items: cartItems.map(item => ({
+                        productId: item._id,
+                        quantity: item.quantity || 1
+                    })),
+                    totalAmount: selectedSubtotal,
+                    shippingAddress: address,
+                    paymentDetails: {
+                        lastFourDigits: cardNumber.replace(/\s/g, '').slice(-4),
+                        cardType: cardType
+                    }
+                };
+
+                await orderService.createOrder(orderData);
+                
+                setIsProcessing(false);
+                const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
+                setLastFourDigits(lastFour);
+                setShowSuccessModal(true);
+            } catch (error) {
+                console.error('Error creating order:', error);
+                setIsProcessing(false);
+                alert('Error al procesar el pedido. Por favor, intenta de nuevo.');
+            }
         }, 2500);
     };
 

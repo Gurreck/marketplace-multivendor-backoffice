@@ -1,9 +1,10 @@
 const Comment = require("../models/Comment");
 const Product = require("../models/Product");
+const Order = require("../models/Order");
 
 // @desc    Crear un comentario
 // @route   POST /api/comments
-// @access  Private (solo clientes)
+// @access  Private (solo clientes que han comprado el producto)
 const createComment = async (req, res) => {
   try {
     const { productId, rating, text } = req.body;
@@ -14,6 +15,20 @@ const createComment = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Producto no encontrado",
+      });
+    }
+
+    // Verificar que el usuario ha comprado el producto
+    const order = await Order.findOne({
+      user: req.user.id,
+      "items.product": productId,
+      status: { $in: ["pagado", "enviado", "entregado"] },
+    });
+
+    if (!order) {
+      return res.status(403).json({
+        success: false,
+        message: "Debes comprar este producto para poder comentado",
       });
     }
 

@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 import { commentService } from '../../services/commentService';
+import { orderService } from '../../services/orderService';
 
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
@@ -34,6 +35,7 @@ const PageViewProduct = () => {
     const [comments, setComments] = useState([]); // Lista de reseñas del producto
     const [averageRating, setAverageRating] = useState(0); // Promedio de calificación (0-5)
     const [loadingComments, setLoadingComments] = useState(true); // Carga específica de comentarios
+    const [hasPurchased, setHasPurchased] = useState(false); // Verifica si el usuario ha comprado el producto
 
     const [newComment, setNewComment] = useState(""); // Texto del nuevo comentario a publicar
     const [newRating, setNewRating] = useState(5); // Calificación del nuevo comentario (1-5)
@@ -49,7 +51,8 @@ const PageViewProduct = () => {
     useEffect(() => {
         fetchProductDetail();
         fetchComments();
-    }, [id]);
+        checkPurchase();
+    }, [id, isAuthenticated]);
 
     // ===== CARGA DE DATOS =====
     /**
@@ -67,6 +70,26 @@ const PageViewProduct = () => {
             console.error("Error fetching comments:", error);
         } finally {
             setLoadingComments(false);
+        }
+    };
+
+    /**
+     * Verifica si el usuario ha comprado el producto
+     */
+    const checkPurchase = async () => {
+        if (!isAuthenticated) {
+            setHasPurchased(false);
+            return;
+        }
+        
+        try {
+            const response = await orderService.verifyPurchase(id);
+            if (response.data.success) {
+                setHasPurchased(response.data.hasPurchased);
+            }
+        } catch (error) {
+            console.error("Error verifying purchase:", error);
+            setHasPurchased(false);
         }
     };
 
@@ -152,7 +175,8 @@ const PageViewProduct = () => {
             }
         } catch (error) {
             console.error("Error creating comment:", error);
-            setShowNotification("Error al publicar comentario");
+            const errorMessage = error.response?.data?.message || "Error al publicar comentario";
+            setShowNotification(errorMessage);
             setTimeout(() => setShowNotification(""), 3000);
         }
     };
@@ -248,18 +272,19 @@ const PageViewProduct = () => {
                                 </div>
                             </div>
 
-                            {/* Formulario de Nueva Reseña */}
-                            <div className="formulario-comentario">
-                                <div className="seleccion-calificacion">
-                                    <label>Tu calificación:</label>
-                                    <div className="entrada-estrellas">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <span 
-                                                key={star}
-                                                className={star <= newRating ? "estrella activo" : "estrella"}
-                                                onClick={() => setNewRating(star)}
-                                            >
-                                                ★
+                            {/* Formulario de Nueva Reseña - Solo visible si el usuario ha comprado el producto */}
+                            {hasPurchased ? (
+                                <div className="formulario-comentario">
+                                    <div className="seleccion-calificacion">
+                                        <label>Tu calificación:</label>
+                                        <div className="entrada-estrellas">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <span 
+                                                    key={star}
+                                                    className={star <= newRating ? "estrella activo" : "estrella"}
+                                                    onClick={() => setNewRating(star)}
+                                                >
+                                                    ★
                                             </span>
                                         ))}
                                     </div>
@@ -274,13 +299,18 @@ const PageViewProduct = () => {
                                     Publicar Comentario
                                 </button>
                             </div>
+                            ) : (
+                                <div className="formulario-comentario" style={{textAlign: 'center', padding: '20px', background: 'var(--nexora-bg-secondary)', borderRadius: '8px', marginBottom: '20px'}}>
+                                    <p style={{color: 'var(--nexora-text-secondary)'}}>🔒 Solo los clientes que han comprado este producto pueden dejar una opinión.</p>
+                                </div>
+                            )}
 
                             {/* Lista de Reseñas cargadas */}
                             <div className="lista-comentarios">
                                 {loadingComments ? (
                                     <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Cargando comentarios...</p>
                                 ) : comments.length === 0 ? (
-                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Aún no hay comentarios</p>
                                 ) : (
                                     comments.map((comment) => (
                                         <div key={comment._id} className="item-comentario">

@@ -61,6 +61,10 @@ app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
 // Rutas de comentarios
 app.use("/api/comments", commentRoutes);
 
+// Rutas de pedidos
+const orderRoutes = require("./routes/orderRoutes");
+app.use("/api/orders", orderRoutes);
+
 // Ruta de prueba
 app.get("/", (req, res) => {
   res.json({
