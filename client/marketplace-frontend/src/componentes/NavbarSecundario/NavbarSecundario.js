@@ -4,12 +4,14 @@ import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
 import './NavbarSecunsario.css';
 
+/**
+ * NavbarSecundario
+ * Una versión simplificada de la barra de navegación utilizada en páginas como
+ * el carrito, la vista de producto o el panel de vendedor.
+ */
 export default function NavbarSecundario({
     user,
     logout,
-
-   
-
     cartCount,
     // Propiedad opcional para personalizar qué hace el botón Inicio (usada en pageVendedor)
     onInicio,
@@ -20,73 +22,90 @@ export default function NavbarSecundario({
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Cierra la sesión y redirige al inicio
+     */
     const handleLogout = () => {
         logout();
         navigate('/');
     };
 
-    // Nueva función que intercepta los clics en los botones de "Inicio"
+    /**
+     * Intercepta los clics en el botón "Inicio" para permitir comportamiento personalizado
+     */
     const handleInicio = () => {
         if (onInicio) {
             // Si nos pasaron una función personalizada desde el padre (ej. pageVendedor), la ejecutamos
             onInicio();
         } else {
-            // Si no (ej. en carrito o productos), hace su comportamiento normal: ir a la página principal
+            // Comportamiento normal: ir a la página principal
             navigate('/');
         }
     };
 
+    // ===== RENDERIZADO =====
     return (
-        <header className="header">
-            <div className="header-top">
-                <div className="header-Marca">
-                    <div className="logo" onClick={handleInicio}>
-                        <img src={logo} alt="Nexora Logo" className="logo-img-header" />
-                        <h1 className="logo-text">Nexora</h1>
+        <header className="encabezado">
+            <div className="parte-superior-encabezado">
+                <div className="marca-encabezado">
+                    <div className="logotipo" onClick={() => navigate('/')}>
+                        <img src={logo} alt="Nexora Logo" className="imagen-logo-encabezado" />
+                        <h1 className="texto-logo">Nexora</h1>
                     </div>
                 </div>
 
-                <div className="header-barra">
-                    <button className="inicio-btn" onClick={handleInicio}>
+                <div className="barra-encabezado">
+                    {/* Botón Inicio con lógica personalizada */}
+                    <button className="boton-inicio" onClick={handleInicio}>
                         Inicio
                     </button>
 
+                    {/* Alternar Tema */}
                     <button
-                        className="theme-toggle-header"
+                        className="alternar-tema-encabezado"
                         onClick={toggleTheme}
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
-                    <div className="user-menu" 
+
+                    {/* Menú de Usuario / Login */}
+                    <div className="menu-usuario" 
                         onClick={() => {
                             if (disableUserMenu) return;
                             if (!user) {
                                 navigate('/login');
                             } else if (user?.role === 'vendedor') {
                                 navigate('/vendedor/dashboard');
+                            } else if (user?.role === 'administrador') {
+                                navigate('/admin/dashboard');
+                            } else {
+                                navigate('/cliente');
                             }
                         }}
                         style={disableUserMenu ? { cursor: 'default' } : {}}
                     >
                         👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </div>
+
+                    {/* Carrito */}
                     <button
-                        className="cart-btn"
+                        className="boton-carrito"
                         onClick={() => disableCart ? null : navigate('/checkout')}
                         disabled={disableCart}
                         style={disableCart ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                         title={disableCart ? "Carrito desactivado para vendedores" : ""}
                     >
-                        🛒 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                        🛒 {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
                     </button>
-                    <button className="logout-btn" onClick={handleLogout}>
+
+                    {/* Salir */}
+                    <button className="boton-salir" onClick={handleLogout} title="Cerrar sesión">
                         ✖ Salir
                     </button>
                 </div>
             </div>
-
-
         </header>
     );
 }

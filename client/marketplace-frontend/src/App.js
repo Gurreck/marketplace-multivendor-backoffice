@@ -10,12 +10,27 @@ import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
 import PagePay from "./componentes/pagePay/pagePay";
 import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
+import PaginaAdmin from "./componentes/pageAdmin/pageAdmin";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
 
 import { useAuth } from "./context/AuthContext";
 
+// ⭐ función para redirigir por rol
+const obtenerRutaPorRol = (rol) => {
+  switch (rol) {
+    case "administrador":
+      return "/admin/dashboard";
+    case "vendedor":
+      return "/vendedor";
+    case "cliente":
+      return "/cliente";
+    default:
+      return "/";
+  }
+};
+
 // 🔐 Componente para proteger rutas
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const RutaProtegida = ({ children, rolesPermitidos }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -27,23 +42,40 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (location.pathname === "/") {
       return children;
     }
-
-        return <Navigate to="/" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role))
-    return <Navigate to={getDashboardByRole(user.role)} replace />;
+  if (rolesPermitidos && !rolesPermitidos.includes(user.role))
+    return <Navigate to={obtenerRutaPorRol(user.role)} replace />;
 
   return children;
 };
 
+// ⭐ Componente inteligente para la ruta raíz
+const RutaRaiz = () => {
+  const { user } = useAuth();
+
+  // Si el usuario es administrador, redirigir al panel admin
+  if (user && user.role === "administrador") {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  // Si es vendedor, redirigir a su panel
+  if (user && user.role === "vendedor") {
+    return <Navigate to="/vendedor" replace />;
+  }
+
+  // Para clientes o visitantes, mostrar la página principal
+  return <Principal />;
+};
+
 function App() {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) return <div>Cargando...</div>;
 
   return (
-    <div className="App">
+    <div className="Aplicacion">
       <Routes>
 
         {/* ⭐ rutas públicas */}
@@ -70,62 +102,68 @@ function App() {
         />
 
 
-        {/* ⭐ rutas protegidas */}
+        {/* ⭐ rutas protegidas - Administrador */}
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute allowedRoles={["administrador"]}>
-              <Principal />
-            </ProtectedRoute>
+            <RutaProtegida rolesPermitidos={["administrador"]}>
+              <PaginaAdmin />
+            </RutaProtegida>
           }
+        />
+
+        {/* ⭐ Redirigir /admin a /admin/dashboard */}
+        <Route
+          path="/admin"
+          element={<Navigate to="/admin/dashboard" replace />}
         />
 
         <Route
           path="/vendedor"
           element={
-            <ProtectedRoute allowedRoles={["vendedor"]}>
+            <RutaProtegida rolesPermitidos={["vendedor"]}>
               <PageVendedor />
-            </ProtectedRoute>
+            </RutaProtegida>
           }
         />
 
         <Route
           path="/cliente"
           element={
-            <ProtectedRoute allowedRoles={["cliente"]}>
+            <RutaProtegida rolesPermitidos={["cliente"]}>
               <Principal />
-            </ProtectedRoute>
+            </RutaProtegida>
           }
         />
 
         <Route
           path="/checkout"
           element={
-            <ProtectedRoute>
+            <RutaProtegida>
               <PagePay />
-            </ProtectedRoute>
+            </RutaProtegida>
           }
         />
 
         <Route
           path="/paymentGateway"
           element={
-            <ProtectedRoute>
+            <RutaProtegida>
               <PaymentGateway />
-            </ProtectedRoute>
+            </RutaProtegida>
           }
         />
 
-        {/* ⭐ ruta raiz inteligente */}
+        {/* ⭐ ruta raíz inteligente — redirige según rol */}
         <Route
           path="/"
-          element={<Principal />}
+          element={<RutaRaiz />}
         />
 
         {/* ⭐ fallback */}
         <Route
           path="*"
-          element={<Principal />}
+          element={<RutaRaiz />}
         />
       </Routes>
 
@@ -134,20 +172,5 @@ function App() {
     </div>
   );
 }
-
-// ⭐ función para redirigir por rol
-const getDashboardByRole = (role) => {
-  switch (role) {
-    case "administrador":
-      return "/admin/dashboard";
-    case "vendedor":
-      return "/vendedor";
-    case "cliente":
-      return "/cliente";
-    default:
-      return "/";
-  }
-};
-
 
 export default App;

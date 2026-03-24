@@ -12,7 +12,7 @@
   --btn-bg: rgba(0, 148, 255, 0.3);
 }
 
-.light-mode {
+.modo-claro {
   --nexora-blue: #0369a1;
   --nexora-cyan: #0284c7;
   --nexora-dark: #f0f9ff;
@@ -32,7 +32,7 @@
   box-sizing: border-box;
 }
 
-.principal-container {
+.contenedor-principal {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -43,7 +43,7 @@
 
 
 /* Notificación */
-.notification {
+.notificacion {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -68,9 +68,9 @@
   }
 }
 
-/* Main Container */
+/* Contenedor Mayor */
 
-.main-container {
+.contenedor-mayor {
   display: flex;
   flex: 1;
   gap: 20px;
@@ -80,35 +80,35 @@
   width: 100%;
 }
 
-/* Productos Section */
-.products-section {
+/* Sección Productos */
+.seccion-productos {
   flex: 1;
   min-width: 0;
 }
 
-.section-header {
+.encabezado-seccion {
   margin-bottom: 30px;
 }
 
-.section-header h2 {
+.encabezado-seccion h2 {
   color: var(--nexora-blue);
   font-size: 28px;
   margin-bottom: 8px;
 }
 
-.section-header p {
+.encabezado-seccion p {
   color: #9ca3af;
   font-size: 14px;
 }
 
-/* Products Grid */
-.products-grid {
+/* Rejilla de Productos */
+.rejilla-productos {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 15px;
 }
 
-.product-card {
+.tarjeta-producto {
   background: var(--card-bg);
   border: 1px solid var(--nexora-border);
   border-radius: 12px;
@@ -119,13 +119,13 @@
   height: 100%;
 }
 
-.product-card:hover {
+.tarjeta-producto:hover {
   border-color: var(--nexora-blue);
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.product-image {
+.imagen-producto {
   position: relative;
   background: #fff;
   display: flex;
@@ -135,18 +135,18 @@
   overflow: hidden;
 }
 
-.product-real-image {
+.imagen-real-producto {
   width: 100%;
   height: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
-.product-card:hover .product-real-image {
+.tarjeta-producto:hover .imagen-real-producto {
   transform: scale(1.05);
 }
 
-.product-image-fallback {
+.imagen-producto-reserva {
   font-size: 64px;
   display: none;
   align-items: center;
@@ -155,16 +155,16 @@
   height: 100%;
 }
 
-.product-emoji {
+.emoji-producto {
   font-size: 64px;
   transition: transform 0.3s ease;
 }
 
-.product-card:hover .product-emoji {
+.tarjeta-producto:hover .emoji-producto {
   transform: scale(1.1);
 }
 
-.product-badge {
+.etiqueta-producto {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -177,7 +177,7 @@
   border: 1px solid rgba(0, 148, 255, 0.5);
 }
 
-.product-info {
+.informacion-producto {
   padding: 12px;
   flex: 1;
   display: flex;
@@ -185,7 +185,7 @@
   gap: 6px;
 }
 
-.product-name {
+.nombre-producto {
   color: var(--nexora-text);
   font-size: 1.3rem;
   font-weight: 700;
@@ -199,7 +199,7 @@
   min-height: 2.6em;
 }
 
-.product-short-desc {
+.descripcion-corta-producto {
   color: #9ca3af;
   font-size: 16px;
   margin: 8px 0 0 0;
@@ -207,29 +207,29 @@
   min-height: 24px;
 }
 
-.product-vendor {
+.vendedor-producto {
   color: #9ca3af;
   font-size: 16px;
   margin: 0;
 }
 
-.product-rating {
+.calificacion-producto {
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 13px;
 }
 
-.stars {
+.estrellas {
   font-size: 14px;
 }
 
-.rating-value {
+.valor-calificacion {
   color: var(--nexora-blue);
   font-weight: 600;
 }
 
-.product-footer {
+.pie-producto {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -237,13 +237,13 @@
   margin-top: auto;
 }
 
-.product-price {
+.precio-producto {
   color: #10b981;
   font-size: 1.5rem;
   font-weight: 800;
 }
 
-.add-btn {
+.boton-agregar {
   background: rgba(0, 148, 255, 0.3);
   border: 1px solid rgba(0, 148, 255, 0.5);
   color: var(--nexora-blue);
@@ -255,20 +255,42 @@
   flex-shrink: 0;
 }
 
-.add-btn:hover {
+.boton-agregar:hover {
   background: rgba(0, 148, 255, 0.5);
   border-color: var(--nexora-blue);
   transform: scale(1.05);
 }
 
-/* Empty State */
-.empty-state {
+/* Estado Vacío */
+.estado-vacio {
   text-align: center;
   padding: 60px 20px;
   color: #9ca3af;
 }
 
-.empty-state p {
+.estado-vacio p {
   font-size: 18px;
   margin: 0;
+}
+
+/* Spinner y Contenedor de Carga */
+.contenedor-carga {
+  text-align: center;
+  padding: 50px;
+}
+
+.indicador-carga {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 148, 255, 0.1);
+  border-left-color: var(--nexora-blue);
+  border-radius: 50%;
+  animation: girar 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
 }

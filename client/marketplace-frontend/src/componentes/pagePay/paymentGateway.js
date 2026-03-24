@@ -9,6 +9,7 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
 
 const PaymentGateway = () => {
+    // ===== NAVEGACIÓN Y CONTEXTO =====
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -21,6 +22,8 @@ const PaymentGateway = () => {
     const selectedItems = location.state?.selectedItems || [];
     const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
     const selectedCount = location.state?.selectedCount || cartItems.length;
+
+    // ===== ESTADO DE TARJETA =====
 
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -38,6 +41,8 @@ const PaymentGateway = () => {
     const [selectedProductComments, setSelectedProductComments] = useState([]);
     const [selectedProductInfo, setSelectedProductInfo] = useState(null);
     const [loadingProductComments, setLoadingProductComments] = useState(false);
+
+    // ===== CARGA DE DATOS Y COMENTARIOS =====
 
     // Función para obtener comentarios de un producto
     const fetchProductComments = async (product) => {
@@ -62,7 +67,7 @@ const PaymentGateway = () => {
         }
     };
 
-    // Estados para dirección de envío
+    // ===== DIRECCIÓN DE ENVÍO =====
     const [address, setAddress] = useState({
         pais: '',
         provincia: '',
@@ -108,6 +113,10 @@ const PaymentGateway = () => {
     // ============================================
     // VALIDACIÓN REAL DE TARJETAS (ALGORITMO DE LUHN)
     // ============================================
+
+    /**
+     * Algoritmo de Luhn (Mod 10) para validación de números de tarjeta
+     */
 
     // Algoritmo de Luhn (Mod 10) - El mismo usado en la vida real
     const luhnCheck = (cardNumber) => {
@@ -397,10 +406,11 @@ const PaymentGateway = () => {
         navigate('/');
     };
 
+    // ===== RENDERIZADO PRINCIPAL =====
     return (
 
         <>
-            <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
+            <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
                 <NavbarSecundario
                     toggleTheme={toggleTheme}
                     isDarkMode={isDarkMode}
@@ -413,60 +423,60 @@ const PaymentGateway = () => {
 
 
 
-            <div className={`gateway-container ${!isDarkMode ? 'light-mode' : ''}`}>
+            <div className={`contenedor-pasarela ${!isDarkMode ? 'modo-claro' : ''}`}>
                 {/* Header */}
 
 
-                <div className="gateway-main-content">
+                <div className="contenido-principal-pasarela">
                     {/* TWO COLUMN LAYOUT: Address (with Reviews at bottom) + Payment */}
-                    <div className="gateway-two-column-layout">
+                    <div className="diseno-dos-columnas-pasarela">
                     {/* Left Column: Address + Reviews at bottom */}
-                    <div className="gateway-left-column">
-                        <div className="dirección-de-paquetes dirección-de-paquetes-right">
-                            <h3 className="gateway-address-title">📦 Dirección de envío</h3>
-                            <div className="gateway-address-form">
+                    <div className="columna-izquierda-pasarela">
+                        <div className="direccion-envio direccion-envio-derecha">
+                            <h3 className="titulo-direccion-pasarela">📦 Dirección de envío</h3>
+                            <div className="formulario-direccion-pasarela">
                                 <input
                                     type="text"
-                                    className={`gateway-address-input ${addressErrors.pais ? 'input-error' : ''}`}
+                                    className={`entrada-direccion-pasarela ${addressErrors.pais ? 'error-entrada' : ''}`}
                                     name="pais"
                                     placeholder="País"
                                     value={address.pais}
                                     onChange={handleAddressChange}
                                     required
                                 />
-                                {addressErrors.pais && <span className="gateway-address-error-message">{addressErrors.pais}</span>}
+                                {addressErrors.pais && <span className="mensaje-error-direccion-pasarela">{addressErrors.pais}</span>}
                                 <input
                                     type="text"
-                                    className={`gateway-address-input ${addressErrors.provincia ? 'input-error' : ''}`}
+                                    className={`entrada-direccion-pasarela ${addressErrors.provincia ? 'error-entrada' : ''}`}
                                     name="provincia"
                                     placeholder="Provincia"
                                     value={address.provincia}
                                     onChange={handleAddressChange}
                                     required
                                 />
-                                {addressErrors.provincia && <span className="gateway-address-error-message">{addressErrors.provincia}</span>}
+                                {addressErrors.provincia && <span className="mensaje-error-direccion-pasarela">{addressErrors.provincia}</span>}
                                 <input
                                     type="text"
-                                    className={`gateway-address-input ${addressErrors.ciudad ? 'input-error' : ''}`}
+                                    className={`entrada-direccion-pasarela ${addressErrors.ciudad ? 'error-entrada' : ''}`}
                                     name="ciudad"
                                     placeholder="Ciudad"
                                     value={address.ciudad}
                                     onChange={handleAddressChange}
                                     required
                                 />
-                                {addressErrors.ciudad && <span className="gateway-address-error-message">{addressErrors.ciudad}</span>}
+                                {addressErrors.ciudad && <span className="mensaje-error-direccion-pasarela">{addressErrors.ciudad}</span>}
                                 <input
                                     type="text"
-                                    className={`gateway-address-input ${addressErrors.codigoPostal ? 'input-error' : ''}`}
+                                    className={`entrada-direccion-pasarela ${addressErrors.codigoPostal ? 'error-entrada' : ''}`}
                                     name="codigoPostal"
                                     placeholder="Código Postal"
                                     value={address.codigoPostal}
                                     onChange={handleAddressChange}
                                     required
                                 />
-                                {addressErrors.codigoPostal && <span className="gateway-address-error-message">{addressErrors.codigoPostal}</span>}
+                                {addressErrors.codigoPostal && <span className="mensaje-error-direccion-pasarela">{addressErrors.codigoPostal}</span>}
                                 <textarea
-                                    className={`gateway-address-input ${addressErrors.direccion ? 'input-error' : ''}`}
+                                    className={`entrada-direccion-pasarela ${addressErrors.direccion ? 'error-entrada' : ''}`}
                                     name="direccion"
                                     placeholder="Dirección exacta"
                                     value={address.direccion}
@@ -474,10 +484,10 @@ const PaymentGateway = () => {
                                     required
                                     rows={4}
                                 />
-                                {addressErrors.direccion && <span className="gateway-address-error-message">{addressErrors.direccion}</span>}
+                                {addressErrors.direccion && <span className="mensaje-error-direccion-pasarela">{addressErrors.direccion}</span>}
                                 <button
                                     type="button"
-                                    className="guardar-direccion-btn"
+                                    className="boton-guardar-direccion"
                                     onClick={handleSaveAddress}
                                 >
                                     Guardar dirección
@@ -486,24 +496,24 @@ const PaymentGateway = () => {
                         </div>
 
                         {/* Reviews Section - Inside Address Column at Bottom */}
-                        <div className="gateway-reviews-in-address">
-                            <h3 className="gateway-reviews-title">📝 Reseñas de Productos</h3>
-                            <p className="gateway-reviews-subtitle">
+                        <div className="resenas-en-direccion-pasarela">
+                            <h3 className="titulo-resenas-pasarela">📝 Reseñas de Productos</h3>
+                            <p className="subtitulo-resenas-pasarela">
                                 Ver opiniones de otros compradores
                             </p>
                             
-                            <div className="gateway-reviews-products-list">
+                            <div className="lista-productos-resenas-pasarela">
                                 {selectedItems.map((item, index) => (
-                                    <div key={item._id || item.id || index} className="gateway-review-product-card">
+                                    <div key={item._id || item.id || index} className="tarjeta-producto-resena-pasarela">
                                         <img 
                                             src={item.images?.[0] || item.image || "https://via.placeholder.com/60"} 
                                             alt={item.name} 
-                                            className="gateway-review-product-image"
+                                            className="imagen-producto-resena-pasarela"
                                         />
-                                        <div className="gateway-review-product-info">
-                                            <span className="gateway-review-product-name">{item.name}</span>
+                                        <div className="info-producto-resena-pasarela">
+                                            <span className="nombre-producto-resena-pasarela">{item.name}</span>
                                             <button 
-                                                className="gateway-review-btn"
+                                                className="boton-ver-resenas-pasarela"
                                                 onClick={() => fetchProductComments(item)}
                                             >
                                                 💬 Ver reseñas
@@ -516,34 +526,34 @@ const PaymentGateway = () => {
                     </div>
 
                     {/* Right Column: Payment Form */}
-                    <div className="gateway-right-column">
+                    <div className="columna-derecha-pasarela">
                         <div className="pasarela-de-pago">
-                            <h2 className="gateway-payment-title">
+                            <h2 className="titulo-pago-pasarela">
                                 💳 Completar Pago
                             </h2>
-                            <p className="gateway-payment-subtitle">
+                            <p className="subtitulo-pago-pasarela">
                                 Ingresa los datos de tu tarjeta para completar la compra
                             </p>
 
                         <form onSubmit={handleSubmit}>
                             {/* Card Preview */}
-                            <div className={`gateway-card-preview ${cardType ? cardType.toLowerCase() : ''}`}>
-                                <div className="gateway-card-preview-inner">
-                                    <div className="gateway-card-chip"></div>
-                                    <div className="gateway-card-number-preview">
+                            <div className={`vista-previa-tarjeta-pasarela ${cardType ? cardType.toLowerCase() : ''}`}>
+                                <div className="interior-vista-previa-tarjeta">
+                                    <div className="chip-tarjeta-pasarela"></div>
+                                    <div className="vista-previa-numero-tarjeta">
                                         {getMaskedCardNumber(cardNumber)}
                                     </div>
-                                    <div className="gateway-card-details-preview">
-                                        <div className="gateway-card-name-preview">
+                                    <div className="vista-previa-detalles-tarjeta">
+                                        <div className="vista-previa-nombre-tarjeta">
                                             {cardName || 'NOMBRE TITULAR'}
                                         </div>
-                                        <div className="gateway-card-expiry-preview">
+                                        <div className="vista-previa-vencimiento-tarjeta">
                                             {expiryDate || 'MM/AA'}
                                         </div>
                                     </div>
-                                    <div className={`gateway-card-logo-preview ${cardType ? 'has-icon' : ''}`}>
+                                    <div className={`vista-previa-logo-tarjeta ${cardType ? 'tiene-icono' : ''}`}>
                                         {cardType && (
-                                            <div className={`gateway-card-icon ${cardType.toLowerCase()}`}>
+                                            <div className={`icono-tarjeta-pasarela ${cardType.toLowerCase()}`}>
                                                 {cardType === 'VISA' && 'VISA'}
                                                 {cardType === 'AMEX' && 'AMEX'}
                                                 {cardType === 'DISCOVER' && 'DISC'}
@@ -551,7 +561,7 @@ const PaymentGateway = () => {
                                                 {cardType === 'JCB' && 'JCB'}
                                             </div>
                                         )}
-                                        <span className="gateway-card-type-text">
+                                        <span className="texto-tipo-tarjeta-pasarela">
                                             {!cardType && 'VISA'}
                                         </span>
                                     </div>
@@ -559,45 +569,45 @@ const PaymentGateway = () => {
                             </div>
 
                             {/* Card Form */}
-                            <div className="gateway-payment-form">
+                            <div className="formulario-pago-pasarela">
                                 {/* Nombre del titular */}
                                 <input
                                     type="text"
-                                    className={`gateway-payment-input ${errors.cardName ? 'input-error' : ''}`}
+                                    className={`entrada-pago-pasarela ${errors.cardName ? 'error-entrada' : ''}`}
                                     placeholder="Nombre del titular"
                                     value={cardName}
                                     onChange={handleCardNameChange}
                                     maxLength={30}
                                 />
-                                {errors.cardName && <span className="gateway-error-message">{errors.cardName}</span>}
+                                {errors.cardName && <span className="mensaje-error-pasarela">{errors.cardName}</span>}
 
                                 {/* Número de tarjeta */}
                                 <input
                                     type="text"
-                                    className={`gateway-payment-input ${errors.cardNumber ? 'input-error' : ''}`}
+                                    className={`entrada-pago-pasarela ${errors.cardNumber ? 'error-entrada' : ''}`}
                                     placeholder="Numero de Tarjeta (inicie con 4, 5, 34, 37, 6011)"
                                     value={cardNumber}
                                     onChange={handleCardNumberChange}
                                     maxLength={cardType === 'AMEX' ? 17 : 19}
                                 />
-                                {errors.cardNumber && <span className="gateway-error-message">{errors.cardNumber}</span>}
+                                {errors.cardNumber && <span className="mensaje-error-pasarela">{errors.cardNumber}</span>}
 
-                                <div className="gateway-card-details-row">
-                                    <div className="gateway-input-group">
+                                <div className="fila-detalles-tarjeta-pasarela">
+                                    <div className="grupo-entrada-pasarela">
                                         <input
                                             type="text"
-                                            className={`gateway-payment-input ${errors.expiryDate ? 'input-error' : ''}`}
+                                            className={`entrada-pago-pasarela ${errors.expiryDate ? 'error-entrada' : ''}`}
                                             placeholder="MM/AA"
                                             value={expiryDate}
                                             onChange={handleExpiryDateChange}
                                             maxLength={5}
                                         />
-                                        {errors.expiryDate && <span className="gateway-error-message">{errors.expiryDate}</span>}
+                                        {errors.expiryDate && <span className="mensaje-error-pasarela">{errors.expiryDate}</span>}
                                     </div>
-                                    <div className="gateway-input-group gateway-cvv-input-group">
+                                    <div className="grupo-entrada-pasarela grupo-entrada-cvv-pasarela">
                                         <input
                                             type={showCvv ? "text" : "password"}
-                                            className={`gateway-payment-input ${errors.cvv ? 'input-error' : ''}`}
+                                            className={`entrada-pago-pasarela ${errors.cvv ? 'error-entrada' : ''}`}
                                             placeholder={cardType === 'AMEX' ? 'CVV (4 digitos)' : 'CVV (3 digitos)'}
                                             value={cvv}
                                             onChange={handleCvvChange}
@@ -605,7 +615,7 @@ const PaymentGateway = () => {
                                         />
                                         <button
                                             type="button"
-                                            className="gateway-cvv-toggle"
+                                            className="alternar-cvv-pasarela"
                                             onClick={() => setShowCvv(!showCvv)}
                                             title={showCvv ? 'Ocultar CVV' : 'Mostrar CVV'}
                                         >
@@ -621,16 +631,16 @@ const PaymentGateway = () => {
                                                 </svg>
                                             )}
                                         </button>
-                                        {errors.cvv && <span className="gateway-error-message">{errors.cvv}</span>}
+                                        {errors.cvv && <span className="mensaje-error-pasarela">{errors.cvv}</span>}
                                     </div>
                                 </div>
 
-                                <p className="gateway-card-hint">
-                                    <span className={`gateway-card-type-indicator ${cardType ? 'active' : ''}`}>
+                                <p className="sugerencia-tarjeta-pasarela">
+                                    <span className={`indicador-tipo-tarjeta-pasarela ${cardType ? 'activo' : ''}`}>
                                         {cardType ? `💳 ${cardType}` : '💳 Visa/Mastercard/Amex/Discover'}
                                     </span>
                                     <br />
-                                    <span className="gateway-validation-info">
+                                    <span className="info-validacion-pasarela">
                                         ✓ Algoritmo de Luhn &nbsp; ✓ Tipo detectado &nbsp; ✓ CVV adaptativo
                                     </span>
                                 </p>
@@ -638,7 +648,7 @@ const PaymentGateway = () => {
 
                             <button
                                 type="submit"
-                                className={`gateway-submit-btn ${isProcessing ? 'processing' : ''}`}
+                                className={`boton-enviar-pasarela ${isProcessing ? 'procesando' : ''}`}
                                 disabled={isProcessing}
                             >
                                 {isProcessing ? 'Procesando...' : `Pagar ₡${selectedSubtotal.toLocaleString()}`}
@@ -646,17 +656,17 @@ const PaymentGateway = () => {
                         </form>
 
                         {/* Trust Section */}
-                        <div className="gateway-trust-section">
-                            <p className="gateway-secure-payment-text">🛡️ Opciones de pago seguro</p>
+                        <div className="seccion-confianza-pasarela">
+                            <p className="texto-pago-seguro-pasarela">🛡️ Opciones de pago seguro</p>
 
-                            <div className="gateway-payment-methods">
+                            <div className="metodos-pago-pasarela">
                                 <span>Visa</span>
                                 <span>Mastercard</span>
                                 <span>Amex</span>
                                 <span>Discover</span>
                             </div>
 
-                            <p className="gateway-trust-disclaimer">
+                            <p className="descargo-responsabilidad-pasarela">
                                 Nexora se compromete a proteger tu información de pago.
                                 Tus datos están encriptados y seguros.
                             </p>
@@ -669,72 +679,90 @@ const PaymentGateway = () => {
 
                 {/* Modal de Comentarios del Producto */}
                 {showCommentsModal && (
-                    <div className="gateway-comments-modal-overlay" onClick={() => setShowCommentsModal(false)}>
-                        <div className="gateway-comments-modal" onClick={(e) => e.stopPropagation()}>
-                            <div className="gateway-comments-modal-header">
-                                <div className="gateway-comments-modal-product-info">
+                    <div className="capa-modal-comentarios-pasarela" onClick={() => setShowCommentsModal(false)}>
+                        <div className="modal-comentarios-pasarela" onClick={(e) => e.stopPropagation()}>
+                            <div className="encabezado-modal-comentarios-pasarela">
+                                <div className="info-producto-modal-comentarios-pasarela">
                                     <img 
                                         src={selectedProductInfo?.image || "https://via.placeholder.com/80"} 
                                         alt={selectedProductInfo?.name} 
-                                        className="gateway-comments-modal-product-image"
+                                        className="imagen-producto-modal-comentarios-pasarela"
                                     />
                                     <div>
                                         <h3>{selectedProductInfo?.name}</h3>
-                                        <div className="gateway-comments-modal-rating">
-                                            <span className="rating-number">{selectedProductInfo?.averageRating || "0"}</span>
-                                            <div className="rating-stars">
+                                        <div className="calificacion-modal-comentarios-pasarela">
+                                            <span className="numero-calificacion">{selectedProductInfo?.averageRating || "0"}</span>
+                                            <div className="estrellas-calificacion">
                                                 {[...Array(5)].map((_, i) => (
-                                                    <span key={i} className={i < Math.round(selectedProductInfo?.averageRating || 0) ? "star filled" : "star"}>★</span>
+                                                    <span key={i} className={i < Math.round(selectedProductInfo?.averageRating || 0) ? "estrella llena" : "estrella"}>★</span>
                                                 ))}
                                             </div>
-                                            <span className="rating-count">({selectedProductInfo?.totalComments || 0} comentarios)</span>
+                                            <span className="conteo-calificacion">({selectedProductInfo?.totalComments || 0} comentarios)</span>
                                         </div>
                                     </div>
                                 </div>
                                 <button 
-                                    className="gateway-comments-modal-close"
+                                    className="cerrar-modal-comentarios-pasarela"
                                     onClick={() => setShowCommentsModal(false)}
                                 >
                                     ✕
                                 </button>
                             </div>
 
-                            <div className="gateway-comments-modal-body">
+                            <div className="cuerpo-modal-comentarios-pasarela">
                                 {loadingProductComments ? (
-                                    <div className="gateway-comments-loading">Cargando comentarios...</div>
+                                    <div className="cargando-comentarios-pasarela">Cargando comentarios...</div>
                                 ) : selectedProductComments.length === 0 ? (
-                                    <div className="gateway-comments-empty">
-                                       
+
+                                    <div className="comentarios-vacios-pasarela">
+                                        <span>💬</span>
+
+                                   
                                         <p>Aún no hay comentarios para este producto.</p>
                                         
                                     </div>
                                 ) : (
-                                    <div className="gateway-comments-list">
+                                    <div className="lista-comentarios-pasarela">
                                         {selectedProductComments.map((comment) => (
-                                            <div key={comment._id} className="gateway-comment-item">
-                                                <div className="gateway-comment-header">
-                                                    
-                                                    <div className="gateway-comment-info">
-                                                        <span className="gateway-comment-user">{comment.user?.nombre || "Usuario "}</span>
-                                                        <span className="gateway-comment-date">
+
+                                            <div key={comment._id} className="item-comentario-pasarela">
+                                                <div className="encabezado-comentario-pasarela">
+                                                    <img 
+                                                        src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} 
+                                                        alt={comment.user?.nombre || "Usuario"} 
+                                                        className="avatar-comentario-pasarela"
+                                                    />
+                                                    <div className="info-comentario-pasarela">
+                                                        <span className="usuario-comentario-pasarela">{comment.user?.nombre || "Usuario"}</span>
+                                                        <span className="fecha-comentario-pasarela">
+
                                                             {new Date(comment.createdAt).toLocaleDateString("es-CR")}
                                                         </span>
                                                     </div>
-                                                    <div className="gateway-comment-rating">
+                                                    <div className="calificacion-comentario-pasarela">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <span key={i} className={i < comment.rating ? "star filled" : " star "}>★</span>
+
+                                                            <span key={i} className={i < comment.rating ? "estrella llena" : "estrella"}>★</span>
+
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <p className="gateway-comment-text">{comment.text}</p>
+                                                <p className="texto-comentario-pasarela">{comment.text}</p>
                                             </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="gateway-comments-modal-footer">
-                                
+
+                            <div className="pie-modal-comentarios-pasarela">
+                                <button 
+                                    className="boton-modal-comentarios-pasarela"
+                                    onClick={() => setShowCommentsModal(false)}
+                                >
+                                    Cerrar
+                                </button>
+
                             </div>
                         </div>
                     </div>
@@ -742,28 +770,28 @@ const PaymentGateway = () => {
 
                 {/* Success Modal */}
                 {showSuccessModal && (
-                    <div className="gateway-success-modal-overlay" onClick={() => setShowSuccessModal(false)}>
-                        <div className="gateway-success-modal" onClick={(e) => e.stopPropagation()}>
-                            <div className="gateway-success-modal-icon">
+                    <div className="capa-modal-exito-pasarela" onClick={() => setShowSuccessModal(false)}>
+                        <div className="modal-exito-pasarela" onClick={(e) => e.stopPropagation()}>
+                            <div className="icono-modal-exito-pasarela">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" strokeLinecap="round" strokeLinejoin="round" />
                                     <polyline points="22 4 12 14.01 9 11.01" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
                             <h2>¡Pago Exitoso!</h2>
-                            <div className="gateway-success-modal-details">
+                            <div className="detalles-modal-exito-pasarela">
                                 <p>Tu compra ha sido procesada correctamente</p>
-                                <div className="gateway-success-modal-card">
-                                    <span className="gateway-card-label">Tarjeta utilizada:</span>
-                                    <span className="gateway-card-number-display">**** **** **** {lastFourDigits}</span>
+                                <div className="tarjeta-modal-exito-pasarela">
+                                    <span className="etiqueta-tarjeta-pasarela">Tarjeta utilizada:</span>
+                                    <span className="pantalla-numero-tarjeta-pasarela">**** **** **** {lastFourDigits}</span>
                                 </div>
-                                <div className="gateway-success-modal-amount">
-                                    <span className="gateway-amount-label">Monto pagado:</span>
-                                    <span className="gateway-amount-value">₡{selectedSubtotal.toLocaleString()}</span>
+                                <div className="monto-modal-exito-pasarela">
+                                    <span className="etiqueta-monto-pasarela">Monto pagado:</span>
+                                    <span className="valor-monto-pasarela">₡{selectedSubtotal.toLocaleString()}</span>
                                 </div>
                             </div>
                             <button
-                                className="gateway-success-modal-btn"
+                                className="boton-modal-exito-pasarela"
                                 onClick={handleContinue}
                             >
                                 Continuar

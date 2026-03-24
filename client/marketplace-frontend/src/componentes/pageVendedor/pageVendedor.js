@@ -11,22 +11,20 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 export default function PageVendedor() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-
   const { addToCart, cartCount } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
 
+  // ===== ESTADO Y COMPONENTES =====
+  const [products, setProducts] = useState([]); // Lista de productos del vendedor
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Manejo de errores
+  const [searchTerm, setSearchTerm] = useState(""); // Término de búsqueda
+  const [selectedCategory, setSelectedCategory] = useState("Todos"); // Categoría seleccionada
+  const [showNotification, setShowNotification] = useState(""); // Mensajes de notificación
 
-  const [products, setProducts] = useState([]);
-  //const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [showNotification, setShowNotification] = useState("");
-
-  // State for Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  // ===== ESTADO DEL MODAL Y FORMULARIO =====
+  const [isModalOpen, setIsModalOpen] = useState(false); // Control del modal
+  const [editingProduct, setEditingProduct] = useState(null); // Producto en edición (null si es nuevo)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -35,9 +33,11 @@ export default function PageVendedor() {
     brand: "",
     stock: "",
   });
-  const [imageFiles, setImageFiles] = useState([]); // Archivos seleccionados
-  const [imagePreviews, setImagePreviews] = useState([]); // Vista previa de imágenes
-  const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)
+  const [imageFiles, setImageFiles] = useState([]); // Archivos de imagen seleccionados para subir
+  const [imagePreviews, setImagePreviews] = useState([]); // Vistas previas de nuevas imágenes
+  const [existingImages, setExistingImages] = useState([]); // Imágenes que ya tiene el producto en el servidor
+
+  // ===== CONFIGURACIÓN Y CATÁLOGOS =====
 
   const categories = [
     "Todos",
@@ -51,11 +51,14 @@ export default function PageVendedor() {
     "Accesorios",
   ];
 
+  // ===== CARGA DE DATOS =====
   useEffect(() => {
     fetchMyProducts();
-    //fetchAllProducts();
   }, []);
 
+  /**
+   * Obtiene los productos del vendedor autenticado
+   */
   const fetchMyProducts = async () => {
     try {
       setLoading(true);
@@ -79,6 +82,10 @@ export default function PageVendedor() {
 
 
 
+  // ===== MANEJO DE FORMULARIO E IMÁGENES =====
+  /**
+   * Actualiza el estado del formulario al escribir en los inputs
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -87,6 +94,9 @@ export default function PageVendedor() {
     });
   };
 
+  /**
+   * Maneja la selección de archivos de imagen y genera vistas previas
+   */
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -122,6 +132,10 @@ export default function PageVendedor() {
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // ===== ACCIONES DE MODAL =====
+  /**
+   * Prepara el modal para agregar un nuevo producto
+   */
   const openAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -138,6 +152,9 @@ export default function PageVendedor() {
     setIsModalOpen(true);
   };
 
+  /**
+   * Prepara el modal para editar un producto existente
+   */
   const openEditModal = (product) => {
     setEditingProduct(product);
     setFormData({
@@ -154,6 +171,10 @@ export default function PageVendedor() {
     setIsModalOpen(true);
   };
 
+  // ===== PERSISTENCIA Y API =====
+  /**
+   * Envía los datos del producto (crear o editar) al servidor
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -219,6 +240,9 @@ export default function PageVendedor() {
     }
   };
 
+  /**
+   * Elimina un producto tras confirmación del usuario
+   */
   const handleDelete = async (id) => {
     if (
       window.confirm("¿Estás seguro de que quieres eliminar este producto?")
@@ -236,8 +260,7 @@ export default function PageVendedor() {
     }
   };
 
-
-
+  // ===== LÓGICA DE FILTRADO =====
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === "Todos" || product.category === selectedCategory;
@@ -247,9 +270,10 @@ export default function PageVendedor() {
     return matchesCategory && matchesSearch;
   });
 
+  // ===== RENDERIZADO PRINCIPAL =====
   return (
     <>
-      <div className={`navbar-secundario ${!isDarkMode ? 'light-mode' : ''}`}>
+      <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
         <NavbarSecundario
           toggleTheme={toggleTheme}
           isDarkMode={isDarkMode}
@@ -264,37 +288,37 @@ export default function PageVendedor() {
           disableUserMenu={true}
         />
       </div>
-      <div className={`principal-container ${!isDarkMode ? "light-mode" : ""}`}>
+      <div className={`contenedor-principal-vendedor ${!isDarkMode ? "modo-claro" : ""}`}>
         {showNotification && (
-          <div className="notification">{showNotification}</div>
+          <div className="notificacion">{showNotification}</div>
         )}
         {/* <DivPromo
         //products={allProducts}
         handlePromoAddToCart={handlePromoAddToCart}
       /> */}
-        <div className="main-container">
-          <section className="products-section">
-            <div className="section-header">
+        <div className="contenedor-principal-productos">
+          <section className="seccion-productos">
+            <div className="encabezado-seccion">
               <h2>
                 Mis Productos{" "}
                 {selectedCategory !== "Todos" && `— ${selectedCategory}`}
               </h2>
-              <div className="header-actions">
+              <div className="acciones-encabezado">
 
                 <p>{filteredProducts.length} productos publicados</p>
-                <button className="add-btn-vendedor" onClick={openAddModal}>
+                <button className="boton-agregar-vendedor" onClick={openAddModal}>
                   ➕ Nuevo Producto
                 </button>
               </div>
             </div>
 
             {loading ? (
-              <div className="loading-container">
-                <div className="spinner"></div>
+              <div className="contenedor-carga">
+                <div className="indicador-carga"></div>
                 <p>Cargando tus productos...</p>
               </div>
             ) : error ? (
-              <div className="empty-state">
+              <div className="estado-vacio">
                 <p>⚠️ {error}</p>
                 <button className="add-btn" onClick={fetchMyProducts}>
                   Reintentar
@@ -308,42 +332,42 @@ export default function PageVendedor() {
                 </button>
               </div>
             ) : (
-              <div className="products-grid">
+              <div className="cuadricula-productos">
                 {filteredProducts.map((product) => (
-                  <div key={product._id} className="product-card">
-                    <div className="product-image">
+                  <div key={product._id} className="tarjeta-producto">
+                    <div className="imagen-producto">
                       <img
                         src={
                           product.images[0]?.url ||
                           "https://via.placeholder.com/300"
                         }
                         alt={product.name}
-                        className="product-real-image"
+                        className="imagen-real-producto"
                       />
-                      <div className="product-badge">{product.category}</div>
+                      <div className="etiqueta-producto">{product.category}</div>
                     </div>
 
-                    <div className="product-info">
-                      <h3 className="product-name">{product.name}</h3>
-                      <p className="product-short-desc">
+                    <div className="informacion-producto">
+                      <h3 className="nombre-producto">{product.name}</h3>
+                      <p className="descripcion-corta-producto">
                         {product.description?.substring(0, 60)}...
                       </p>
-                      <div className="card-meta">
-                        <span className="product-price">
+                      <div className="meta-tarjeta">
+                        <span className="precio-producto">
                           ₡{product.price.toLocaleString()}
                         </span>
-                        <span className="card-stock">Stock: {product.stock}</span>
+                        <span className="existencias-tarjeta">Stock: {product.stock}</span>
                       </div>
 
-                      <div className="product-footer-vendedor">
+                      <div className="pie-pagina-producto-vendedor">
                         <button
-                          className="btn-edit"
+                          className="boton-editar"
                           onClick={() => openEditModal(product)}
                         >
                           ✏️ Editar
                         </button>
                         <button
-                          className="btn-delete"
+                          className="boton-eliminar"
                           onClick={() => handleDelete(product._id)}
                         >
                           🗑️ Borrar
@@ -359,22 +383,22 @@ export default function PageVendedor() {
 
         {/* Modal for Add/Edit */}
         {isModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
+          <div className="capa-modal">
+            <div className="contenido-modal">
+              <div className="encabezado-modal">
                 <h2>
                   {editingProduct ? "Editar Producto" : "Subir Nuevo Producto"}
                 </h2>
                 <button
-                  className="close-modal"
+                  className="cerrar-modal"
                   onClick={() => setIsModalOpen(false)}
                 >
                   ×
                 </button>
               </div>
 
-              <form className="product-form" onSubmit={handleSubmit}>
-                <div className="form-group">
+              <form className="formulario-producto" onSubmit={handleSubmit}>
+                <div className="grupo-formulario">
                   <label>Nombre del Producto</label>
                   <input
                     type="text"
@@ -398,7 +422,7 @@ export default function PageVendedor() {
                   />
                 </div>
 
-                <div className="form-row">
+                <div className="fila-formulario">
                   <div className="form-group">
                     <label>Precio (₡)</label>
                     <input
@@ -460,7 +484,7 @@ export default function PageVendedor() {
 
                   {/* Imágenes existentes (al editar) */}
                   {existingImages.length > 0 && (
-                    <div className="image-previews-container">
+                    <div className="contenedor-vistas-previas-imagenes">
                       <p
                         style={{
                           fontSize: "0.85rem",
@@ -470,16 +494,16 @@ export default function PageVendedor() {
                       >
                         Imágenes actuales:
                       </p>
-                      <div className="image-previews-grid">
+                      <div className="cuadricula-vistas-previas-imagenes">
                         {existingImages.map((img, index) => (
                           <div
                             key={`existing-${index}`}
-                            className="image-preview-item"
+                            className="item-vista-previa-imagen"
                           >
                             <img src={img.url} alt={`Existente ${index + 1}`} />
                             <button
                               type="button"
-                              className="btn-remove-preview"
+                              className="boton-quitar-vista-previa"
                               onClick={() => removeExistingImage(index)}
                             >
                               ×
@@ -523,8 +547,8 @@ export default function PageVendedor() {
                   )}
 
                   {/* Botón para seleccionar archivos */}
-                  <div className="file-upload-area">
-                    <label className="btn-file-upload">
+                  <div className="area-carga-archivos">
+                    <label className="boton-carga-archivos">
                       📁 Seleccionar imágenes
                       <input
                         type="file"
@@ -534,21 +558,21 @@ export default function PageVendedor() {
                         style={{ display: "none" }}
                       />
                     </label>
-                    <span className="file-upload-hint">
+                    <span className="sugerencia-carga-archivos">
                       Máx. 5 imágenes (JPEG, PNG, GIF, WebP) — 5MB c/u
                     </span>
                   </div>
                 </div>
 
-                <div className="form-actions-modal">
+                <div className="acciones-formulario-modal">
                   <button
                     type="button"
-                    className="btn-secondary-modal"
+                    className="boton-secundario-modal"
                     onClick={() => setIsModalOpen(false)}
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className="btn-primary-modal">
+                  <button type="submit" className="boton-primario-modal">
                     {editingProduct ? "Guardar Cambios" : "Publicar Producto"}
                   </button>
                 </div>
