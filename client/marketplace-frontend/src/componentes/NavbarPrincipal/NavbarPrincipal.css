@@ -116,6 +116,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .alternar-tema-encabezado {
@@ -261,21 +265,45 @@
 
     .derecha-encabezado {
         gap: 5px;
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
     }
 
-    .menu-usuario span, .boton-salir span {
-        display: none; /* If we had icons + text, we'd hide text. But here it's simple text. */
+    .menu-usuario, 
+    .boton-carrito, 
+    .boton-salir,
+    .alternar-tema-encabezado {
+        padding: 8px 10px;
+        font-size: 13px;
+        border-radius: 20px;
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+        max-width: fit-content;
     }
     
     .menu-usuario {
-        padding: 8px;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-align: center;
+    }
+
+    .menu-usuario span {
+        display: none;
     }
     
-    .boton-salir {
-        padding: 8px;
+    .texto-logo {
+        font-size: 20px;
     }
     
-    .boton-carrito {
-        padding: 8px;
+    .imagen-logo-encabezado {
+        width: 40px;
+        scale: 1.2;
     }
+    
+    /* On extreme small screens, we might want to hide text if labels are long */
+    /* But since labels are short "Salir", "Iniciar sesión", we'll just keep them but smaller */
 }

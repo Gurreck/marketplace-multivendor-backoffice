@@ -2,6 +2,12 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Nexo from "../../resource/MascotaNexo/Nexo.svg";
 import "./MascotaNexo.css";
+import { 
+  HelpCircle, 
+  Minus, 
+  PawPrint, 
+  Bell 
+} from 'lucide-react';
 
 /**
  * Componente Mascota (Nexo)
@@ -44,24 +50,24 @@ export default function Mascota() {
 
   else if (location.pathname === "/") {
     mensajes = [
-      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Hola, soy Nexo, tu asistente virtual. Pulsa el botón de ayuda para consejos útiles.",
       "Puedes navegar como invitado, pero algunas funciones estarán limitadas",
       "Registrate para disfrutar de todas las funciones",
       "Inicia sesión para acceder a tu cuenta y gestionar tus compras",
-      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes filtrar productos por categoría para encontrar lo que buscas más rápido",
       "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
-      "Revisa nuestras promociones destacadas!"
+      "¡Revisa nuestras promociones destacadas!"
     ];
   }
 
   else if (location.pathname === "/cliente") {
     mensajes = [
-      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Hola, soy Nexo, tu asistente virtual. Pulsa el botón de ayuda para consejos útiles.",
       "Explora nuevas categorías de productos",
       "Revisa tus productos en el carrito antes de finalizar tu compra",
-      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes filtrar productos por categoría para encontrar lo que buscas más rápido",
       "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
-      "Revisa nuestras promociones destacadas!"
+      "¡Revisa nuestras promociones destacadas!"
     ];
   }
 
@@ -83,9 +89,9 @@ export default function Mascota() {
 
   else if (location.pathname.includes("/checkout")) {
     mensajes = [
-      "",
-      "",
-      ""
+      "Completa tus datos de envío y pago para finalizar la compra",
+      "Verifica el resumen de tu pedido antes de proceder",
+      "Tu compra es segura con nosotros"
     ];
   }
 
@@ -100,7 +106,7 @@ export default function Mascota() {
   else {
     mensajes = [
       "Puedes usar el menú para navegar",
-      "Revisa tus notificaciones 🔔",
+      "Revisa tus notificaciones",
       "Usa el buscador para encontrar cosas",
       "Si necesitas ayuda estoy aquí"
     ];
@@ -114,14 +120,14 @@ export default function Mascota() {
     setIndiceMensaje((indiceMensaje + 1) % mensajes.length);
   };
 
-  // ===== RENDERIZADO CONDICIONAL (MINIMIZADO) =====
   if (!visible) {
     return (
       <button
         className="mascota-mostrar"
         onClick={() => setVisible(true)}
+        title="Mostrar asistente"
       >
-        🐾
+        <PawPrint size={24} />
       </button>
     );
   }
@@ -144,9 +150,9 @@ export default function Mascota() {
         <button
             className="mascota-ayuda"
             onClick={cambiarMensaje}
-            title="Ver otro consejo"
+            title="Siguiente consejo"
         >
-            ?
+            <HelpCircle size={18} />
         </button>
 
         <button
@@ -154,7 +160,7 @@ export default function Mascota() {
             onClick={() => setVisible(false)}
             title="Ocultar asistente"
         >
-            —
+            <Minus size={18} />
         </button>
        </div>
     </div>
