@@ -497,6 +497,10 @@
 }
 
 @media (max-width: 768px) {
+    .contenedor-principal-productos {
+        padding: 20px 3% 40px 3%;
+    }
+
     .cuadricula-productos {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -504,10 +508,36 @@
     .fila-formulario {
         grid-template-columns: 1fr;
     }
+
+    .encabezado-seccion {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .acciones-encabezado {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 @media (max-width: 480px) {
     .cuadricula-productos {
         grid-template-columns: 1fr;
+    }
+
+    .acciones-encabezado {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .contenido-modal {
+        padding: 20px 15px;
+    }
+
+    .tarjeta-producto {
+        max-width: 350px;
+        margin: 0 auto;
+        width: 100%;
     }
 }

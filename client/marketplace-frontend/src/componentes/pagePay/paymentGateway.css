@@ -757,17 +757,32 @@
     .contenido-principal-pasarela {
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        gap: 20px;
     }
     .columna-izquierda-pasarela,
     .columna-derecha-pasarela {
         width: 100%;
-    }
-    .dirección-de-paquetes-right {
-        margin-left: 0;
-        margin-top: 0;
-        width: 100%;
         max-width: 100%;
+    }
+    
+    .pasarela-de-pago {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .contenedor-pasarela {
+        padding: 15px 3%;
+    }
+
+    .encabezado-pasarela {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .direccion-envio {
+        padding: 20px;
     }
 }
 
@@ -793,9 +808,21 @@
     }
     
     .vista-previa-detalles-tarjeta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        flex-direction: row;
+        align-items: flex-end;
+    }
+    
+    .vista-previa-logo-tarjeta {
+        top: 15px;
+        right: 15px;
+    }
+
+    .modal-exito-pasarela {
+        padding: 25px 20px;
+    }
+
+    .fila-detalles-tarjeta-pasarela {
+        grid-template-columns: 1fr;
     }
     
     .gateway-payment-title {
