@@ -98,11 +98,19 @@
     background: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     cursor: pointer;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.boton-navegacion-imagen:hover {
+    background: rgba(0, 148, 255, 0.7);
 }
 
 .boton-navegacion-imagen.prev {
@@ -223,6 +231,9 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .boton-agregar-carrito:hover {
@@ -240,6 +251,8 @@
     border-radius: 8px;
     z-index: 1000;
     animation: slideIn 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
 @keyframes slideIn {
@@ -275,12 +288,18 @@
 }
 
 .boton-enviar-comentario {
-    background: #7c3aed;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .item-comentario {
@@ -411,16 +430,8 @@
 }
 
 .estrellas-input .estrella {
-    font-size: 24px;
-    cursor: pointer;
-    color: #4b5563;
-    transition: color 0.2s, transform 0.2s;
-}
-
-.estrellas-input .estrella.active,
-.estrellas-input .estrella:hover {
-    color: #fbbf24;
-    transform: scale(1.1);
+    display: flex;
+    align-items: center;
 }
 
 .formulario-comentario .entrada-comentario {

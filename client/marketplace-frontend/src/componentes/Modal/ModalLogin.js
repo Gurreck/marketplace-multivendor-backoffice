@@ -1,5 +1,6 @@
 import React from 'react';
 import './ModalLogin.css';
+import { LogIn, X } from 'lucide-react';
 
 const ModalLogin = ({ isOpen, onClose, onLogin, mensaje }) => {
     if (!isOpen) return null;
@@ -8,12 +9,15 @@ const ModalLogin = ({ isOpen, onClose, onLogin, mensaje }) => {
         <div className="capa-modal" onClick={onClose}>
             <div className="contenido-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="encabezado-modal">
-                    
-                    <h3>Porfavor inicia sesión</h3>
+                    <LogIn size={24} color="var(--nexora-blue)" />
+                    <h3>Inicia Sesión</h3>
+                    <button className="boton-cerrar-modal" onClick={onClose}>
+                        <X size={20} />
+                    </button>
                 </div>
                 
                 <div className="cuerpo-modal">
-                    <p>{mensaje || 'Deseas iniciar sesión ahora?'}</p>
+                    <p>{mensaje || '¿Deseas iniciar sesión ahora?'}</p>
                 </div>  
 
                 <div className="pie-modal">

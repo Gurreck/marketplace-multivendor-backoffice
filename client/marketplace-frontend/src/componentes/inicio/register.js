@@ -3,6 +3,18 @@ import './register.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { 
+    Sun, 
+    Moon, 
+    User, 
+    Mail, 
+    Lock, 
+    Eye, 
+    EyeOff, 
+    UserPlus, 
+    Loader2,
+    ShieldCheck
+} from 'lucide-react';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -63,16 +75,11 @@ export default function Register() {
         }
 
         try {
-            // Llamar a la API de registro usando el contexto
             await register(formData.name, formData.email, formData.password, formData.role);
-
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
             setError('');
-
-            // Limpiar formulario y volver al login
             setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'cliente' });
             navigate('/login');
-
         } catch (err) {
             setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
             console.error(err);
@@ -80,6 +87,7 @@ export default function Register() {
             setLoading(false);
         }
     }
+
     return (
         <div className={`contenedor-registro ${!isDarkMode ? 'modo-claro' : ''}`}>
             <div className="tarjeta-registro">
@@ -88,7 +96,7 @@ export default function Register() {
                     onClick={toggleTheme}
                     title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                 >
-                    {isDarkMode ? '☀️' : '🌙'}
+                    {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
 
                 <div className="icono-registro">
@@ -98,12 +106,17 @@ export default function Register() {
                 <h1 className="titulo-registro">Crear Cuenta</h1>
                 <p className="subtitulo-registro">Únete al marketplace</p>
 
-                {error && <div className="error-registro">{error}</div>}
+                {error && (
+                    <div className="error-registro">
+                        <ShieldCheck size={18} style={{ marginRight: '8px' }} />
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="formulario-registro">
                     <div className="grupo-formulario">
                         <label htmlFor="name">
-                            <span className="icono-etiqueta">👤</span> Nombre completo
+                            <span className="icono-etiqueta"><User size={18} /></span> Nombre completo
                         </label>
                         <input
                             type="text"
@@ -118,7 +131,7 @@ export default function Register() {
 
                     <div className="grupo-formulario">
                         <label htmlFor="email">
-                            <span className="icono-etiqueta">📧</span> Email
+                            <span className="icono-etiqueta"><Mail size={18} /></span> Email
                         </label>
                         <input
                             type="email"
@@ -133,7 +146,7 @@ export default function Register() {
 
                     <div className="grupo-formulario">
                         <label htmlFor="password">
-                            <span className="icono-etiqueta">🔐</span> Contraseña
+                            <span className="icono-etiqueta"><Lock size={18} /></span> Contraseña
                         </label>
                         <div className="contenedor-entrada-contrasena">
                             <input
@@ -150,14 +163,14 @@ export default function Register() {
                                 className="boton-alternar-contrasena"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
-                                {showPassword ? "👁️" : "🙈"}
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
                     </div>
 
                     <div className="grupo-formulario">
                         <label htmlFor="confirmPassword">
-                            <span className="icono-etiqueta">🔐</span> Confirmar contraseña
+                            <span className="icono-etiqueta"><Lock size={18} /></span> Confirmar contraseña
                         </label>
                         <div className="contenedor-entrada-contrasena">
                             <input
@@ -173,15 +186,15 @@ export default function Register() {
                                 type="button"
                                 className="boton-alternar-contrasena"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            >
-                                {showConfirmPassword ? "👁️" : "🙈"}
+                             >
+                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
                     </div>
 
                     <div className="grupo-formulario">
                         <label htmlFor="role">
-                            <span className="icono-etiqueta">👤</span> Tipo de cuenta
+                            <span className="icono-etiqueta"><ShieldCheck size={18} /></span> Tipo de cuenta
                         </label>
                         <select
                             id="role"
@@ -201,7 +214,17 @@ export default function Register() {
                         className={`boton-registro ${loading ? 'cargando' : ''}`}
                         disabled={loading}
                     >
-                        {loading ? '⏳ Creando cuenta...' : '➕ Registrarse'}
+                        {loading ? (
+                            <>
+                                <Loader2 className="animacion-giro" size={20} />
+                                Creando cuenta...
+                            </>
+                        ) : (
+                            <>
+                                <UserPlus size={20} />
+                                Registrarse
+                            </>
+                        )}
                     </button>
                 </form>
 

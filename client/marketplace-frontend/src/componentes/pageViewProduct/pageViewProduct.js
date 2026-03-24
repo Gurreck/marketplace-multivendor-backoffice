@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './pageViewProduct.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -6,9 +6,22 @@ import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 import { commentService } from '../../services/commentService';
-
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
+import { 
+    ChevronLeft, 
+    ChevronRight, 
+    MessageCircle, 
+    Star, 
+    Send, 
+    Plus, 
+    Search, 
+    CheckCircle2, 
+    Loader2,
+    Tag,
+    User,
+    ArrowLeft
+} from 'lucide-react';
 
 const PageViewProduct = () => {
     const { id } = useParams();
@@ -18,13 +31,11 @@ const PageViewProduct = () => {
     const { addToCart, cartCount } = useCart();
     const { isDarkMode, toggleTheme } = useTheme();
 
- 
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [similarProducts, setSimilarProducts] = useState([]);
 
-    // ESTADO PARA COMENTARIOS (desde backend)
     const [comments, setComments] = useState([]);
     const [averageRating, setAverageRating] = useState(0);
     const [loadingComments, setLoadingComments] = useState(true);
@@ -35,13 +46,8 @@ const PageViewProduct = () => {
     const [showNotification, setShowNotification] = useState('');
     const [showLoginModal, setShowLoginModal] = useState(false);
 
-    useEffect(() => {
-        fetchProductDetail();
-        fetchComments();
-    }, [id]);
-
     // Función para cargar comentarios desde el backend
-    const fetchComments = async () => {
+    const fetchComments = useCallback(async () => {
         try {
             setLoadingComments(true);
             const response = await commentService.getCommentsByProduct(id);
@@ -54,27 +60,9 @@ const PageViewProduct = () => {
         } finally {
             setLoadingComments(false);
         }
-    };
+    }, [id]);
 
-
-    const fetchProductDetail = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get(`/products/${id}`);
-            if (response.data.success) {
-                setSelectedProduct(response.data.data);
-                // Fetch similar products
-                fetchSimilarProducts(response.data.data.category, response.data.data._id);
-            }
-        } catch (error) {
-            console.error('Error fetching product detail:', error);
-            navigate('/');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchSimilarProducts = async (category, currentId) => {
+    const fetchSimilarProducts = useCallback(async (category, currentId) => {
         try {
             const response = await api.get('/products');
             if (response.data.success) {
@@ -84,7 +72,28 @@ const PageViewProduct = () => {
         } catch (error) {
             console.error('Error fetching similar products:', error);
         }
-    };
+    }, []);
+
+    const fetchProductDetail = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await api.get(`/products/${id}`);
+            if (response.data.success) {
+                setSelectedProduct(response.data.data);
+                fetchSimilarProducts(response.data.data.category, response.data.data._id);
+            }
+        } catch (error) {
+            console.error('Error fetching product detail:', error);
+            navigate('/');
+        } finally {
+            setLoading(false);
+        }
+    }, [id, navigate, fetchSimilarProducts]);
+
+    useEffect(() => {
+        fetchProductDetail();
+        fetchComments();
+    }, [fetchProductDetail, fetchComments]);
 
     const goToPreviousImage = () => {
         setCurrentImageIndex((prev) =>
@@ -116,7 +125,7 @@ const PageViewProduct = () => {
             if (response.data.success) {
                 setNewComment("");
                 setNewRating(5);
-                fetchComments(); // Recargar comentarios
+                fetchComments();
                 setShowNotification("Comentario publicado exitosamente");
                 setTimeout(() => setShowNotification(""), 3000);
             }
@@ -128,8 +137,9 @@ const PageViewProduct = () => {
     };
 
     if (loading) return (
-        <div className="loading" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0094FF', fontSize: '24px' }}>
-            Cargando producto...
+        <div className="loading" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0094FF', gap: '15px' }}>
+            <Loader2 className="animacion-giro" size={48} />
+            <p style={{ fontSize: '20px', fontWeight: '500' }}>Cargando producto...</p>
         </div>
     );
 
@@ -158,16 +168,12 @@ const PageViewProduct = () => {
             <div className={`contenedor-pagina-producto ${!isDarkMode ? 'modo-claro' : ''}`}>
                 {showNotification && (
                     <div className="notificacion">
-                        ✓ {showNotification}
+                        <CheckCircle2 size={18} style={{ marginRight: '8px' }} />
+                        {showNotification}
                     </div>
                 )}
 
-
-
-
-
             <div className="contenido-pagina-producto">
-
                 <div className="diseno-contenido-principal">
                     <div className="seccion-imagen">
                         <div className="contenedor-imagen-principal">
@@ -179,8 +185,12 @@ const PageViewProduct = () => {
 
                             {selectedProduct.images.length > 1 && (
                                 <>
-                                    <button className="boton-navegacion-imagen prev" onClick={goToPreviousImage}>◀</button>
-                                    <button className="boton-navegacion-imagen next" onClick={goToNextImage}>▶</button>
+                                    <button className="boton-navegacion-imagen prev" onClick={goToPreviousImage}>
+                                        <ChevronLeft size={24} />
+                                    </button>
+                                    <button className="boton-navegacion-imagen next" onClick={goToNextImage}>
+                                        <ChevronRight size={24} />
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -199,34 +209,39 @@ const PageViewProduct = () => {
                             </div>
                         )}
 
-                        {/* SECCIÓN DE COMENTARIOS - Debajo de la imagen */}
                         <div className="seccion-comentarios">
                             <div className="encabezado-comentarios">
-                                <h3>💬 Opiniones de Clientes</h3>
+                                <h3><MessageCircle size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Opiniones de Clientes</h3>
                                 <div className="resumen-calificacion">
                                     <span className="numero-calificacion">{averageRating || "0"}</span>
                                     <div className="estrellas-calificacion">
                                         {[...Array(5)].map((_, i) => (
-                                            <span key={i} className={i < Math.round(averageRating || 0) ? "estrella llena" : "estrella"}>★</span>
+                                            <Star 
+                                                key={i} 
+                                                size={16} 
+                                                fill={i < Math.round(averageRating || 0) ? "var(--admin-advertencia)" : "none"} 
+                                                color={i < Math.round(averageRating || 0) ? "var(--admin-advertencia)" : "#ccc"} 
+                                            />
                                         ))}
                                     </div>
                                     <span className="conteo-calificacion">({comments.length} comentarios)</span>
                                 </div>
                             </div>
 
-                            {/* Formulario para nuevo comentario */}
                             <div className="formulario-comentario">
                                 <div className="seleccion-calificacion">
                                     <label>Tu calificación:</label>
                                     <div className="entrada-estrellas">
                                         {[1, 2, 3, 4, 5].map((star) => (
-                                            <span 
+                                            <Star 
                                                 key={star}
+                                                size={24}
                                                 className={star <= newRating ? "estrella activo" : "estrella"}
                                                 onClick={() => setNewRating(star)}
-                                            >
-                                                ★
-                                            </span>
+                                                fill={star <= newRating ? "var(--admin-advertencia)" : "none"}
+                                                color={star <= newRating ? "var(--admin-advertencia)" : "#ccc"}
+                                                style={{ cursor: 'pointer' }}
+                                            />
                                         ))}
                                     </div>
                                 </div>
@@ -237,16 +252,18 @@ const PageViewProduct = () => {
                                     onChange={(e) => setNewComment(e.target.value)}
                                 />
                                 <button className="boton-enviar-comentario" onClick={handleSubmitComment}>
+                                    <Send size={16} style={{ marginRight: '8px' }} />
                                     Publicar Comentario
                                 </button>
                             </div>
 
-                            {/* Lista de comentarios */}
                             <div className="lista-comentarios">
                                 {loadingComments ? (
-                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Cargando comentarios...</p>
+                                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                                        <Loader2 className="animacion-giro" size={24} color="var(--nexora-blue)" />
+                                    </div>
                                 ) : comments.length === 0 ? (
-                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)', padding: '20px'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
                                 ) : (
                                     comments.map((comment) => (
                                         <div key={comment._id} className="item-comentario">
@@ -258,7 +275,12 @@ const PageViewProduct = () => {
                                                 </div>
                                                 <div className="calificacion-comentario">
                                                     {[...Array(5)].map((_, i) => (
-                                                        <span key={i} className={i < comment.rating ? "estrella llena" : "estrella"}>★</span>
+                                                        <Star 
+                                                            key={i} 
+                                                            size={14} 
+                                                            fill={i < comment.rating ? "var(--admin-advertencia)" : "none"}
+                                                            color={i < comment.rating ? "var(--admin-advertencia)" : "#ccc"}
+                                                        />
                                                     ))}
                                                 </div>
                                             </div>
@@ -271,6 +293,12 @@ const PageViewProduct = () => {
                     </div>
 
                     <div className="seccion-informacion">
+                        <div className="navegacion-atras">
+                            <button onClick={() => navigate(-1)} className="boton-atras">
+                                <ArrowLeft size={18} style={{ marginRight: '8px' }} /> Volver
+                            </button>
+                        </div>
+                        
                         <h1 className="nombre-producto">{selectedProduct.name}</h1>
 
                         <div className="caja-descripcion">
@@ -279,11 +307,13 @@ const PageViewProduct = () => {
                         </div>
 
                         <div className="etiqueta-categoria">
+                            <Tag size={16} style={{ marginRight: '8px' }} />
                             Categoría: <strong>{selectedProduct.category}</strong>
                         </div>
 
                         <div className="meta-producto">
                             <div className="vendedor">
+                                <User size={16} style={{ marginRight: '8px' }} />
                                 Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
                             </div>
                         </div>
@@ -304,19 +334,15 @@ const PageViewProduct = () => {
                                     setShowNotification(`${selectedProduct.name} agregado al carrito`);
                                     setTimeout(() => setShowNotification(''), 3000);
                                 }}
-
-
-
-                                
                             >
-                                ➕ Agregar al Carrito
+                                <Plus size={20} style={{ marginRight: '10px' }} />
+                                Agregar al Carrito
                             </button>
                         </div>
 
-                        {/* Productos Similares */}
                         {similarProducts.length > 0 && (
                             <div className="seccion-productos-similares">
-                                <h3>🔍 Productos Similares</h3>
+                                <h3><Search size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Productos Similares</h3>
                                 <div className="cuadricula-productos-similares">
                                     {similarProducts.map((product) => (
                                         <div

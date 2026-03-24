@@ -29,6 +29,8 @@
 .migas-pan {
     color: var(--nexora-blue);
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
 }
 
 .migas-pan span {
@@ -245,10 +247,12 @@
     border: 1px solid rgba(248, 113, 113, 0.2);
     color: #f87171;
     cursor: pointer;
-    font-size: 1.1rem;
     padding: 8px;
     border-radius: 8px;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .boton-eliminar-item:hover {
@@ -429,12 +433,8 @@
 }
 
 .estrellas-calificacion-item .estrella {
-    font-size: 14px;
-    color: #4b5563;
-}
-
-.estrellas-calificacion-item .estrella.llena {
-    color: #fbbf24;
+    display: flex;
+    align-items: center;
 }
 
 .numero-calificacion-item {

@@ -123,7 +123,8 @@
     gap: 6px;
     position: relative;
     overflow: hidden;
-    right: 100px;
+    max-width: 200px;
+    text-overflow: ellipsis;
 }
 
 /* Efecto glow sutil en botones */
@@ -211,18 +212,21 @@
 }
 
 @keyframes badgePulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .barra-navegacion-secundaria .encabezado {
+        padding: 12px 30px;
+    }
+    
+    .barra-navegacion-secundaria .parte-superior-encabezado {
+        gap: 15px;
+    }
+}
+
 @media (max-width: 768px) {
     .barra-navegacion-secundaria .encabezado {
         padding: 12px 20px;
@@ -256,7 +260,8 @@
 
     .barra-navegacion-secundaria .menu-usuario,
     .barra-navegacion-secundaria .boton-carrito,
-    .barra-navegacion-secundaria .boton-salir {
+    .barra-navegacion-secundaria .boton-salir,
+    .barra-navegacion-secundaria .boton-inicio {
         padding: 8px 14px;
         font-size: 13px;
     }
@@ -276,13 +281,33 @@
     .barra-navegacion-secundaria .barra-encabezado {
         flex-wrap: wrap;
         gap: 8px;
+        width: 100%;
+        justify-content: center;
     }
 
     .barra-navegacion-secundaria .menu-usuario,
     .barra-navegacion-secundaria .boton-carrito,
-    .barra-navegacion-secundaria .boton-salir {
-        padding: 7px 12px;
-        font-size: 12px;
+    .barra-navegacion-secundaria .boton-salir,
+    .barra-navegacion-secundaria .boton-inicio {
+        padding: 7px 10px;
+        font-size: 11px;
         border-radius: 20px;
+        flex: 1;
+        min-width: 0;
+        max-width: fit-content;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-align: center;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario span,
+    .barra-navegacion-secundaria .boton-salir span {
+        display: none;
     }
 }

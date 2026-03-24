@@ -2,12 +2,23 @@ import React, { useState } from 'react';
 import './forgot_Password.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
+import { 
+    Sun, 
+    Moon, 
+    Mail, 
+    CheckCircle, 
+    AlertTriangle, 
+    Loader2,
+    ArrowLeft
+} from 'lucide-react';
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
@@ -16,9 +27,11 @@ export default function ForgotPassword() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError('');
+        setMessage('');
 
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            alert('Por favor, ingresa un email válido');
+            setError('Por favor, ingresa un email válido');
             setLoading(false);
             return;
         }
@@ -26,17 +39,8 @@ export default function ForgotPassword() {
         // Simulación de envío de correo
         setTimeout(() => {
             console.log('Recuperar contraseña para:', email);
-            alert(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
             setMessage(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
             setLoading(false);
-            // The snippet does not navigate to login immediately after success message,
-            // but the original code did. Keeping the original behavior for now,
-            // but the snippet implies the message should be shown first.
-            // For now, I'll keep the navigate after the message is set.
-            // If the user wants to navigate after a delay, that's a separate instruction.
-            // For now, the snippet doesn't show navigation after success, so I'll remove it from here.
-            // The snippet has a button to navigate back to login.
-            // navigate('/login'); // Removed this line as per snippet's implied flow
         }, 1500);
     };
 
@@ -48,7 +52,7 @@ export default function ForgotPassword() {
                     onClick={toggleTheme}
                     title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                 >
-                    {isDarkMode ? '☀️' : '🌙'}
+                    {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
 
                 <div className="icono-olvido">
@@ -60,20 +64,20 @@ export default function ForgotPassword() {
 
                 {error && (
                     <div className="error-olvido">
-                        <span>⚠️</span> {error}
+                        <AlertTriangle size={18} /> {error}
                     </div>
                 )}
 
                 {message && (
                     <div className="mensaje-exito-olvido">
-                        <span>✅</span> {message}
+                        <CheckCircle size={18} /> {message}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="formulario-olvido">
                     <div className="grupo-formulario">
                         <label htmlFor="email">
-                            <span className="icono-etiqueta">📧</span> Email de recuperación
+                            <span className="icono-etiqueta"><Mail size={18} /></span> Email de recuperación
                         </label>
                         <div className="contenedor-entrada-icono">
                             <input
@@ -93,7 +97,12 @@ export default function ForgotPassword() {
                         className={`boton-olvido ${loading ? 'cargando' : ''}`}
                         disabled={loading}
                     >
-                        {loading ? '⏳ Procesando...' : 'Aceptar'}
+                        {loading ? (
+                            <>
+                                <Loader2 className="animacion-giro" size={20} />
+                                Procesando...
+                            </>
+                        ) : 'Enviar instrucciones'}
                     </button>
                 </form>
 
@@ -104,6 +113,7 @@ export default function ForgotPassword() {
                         onClick={() => navigate('/login')}
                         disabled={loading}
                     >
+                        <ArrowLeft size={16} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
                         Volver al inicio de sesión
                     </button>
                 </div>

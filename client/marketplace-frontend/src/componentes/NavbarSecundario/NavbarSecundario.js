@@ -3,17 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
 import './NavbarSecunsario.css';
+import { 
+    Home, 
+    Sun, 
+    Moon, 
+    User, 
+    ShoppingCart, 
+    LogOut 
+} from 'lucide-react';
 
 export default function NavbarSecundario({
     user,
     logout,
-
-   
-
     cartCount,
-    // Propiedad opcional para personalizar qué hace el botón Inicio (usada en pageVendedor)
     onInicio,
-    // Bloquear el carrito en la página de vendedor
     disableCart,
     disableUserMenu
 }) {
@@ -25,13 +28,10 @@ export default function NavbarSecundario({
         navigate('/');
     };
 
-    // Nueva función que intercepta los clics en los botones de "Inicio"
     const handleInicio = () => {
         if (onInicio) {
-            // Si nos pasaron una función personalizada desde el padre (ej. pageVendedor), la ejecutamos
             onInicio();
         } else {
-            // Si no (ej. en carrito o productos), hace su comportamiento normal: ir a la página principal
             navigate('/');
         }
     };
@@ -48,6 +48,7 @@ export default function NavbarSecundario({
 
                 <div className="barra-encabezado">
                     <button className="boton-inicio" onClick={handleInicio}>
+                        <Home size={18} style={{ marginRight: '8px' }} />
                         Inicio
                     </button>
 
@@ -56,7 +57,7 @@ export default function NavbarSecundario({
                         onClick={toggleTheme}
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
-                        {isDarkMode ? '☀️' : '🌙'}
+                        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                     <div className="menu-usuario" 
                         onClick={() => {
@@ -69,7 +70,10 @@ export default function NavbarSecundario({
                         }}
                         style={disableUserMenu ? { cursor: 'default' } : {}}
                     >
-                        👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
+                        <User size={18} style={{ marginRight: '8px' }} />
+                        <span className="nombre-usuario">
+                            {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
+                        </span>
                     </div>
                     <button
                         className="boton-carrito"
@@ -78,15 +82,15 @@ export default function NavbarSecundario({
                         style={disableCart ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                         title={disableCart ? "Carrito desactivado para vendedores" : ""}
                     >
-                        🛒 {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
+                        <ShoppingCart size={20} />
+                        {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
                     </button>
                     <button className="boton-salir" onClick={handleLogout}>
-                        ✖ Salir
+                        <LogOut size={18} style={{ marginRight: '8px' }} />
+                        Salir
                     </button>
                 </div>
             </div>
-
-
         </header>
     );
 }
