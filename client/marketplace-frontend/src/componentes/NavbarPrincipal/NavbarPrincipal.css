@@ -1,0 +1,309 @@
+/* Header */
+.encabezado {
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--nexora-border);
+    padding: 20px 60px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.parte-superior-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.izquierda-encabezado {
+    flex-shrink: 0;
+}
+
+.logotipo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+}
+
+.logotipo:hover {
+    transform: scale(1.05);
+}
+
+.imagen-logo-encabezado {
+    width: 60px;
+    height: auto;
+    filter: drop-shadow(0 0 8px rgba(0, 148, 255, 0.5));
+    scale: 1.8;
+    top: 3px;
+    position: relative;
+}
+
+.texto-logo {
+    color: var(--nexora-blue);
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Search Bar */
+.centro-encabezado {
+    flex: 1;
+    min-width: 300px;
+}
+
+.barra-busqueda {
+    display: flex;
+    align-items: center;
+    background: var(--input-bg);
+    border: 1px solid var(--nexora-border);
+    border-radius: 30px;
+    padding: 0 25px;
+    transition: all 0.3s ease;
+    height: 50px;
+}
+
+.barra-busqueda:focus-within {
+    border-color: var(--nexora-blue);
+    box-shadow: 0 0 20px rgba(0, 148, 255, 0.2);
+}
+
+.icono-busqueda {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.barra-busqueda input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 0;
+    color: #e5e7eb;
+    outline: none;
+    font-size: 16px;
+}
+
+.barra-busqueda input::placeholder {
+    color: #6b7280;
+}
+
+/* Header Right */
+.derecha-encabezado {
+    display: flex;
+    gap: 15px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.menu-usuario,
+.boton-carrito,
+.boton-salir,
+.alternar-tema-encabezado {
+    background: var(--btn-bg);
+    border: 1px solid var(--nexora-border);
+    color: var(--nexora-blue);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.alternar-tema-encabezado {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 18px;
+}
+
+.menu-usuario:hover,
+.boton-carrito:hover,
+.boton-salir:hover,
+.alternar-tema-encabezado:hover {
+    background: rgba(0, 148, 255, 0.4);
+    border-color: var(--nexora-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 148, 255, 0.2);
+}
+
+.boton-salir {
+    color: #f87171;
+    border-color: rgba(244, 63, 94, 0.3);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.boton-salir:hover {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: #f87171;
+}
+
+.boton-carrito {
+    position: relative;
+}
+
+.etiqueta-carrito {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #f87171;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Categorías */
+.barra-categorias {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    scrollbar-width: thin;
+}
+
+.barra-categorias::-webkit-scrollbar {
+    height: 4px;
+}
+
+.barra-categorias::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.barra-categorias::-webkit-scrollbar-thumb {
+    background: rgba(0, 148, 255, 0.3);
+    border-radius: 2px;
+}
+
+.boton-categoria {
+    background: transparent;
+    border: 1px solid var(--nexora-border);
+    color: #9ca3af;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.boton-categoria:hover {
+    border-color: var(--nexora-blue);
+    color: var(--nexora-blue);
+}
+
+.boton-categoria.activo {
+    background: rgba(0, 148, 255, 0.3);
+    border-color: var(--nexora-blue);
+    color: var(--nexora-blue);
+    font-weight: 600;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+    .encabezado {
+        padding: 15px 30px;
+    }
+    
+    .texto-logo {
+        font-size: 24px;
+    }
+    
+    .imagen-logo-encabezado {
+        width: 45px;
+    }
+}
+
+@media (max-width: 768px) {
+    .parte-superior-encabezado {
+        gap: 15px;
+    }
+
+    .centro-encabezado {
+        order: 3;
+        width: 100%;
+        min-width: 100%;
+        margin-top: 10px;
+    }
+
+    .derecha-encabezado {
+        gap: 8px;
+    }
+
+    .menu-usuario, .boton-carrito, .boton-salir {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .texto-logo {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .encabezado {
+        padding: 10px 15px;
+    }
+
+    .derecha-encabezado {
+        gap: 5px;
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .menu-usuario, 
+    .boton-carrito, 
+    .boton-salir,
+    .alternar-tema-encabezado {
+        padding: 8px 10px;
+        font-size: 13px;
+        border-radius: 20px;
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+        max-width: fit-content;
+    }
+    
+    .menu-usuario {
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-align: center;
+    }
+
+    .menu-usuario span {
+        display: none;
+    }
+    
+    .texto-logo {
+        font-size: 20px;
+    }
+    
+    .imagen-logo-encabezado {
+        width: 40px;
+        scale: 1.2;
+    }
+    
+    /* On extreme small screens, we might want to hide text if labels are long */
+    /* But since labels are short "Salir", "Iniciar sesión", we'll just keep them but smaller */
+}

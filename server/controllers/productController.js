@@ -1,22 +1,27 @@
 const Product = require("../models/Product");
+const cloudinary = require("../config/cloudinary");
 
 // @desc    Crear un nuevo producto
 // @route   POST /api/products
-// @access  Private (Vendedor, Admin)
+// @access  Private
 const createProduct = async (req, res) => {
   try {
-    // Construir URLs de las imágenes subidas
     let images = [];
+
     if (req.files && req.files.length > 0) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
-      images = req.files.map((file) => `${baseUrl}/uploads/${file.filename}`);
-    } else if (req.body.images) {
-      // Fallback: si vienen URLs directas (compatibilidad)
-      images = Array.isArray(req.body.images) ? req.body.images : [req.body.images];
+      images = req.files.map((file) => ({
+        url: file.path,
+        public_id: file.filename,
+      }));
     }
 
     const product = await Product.create({
-      ...req.body,
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      brand: req.body.brand,
+      stock: req.body.stock,
       images,
       vendor: req.user.id,
     });
@@ -25,8 +30,9 @@ const createProduct = async (req, res) => {
       success: true,
       data: product,
     });
+
   } catch (error) {
-    console.error('Error en createProduct:', error);
+    console.error("Error en createProduct:", error);
     res.status(400).json({
       success: false,
       message: error.message,
@@ -35,20 +41,17 @@ const createProduct = async (req, res) => {
 };
 
 // @desc    Obtener todos los productos
-// @route   GET /api/products
-// @access  Public / Private (Filtra según rol)
 const getProducts = async (req, res) => {
   try {
     let query = {};
 
-    // Solo filtrar por vendor si el usuario está autenticado Y lo solicita
     if (req.query.vendor === "me" && req.user) {
       query.vendor = req.user.id;
     }
 
     const products = await Product.find(query).populate(
       "vendor",
-      "nombre email",
+      "nombre email"
     );
 
     res.status(200).json({
@@ -57,7 +60,7 @@ const getProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    console.error('Error en getProducts:', error);
+    console.error("Error en getProducts:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -65,14 +68,34 @@ const getProducts = async (req, res) => {
   }
 };
 
-// @desc    Obtener un producto por ID
-// @route   GET /api/products/:id
-// @access  Public
+// @desc    Obtener productos del vendedor autenticado
+const getVendorProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ vendor: req.user.id }).populate(
+      "vendor",
+      "nombre email"
+    );
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error en getVendorProducts:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Obtener producto por ID
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate(
       "vendor",
-      "nombre email",
+      "nombre email"
     );
 
     if (!product) {
@@ -87,7 +110,7 @@ const getProductById = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.error('Error en getProductById:', error);
+    console.error("Error en getProductById:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -95,11 +118,10 @@ const getProductById = async (req, res) => {
   }
 };
 
-// @desc    Actualizar un producto
-// @route   PUT /api/products/:id
-// @access  Private (Vendor dueño del producto o Admin)
+// @desc    Actualizar producto
 const updateProduct = async (req, res) => {
   try {
+
     let product = await Product.findById(req.params.id);
 
     if (!product) {
@@ -109,35 +131,54 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    // Verificar propiedad
-    if (
-      !product.vendor.equals(req.user.id) &&
-      req.user.role !== "administrador"
-    ) {
+    if (!product.vendor.equals(req.user.id)) {
       return res.status(403).json({
         success: false,
-        message: "No autorizado para editar este producto",
+        message: "No autorizado",
       });
     }
 
-    // Si vienen archivos nuevos, actualizar las imágenes
-    let updateData = { ...req.body };
-    if (req.files && req.files.length > 0) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
-      updateData.images = req.files.map((file) => `${baseUrl}/uploads/${file.filename}`);
+    let images = [...product.images];
+
+    // eliminar imágenes seleccionadas
+    if (req.body.removeImages) {
+      const removeImages = JSON.parse(req.body.removeImages);
+
+      for (const img of removeImages) {
+        await cloudinary.uploader.destroy(img.public_id);
+      }
+
+      images = images.filter(
+        (img) => !removeImages.some((r) => r.public_id === img.public_id)
+      );
     }
 
-    product = await Product.findByIdAndUpdate(req.params.id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    // agregar nuevas imágenes
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map((file) => ({
+        url: file.path,
+        public_id: file.filename,
+      }));
 
-    res.status(200).json({
+      images = [...images, ...newImages];
+    }
+
+    product = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        images,
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.json({
       success: true,
       data: product,
     });
+
   } catch (error) {
-    console.error('Error en updateProduct:', error);
+    console.error(error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -145,9 +186,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-// @desc    Eliminar un producto
-// @route   DELETE /api/products/:id
-// @access  Private (Vendor dueño del producto o Admin)
+// @desc    Eliminar producto
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -159,15 +198,19 @@ const deleteProduct = async (req, res) => {
       });
     }
 
-    // Verificar propiedad
     if (
       !product.vendor.equals(req.user.id) &&
       req.user.role !== "administrador"
     ) {
       return res.status(403).json({
         success: false,
-        message: "No autorizado para eliminar este producto",
+        message: "No autorizado",
       });
+    }
+
+    // ⭐ eliminar imágenes de Cloudinary
+    for (const image of product.images) {
+      await cloudinary.uploader.destroy(image.public_id);
     }
 
     await product.deleteOne();
@@ -177,7 +220,7 @@ const deleteProduct = async (req, res) => {
       message: "Producto eliminado",
     });
   } catch (error) {
-    console.error('Error en deleteProduct:', error);
+    console.error("Error en deleteProduct:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -185,10 +228,10 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-// ⭐ EXPORTAR TODO AL FINAL
 module.exports = {
   createProduct,
   getProducts,
+  getVendorProducts,
   getProductById,
   updateProduct,
   deleteProduct,

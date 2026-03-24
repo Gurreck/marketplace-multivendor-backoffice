@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
+import { commentService } from '../../services/commentService';
 import './paymentGateway.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
+import { 
+    MapPin, 
+    CreditCard, 
+    MessageCircle, 
+    Star, 
+    Eye, 
+    EyeOff, 
+    CheckCircle2, 
+    Loader2, 
+    X,
+    Lock
+} from 'lucide-react';
 
 const PaymentGateway = () => {
+    // ===== NAVEGACIÓN Y CONTEXTO =====
     const navigate = useNavigate();
     const location = useLocation();
-    const { clearCart, cartItems, cartTotal } = useCart();
-    
-    // Get selected items and total from navigation state
+
+    const { clearCart, cartTotal, cartCount } = useCart();
+    const { user, logout } = useAuth();
+    const { isDarkMode, toggleTheme } = useTheme();
+
     const selectedItems = location.state?.selectedItems || [];
     const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
-    const selectedCount = location.state?.selectedCount || cartItems.length;
+
+    // ===== ESTADO DE TARJETA =====
 
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -24,69 +44,106 @@ const PaymentGateway = () => {
     const [cardType, setCardType] = useState(null);
     const [showCvv, setShowCvv] = useState(false);
 
-    // ============================================
-    // VALIDACIÓN REAL DE TARJETAS (ALGORITMO DE LUHN)
-    // ============================================
+    const [showCommentsModal, setShowCommentsModal] = useState(false);
+    const [selectedProductComments, setSelectedProductComments] = useState([]);
+    const [selectedProductInfo, setSelectedProductInfo] = useState(null);
+    const [loadingProductComments, setLoadingProductComments] = useState(false);
 
-    // Algoritmo de Luhn (Mod 10) - El mismo usado en la vida real
+    const fetchProductComments = async (product) => {
+        setLoadingProductComments(true);
+        try {
+            const productId = product._id || product.id;
+            const response = await commentService.getCommentsByProduct(productId);
+            if (response.data.success) {
+                setSelectedProductComments(response.data.data);
+                setSelectedProductInfo({
+                    name: product.name,
+                    image: product.images?.[0] || product.image,
+                    averageRating: response.data.averageRating,
+                    totalComments: response.data.count
+                });
+                setShowCommentsModal(true);
+            }
+        } catch (error) {
+            console.error("Error fetching product comments:", error);
+        } finally {
+            setLoadingProductComments(false);
+        }
+    };
+
+    const [address, setAddress] = useState({
+        pais: '',
+        provincia: '',
+        ciudad: '',
+        codigoPostal: '',
+        direccion: ''
+    });
+
+    const [addressErrors, setAddressErrors] = useState({});
+
+    const validateAddress = () => {
+        const newErrors = {};
+        if (!address.pais.trim()) newErrors.pais = 'El país es requerido';
+        if (!address.provincia.trim()) newErrors.provincia = 'La provincia es requerida';
+        if (!address.ciudad.trim()) newErrors.ciudad = 'La ciudad es requerida';
+        if (!address.codigoPostal.trim()) newErrors.codigoPostal = 'El código postal es requerido';
+        if (!address.direccion.trim()) newErrors.direccion = 'La dirección exacta es requerida';
+        return newErrors;
+    };
+
+    const handleSaveAddress = () => {
+        const errors = validateAddress();
+        if (Object.keys(errors).length > 0) {
+            setAddressErrors(errors);
+        } else {
+            setAddressErrors({});
+            alert('Dirección guardada correctamente');
+        }
+    };
+
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setAddress(prev => ({ ...prev, [name]: value }));
+        if (addressErrors[name]) {
+            setAddressErrors(prev => ({ ...prev, [name]: null }));
+        }
+    };
+
     const luhnCheck = (cardNumber) => {
         const cleanNumber = cardNumber.replace(/\s/g, '');
         let sum = 0;
         let isEven = false;
-        
-        // Recorrer de derecha a izquierda
         for (let i = cleanNumber.length - 1; i >= 0; i--) {
             let digit = parseInt(cleanNumber[i], 10);
-            
             if (isEven) {
                 digit *= 2;
-                if (digit > 9) {
-                    digit -= 9;
-                }
+                if (digit > 9) digit -= 9;
             }
-            
             sum += digit;
             isEven = !isEven;
         }
-        
         return sum % 10 === 0;
     };
 
-    // Detectar tipo de tarjeta basado en IIN/BIN (Industry Identification Number)
     const detectCardType = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
-        
-        // Visa: empieza con 4
         if (/^4/.test(cleanNumber)) return 'VISA';
-        
-        // Mastercard: 51-55 o 2221-2720
         if (/^5[1-5]/.test(cleanNumber) || /^2[2-7]/.test(cleanNumber)) return 'MASTERCARD';
-        
-        // American Express: 34 o 37
         if (/^3[47]/.test(cleanNumber)) return 'AMEX';
-        
-        // Discover: 6011, 622126-622925, 644-649, 65
         if (/^6011/.test(cleanNumber) || /^65/.test(cleanNumber) || /^64[4-9]/.test(cleanNumber) || /^622(12[6-9]|1[3-9]\d|[2-8]\d{2}|91\d|92[0-5])/.test(cleanNumber)) return 'DISCOVER';
-        
-        // Diners Club: 300-305, 36, 38
         if (/^3[068]/.test(cleanNumber) || /^30[0-5]/.test(cleanNumber)) return 'DINERS';
-        
-        // JCB: 3528-3589
         if (/^35[2-8]/.test(cleanNumber)) return 'JCB';
-        
         return null;
     };
 
-    // Obtener longitud esperada según tipo de tarjeta
     const getExpectedLength = (cardType) => {
         switch (cardType) {
             case 'AMEX': return 15;
             case 'DINERS': return 14;
-            default: return 16; // Visa, Mastercard, Discover, JCB
+            default: return 16;
         }
     };
 
-    // Obtener CVV esperado según tipo de tarjeta
     const getExpectedCvvLength = (cardType) => {
         switch (cardType) {
             case 'AMEX': return 4;
@@ -94,458 +151,406 @@ const PaymentGateway = () => {
         }
     };
 
-    // Formatear número de tarjeta con asteriscos para los últimos 4 dígitos
     const getMaskedCardNumber = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
-        if (cleanNumber.length === 0) {
-            return '#### #### #### ####';
-        }
-        if (cleanNumber.length <= 4) {
-            // Si hay menos de 4 dígitos, mostrar todo como asteriscos
-            return '**** **** **** ' + '*'.repeat(cleanNumber.length);
-        }
+        if (cleanNumber.length === 0) return '#### #### #### ####';
+        if (cleanNumber.length <= 4) return '**** **** **** ' + '*'.repeat(cleanNumber.length);
         const firstDigits = cleanNumber.substring(0, cleanNumber.length - 4);
-        // Formatear con espacios cada 4 dígitos y añadir asteriscos al final
         const formatted = firstDigits.replace(/(.{4})/g, '$1 ').trim() + ' ****';
         return formatted;
     };
 
-    // Validar número de tarjeta con algoritmo de Luhn (como en la vida real)
     const validateCardNumber = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
-        
-        // Verificar que solo contenga dígitos
-        if (!/^\d+$/.test(cleanNumber)) {
-            return 'El numero de tarjeta debe contener solo digitos';
-        }
-        
-        // Detectar tipo de tarjeta
+        if (!/^\d+$/.test(cleanNumber)) return 'El número de tarjeta debe contener solo dígitos';
         const detectedType = detectCardType(cleanNumber);
-        
-        if (!detectedType) {
-            return 'Tipo de tarjeta no reconocido. Use Visa, Mastercard, Amex o Discover';
-        }
-        
-        // Verificar longitud según tipo de tarjeta
+        if (!detectedType) return 'Tipo de tarjeta no reconocido';
         const expectedLength = getExpectedLength(detectedType);
-        if (cleanNumber.length !== expectedLength) {
-            if (detectedType === 'AMEX') {
-                return `Las tarjetas ${detectedType} deben tener 15 digitos`;
-            }
-            return `Las tarjetas ${detectedType} deben tener 16 digitos`;
-        }
-        
-        // Aplicar algoritmo de Luhn (validación real)
-        if (!luhnCheck(cleanNumber)) {
-            return 'Numero de tarjeta invalido (fallo validacion Luhn)';
-        }
-        
+        if (cleanNumber.length !== expectedLength) return `Las tarjetas ${detectedType} deben tener ${expectedLength} dígitos`;
+        if (!luhnCheck(cleanNumber)) return 'Número de tarjeta inválido';
         return null;
     };
 
-    // Validar fecha de vencimiento (formato MM/YY y no vencida)
     const validateExpiryDate = (date) => {
-        if (!/^\d{2}\/\d{2}$/.test(date)) {
-            return 'Formato invalido. Use MM/AA';
-        }
+        if (!/^\d{2}\/\d{2}$/.test(date)) return 'Formato inválido. Use MM/AA';
         const [month, year] = date.split('/').map(Number);
-        if (month < 1 || month > 12) {
-            return 'Mes invalido (01-12)';
-        }
+        if (month < 1 || month > 12) return 'Mes inválido (01-12)';
         const currentYear = new Date().getFullYear() % 100;
         const currentMonth = new Date().getMonth() + 1;
-        if (year < currentYear || (year === currentYear && month < currentMonth)) {
-            return 'La tarjeta esta vencida';
-        }
+        if (year < currentYear || (year === currentYear && month < currentMonth)) return 'La tarjeta está vencida';
         return null;
     };
 
-    // Validar CVV (3 dígitos para Visa/MC/Discover, 4 para Amex)
     const validateCvv = (cvvCode, currentCardType = cardType) => {
         const cleanCvv = cvvCode.replace(/\s/g, '');
         const expectedLength = getExpectedCvvLength(currentCardType);
-        
-        if (!/^\d+$/.test(cleanCvv)) {
-            return 'El CVV debe contener solo digitos';
-        }
-        
-        if (cleanCvv.length !== expectedLength) {
-            if (expectedLength === 4) {
-                return 'El CVV de American Express debe tener 4 digitos';
-            }
-            return 'El CVV debe tener 3 digitos';
-        }
-        
+        if (!/^\d+$/.test(cleanCvv)) return 'El CVV debe contener solo dígitos';
+        if (cleanCvv.length !== expectedLength) return `El CVV debe tener ${expectedLength} dígitos`;
         return null;
     };
 
-    // Validar nombre del titular
-    const validateCardName = (name) => {
-        if (name.trim().length < 3) {
-            return 'Ingrese el nombre del titular';
-        }
-        return null;
-    };
-
-    // Formatear número de tarjeta según el tipo detectado
     const formatCardNumber = (value) => {
         const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
         const cleanNumber = v.replace(/\s/g, '');
         const detectedType = detectCardType(cleanNumber);
-        
-        // American Express: 4-6-5 (cada grupo tiene diferente cantidad)
         if (detectedType === 'AMEX') {
-            if (v.length > 4 && v.length <= 10) {
-                return v.substring(0, 4) + ' ' + v.substring(4, 10);
-            } else if (v.length > 10) {
-                return v.substring(0, 4) + ' ' + v.substring(4, 10) + ' ' + v.substring(10, 15);
-            }
+            if (v.length > 4 && v.length <= 10) return v.substring(0, 4) + ' ' + v.substring(4, 10);
+            else if (v.length > 10) return v.substring(0, 4) + ' ' + v.substring(4, 10) + ' ' + v.substring(10, 15);
             return v;
         }
-        
-        // Otros tipos: 4-4-4-4
         const matches = v.match(/\d{4,16}/g);
         const match = (matches && matches[0]) || '';
         const parts = [];
-        for (let i = 0, len = match.length; i < len; i += 4) {
-            parts.push(match.substring(i, i + 4));
-        }
+        for (let i = 0, len = match.length; i < len; i += 4) parts.push(match.substring(i, i + 4));
         return parts.length ? parts.join(' ') : v;
     };
 
-    // Formatear fecha de vencimiento (MM/AA)
     const formatExpiryDateInput = (value) => {
         const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-        if (v.length >= 2) {
-            return v.substring(0, 2) + '/' + v.substring(2, 4);
-        }
+        if (v.length >= 2) return v.substring(0, 2) + '/' + v.substring(2, 4);
         return v;
     };
 
-    // Manejar cambio en número de tarjeta
     const handleCardNumberChange = (e) => {
         const formatted = formatCardNumber(e.target.value);
         setCardNumber(formatted);
-        
-        // Detectar tipo de tarjeta en tiempo real
         const cleanNumber = formatted.replace(/\s/g, '');
         const detectedType = detectCardType(cleanNumber);
         setCardType(detectedType);
-        
-        // Ajustar longitud máxima del CVV según tipo
         const expectedCvvLength = getExpectedCvvLength(detectedType);
-        if (cvv.length > expectedCvvLength) {
-            setCvv(cvv.substring(0, expectedCvvLength));
-        }
-        
-        if (errors.cardNumber) {
-            setErrors(prev => ({ ...prev, cardNumber: null }));
-        }
+        if (cvv.length > expectedCvvLength) setCvv(cvv.substring(0, expectedCvvLength));
+        if (errors.cardNumber) setErrors(prev => ({ ...prev, cardNumber: null }));
     };
 
-    // Manejar cambio en fecha de vencimiento
     const handleExpiryDateChange = (e) => {
         const formatted = formatExpiryDateInput(e.target.value);
         setExpiryDate(formatted);
-        if (errors.expiryDate) {
-            setErrors(prev => ({ ...prev, expiryDate: null }));
-        }
+        if (errors.expiryDate) setErrors(prev => ({ ...prev, expiryDate: null }));
     };
 
-    // Manejar cambio en CVV
     const handleCvvChange = (e) => {
         const expectedLength = getExpectedCvvLength(cardType);
         const v = e.target.value.replace(/[^0-9]/g, '').substring(0, expectedLength);
         setCvv(v);
-        if (errors.cvv) {
-            setErrors(prev => ({ ...prev, cvv: null }));
-        }
+        if (errors.cvv) setErrors(prev => ({ ...prev, cvv: null }));
     };
 
-    // Manejar cambio en nombre
-    const handleCardNameChange = (e) => {
-        setCardName(e.target.value);
-        if (errors.cardName) {
-            setErrors(prev => ({ ...prev, cardName: null }));
-        }
-    };
-
-    // Manejar envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Validar todos los campos
         const newErrors = {};
         const cardError = validateCardNumber(cardNumber);
         const expiryError = validateExpiryDate(expiryDate);
         const cvvError = validateCvv(cvv, cardType);
-        const nameError = validateCardName(cardName);
-
         if (cardError) newErrors.cardNumber = cardError;
         if (expiryError) newErrors.expiryDate = expiryError;
         if (cvvError) newErrors.cvv = cvvError;
-        if (nameError) newErrors.cardName = nameError;
-
+        if (cardName.trim().length < 3) newErrors.cardName = 'Ingrese el nombre del titular';
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-
-        // Simulación de pasarela de pago
         setIsProcessing(true);
-        setErrors({});
-        
-        // Simular procesamiento con delay
         setTimeout(() => {
             setIsProcessing(false);
             const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
             setLastFourDigits(lastFour);
             setShowSuccessModal(true);
-        }, 2500);
+        }, 2000);
     };
 
-    // Volver al carrito
-    const handleGoBack = () => {
-        navigate('/checkout');
-    };
-
-    // Finalizar compra
     const handleContinue = () => {
         clearCart();
         setShowSuccessModal(false);
         navigate('/');
     };
 
+    // ===== RENDERIZADO PRINCIPAL =====
     return (
-        <div className="gateway-container">
-            {/* Header */}
-            <div className="gateway-header">
-                <div className="gateway-breadcrumb">
-                    <span onClick={() => navigate('/')}>&gt; Inicio</span> &gt; 
-                    <span onClick={() => navigate('/checkout')}>&gt; Carrito</span> &gt; 
-                    <span>Pago</span>
-                </div>
-                <button className="gateway-back-btn" onClick={handleGoBack}>
-                    ← Volver al carrito
-                </button>
+        <>
+            <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
+                <NavbarSecundario
+                    toggleTheme={toggleTheme}
+                    isDarkMode={isDarkMode}
+                    user={user}
+                    logout={logout}
+                    cartCount={cartCount}
+                />
             </div>
 
-            <div className="gateway-main-content">
-                {/* Payment Form Section */}
-                <div className="gateway-payment-section">
-                    <h2 className="gateway-payment-title">
-                        💳 Completar Pago
-                    </h2>
-                    <p className="gateway-payment-subtitle">
-                        Ingresa los datos de tu tarjeta para completar la compra
-                    </p>
-
-                    <form onSubmit={handleSubmit}>
-                        {/* Card Preview */}
-                        <div className={`gateway-card-preview ${cardType ? cardType.toLowerCase() : ''}`}>
-                            <div className="gateway-card-preview-inner">
-                                <div className="gateway-card-chip"></div>
-                                <div className="gateway-card-number-preview">
-                                    {getMaskedCardNumber(cardNumber)}
-                                </div>
-                                <div className="gateway-card-details-preview">
-                                    <div className="gateway-card-name-preview">
-                                        {cardName || 'NOMBRE TITULAR'}
-                                    </div>
-                                    <div className="gateway-card-expiry-preview">
-                                        {expiryDate || 'MM/AA'}
-                                    </div>
-                                </div>
-                                <div className={`gateway-card-logo-preview ${cardType ? 'has-icon' : ''}`}>
-                                    {cardType && (
-                                        <div className={`gateway-card-icon ${cardType.toLowerCase()}`}>
-                                            {cardType === 'VISA' && 'VISA'}
-                                            {cardType === 'AMEX' && 'AMEX'}
-                                            {cardType === 'DISCOVER' && 'DISC'}
-                                            {cardType === 'DINERS' && 'DC'}
-                                            {cardType === 'JCB' && 'JCB'}
-                                        </div>
-                                    )}
-                                    <span className="gateway-card-type-text">
-                                        {!cardType && 'VISA'}
-                                    </span>
-                                </div>
+            <div className={`contenedor-pasarela ${!isDarkMode ? 'modo-claro' : ''}`}>
+                <div className="contenido-principal-pasarela">
+                    <div className="diseno-dos-columnas-pasarela">
+                    <div className="columna-izquierda-pasarela">
+                        <div className="direccion-envio">
+                            <h3 className="titulo-direccion-pasarela"><MapPin size={20} style={{ marginRight: '10px' }} /> Dirección de envío</h3>
+                            <div className="formulario-direccion-pasarela">
+                                <input
+                                    type="text"
+                                    className={`entrada-direccion-pasarela ${addressErrors.pais ? 'error-entrada' : ''}`}
+                                    name="pais"
+                                    placeholder="País"
+                                    value={address.pais}
+                                    onChange={handleAddressChange}
+                                />
+                                <input
+                                    type="text"
+                                    className={`entrada-direccion-pasarela ${addressErrors.provincia ? 'error-entrada' : ''}`}
+                                    name="provincia"
+                                    placeholder="Provincia"
+                                    value={address.provincia}
+                                    onChange={handleAddressChange}
+                                />
+                                <input
+                                    type="text"
+                                    className={`entrada-direccion-pasarela ${addressErrors.ciudad ? 'error-entrada' : ''}`}
+                                    name="ciudad"
+                                    placeholder="Ciudad"
+                                    value={address.ciudad}
+                                    onChange={handleAddressChange}
+                                />
+                                <input
+                                    type="text"
+                                    className={`entrada-direccion-pasarela ${addressErrors.codigoPostal ? 'error-entrada' : ''}`}
+                                    name="codigoPostal"
+                                    placeholder="Código Postal"
+                                    value={address.codigoPostal}
+                                    onChange={handleAddressChange}
+                                />
+                                <textarea
+                                    className={`entrada-direccion-pasarela ${addressErrors.direccion ? 'error-entrada' : ''}`}
+                                    name="direccion"
+                                    placeholder="Dirección exacta"
+                                    value={address.direccion}
+                                    onChange={handleAddressChange}
+                                    rows={3}
+                                />
+                                <button
+                                    type="button"
+                                    className="boton-guardar-direccion"
+                                    onClick={handleSaveAddress}
+                                >
+                                    Guardar dirección
+                                </button>
                             </div>
                         </div>
 
-                        {/* Card Form */}
-                        <div className="gateway-payment-form">
-                            {/* Nombre del titular */}
-                            <input 
-                                type="text" 
-                                className={`gateway-payment-input ${errors.cardName ? 'input-error' : ''}`}
-                                placeholder="Nombre del titular" 
-                                value={cardName} 
-                                onChange={handleCardNameChange}
-                                maxLength={30}
-                            />
-                            {errors.cardName && <span className="gateway-error-message">{errors.cardName}</span>}
-                            
-                            {/* Número de tarjeta */}
-                            <input 
-                                type="text" 
-                                className={`gateway-payment-input ${errors.cardNumber ? 'input-error' : ''}`}
-                                placeholder="Numero de Tarjeta (inicie con 4, 5, 34, 37, 6011)" 
-                                value={cardNumber} 
-                                onChange={handleCardNumberChange}
-                                maxLength={cardType === 'AMEX' ? 17 : 19}
-                            />
-                            {errors.cardNumber && <span className="gateway-error-message">{errors.cardNumber}</span>}
-                            
-                            <div className="gateway-card-details-row">
-                                <div className="gateway-input-group">
-                                    <input 
-                                        type="text" 
-                                        className={`gateway-payment-input ${errors.expiryDate ? 'input-error' : ''}`}
-                                        placeholder="MM/AA" 
-                                        value={expiryDate} 
+                        <div className="resenas-en-direccion-pasarela">
+                            <h3 className="titulo-resenas-pasarela"><MessageCircle size={20} style={{ marginRight: '10px' }} /> Reseñas de Productos</h3>
+                            <div className="lista-productos-resenas-pasarela">
+                                {selectedItems.map((item, index) => (
+                                    <div key={item._id || item.id || index} className="tarjeta-producto-resena-pasarela">
+                                        <img 
+                                            src={item.images?.[0]?.url || item.image || "https://via.placeholder.com/60"} 
+                                            alt={item.name} 
+                                            className="imagen-producto-resena-pasarela"
+                                        />
+                                        <div className="info-producto-resena-pasarela">
+                                            <span className="nombre-producto-resena-pasarela">{item.name}</span>
+                                            <button 
+                                                className="boton-ver-resenas-pasarela"
+                                                onClick={() => fetchProductComments(item)}
+                                            >
+                                                Ver reseñas
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="columna-derecha-pasarela">
+                        <div className="pasarela-de-pago">
+                            <h2 className="titulo-pago-pasarela">
+                                <CreditCard size={24} style={{ marginRight: '10px' }} /> Completar Pago
+                            </h2>
+                            <p className="subtitulo-pago-pasarela">
+                                Ingresa los datos de tu tarjeta
+                            </p>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className={`vista-previa-tarjeta-pasarela ${cardType ? cardType.toLowerCase() : ''}`}>
+                                <div className="interior-vista-previa-tarjeta">
+                                    <div className="chip-tarjeta-pasarela"></div>
+                                    <div className="vista-previa-numero-tarjeta">
+                                        {getMaskedCardNumber(cardNumber)}
+                                    </div>
+                                    <div className="vista-previa-detalles-tarjeta">
+                                        <div className="vista-previa-nombre-tarjeta">
+                                            {cardName.toUpperCase() || 'NOMBRE TITULAR'}
+                                        </div>
+                                        <div className="vista-previa-vencimiento-tarjeta">
+                                            {expiryDate || 'MM/AA'}
+                                        </div>
+                                    </div>
+                                    <div className="vista-previa-logo-tarjeta">
+                                        {cardType || 'CARD'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="formulario-pago-pasarela">
+                                <input
+                                    type="text"
+                                    className={`entrada-pago-pasarela ${errors.cardName ? 'error-entrada' : ''}`}
+                                    placeholder="Nombre en la tarjeta"
+                                    value={cardName}
+                                    onChange={(e) => setCardName(e.target.value)}
+                                />
+                                <input
+                                    type="text"
+                                    className={`entrada-pago-pasarela ${errors.cardNumber ? 'error-entrada' : ''}`}
+                                    placeholder="Número de tarjeta"
+                                    value={cardNumber}
+                                    onChange={handleCardNumberChange}
+                                />
+                                <div className="fila-detalles-tarjeta-pasarela">
+                                    <input
+                                        type="text"
+                                        className={`entrada-pago-pasarela ${errors.expiryDate ? 'error-entrada' : ''}`}
+                                        placeholder="MM/AA"
+                                        value={expiryDate}
                                         onChange={handleExpiryDateChange}
                                         maxLength={5}
                                     />
-                                    {errors.expiryDate && <span className="gateway-error-message">{errors.expiryDate}</span>}
+                                    <div className="campo-cvv-pasarela">
+                                        <input
+                                            type={showCvv ? "text" : "password"}
+                                            className={`entrada-pago-pasarela ${errors.cvv ? 'error-entrada' : ''}`}
+                                            placeholder="CVV"
+                                            value={cvv}
+                                            onChange={handleCvvChange}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="alternar-cvv-pasarela"
+                                            onClick={() => setShowCvv(!showCvv)}
+                                        >
+                                            {showCvv ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="gateway-input-group gateway-cvv-input-group">
-                                    <input 
-                                        type={showCvv ? "text" : "password"}
-                                        className={`gateway-payment-input ${errors.cvv ? 'input-error' : ''}`}
-                                        placeholder={cardType === 'AMEX' ? 'CVV (4 digitos)' : 'CVV (3 digitos)'} 
-                                        value={cvv} 
-                                        onChange={handleCvvChange}
-                                        maxLength={cardType === 'AMEX' ? 4 : 3}
+                                {errors.cardNumber && <span className="mensaje-error-pasarela">{errors.cardNumber}</span>}
+                                {errors.expiryDate && <span className="mensaje-error-pasarela">{errors.expiryDate}</span>}
+                                {errors.cvv && <span className="mensaje-error-pasarela">{errors.cvv}</span>}
+                                {errors.cardName && <span className="mensaje-error-pasarela">{errors.cardName}</span>}
+                            </div>
+
+                            <button
+                                type="submit"
+                                className={`boton-enviar-pasarela ${isProcessing ? 'procesando' : ''}`}
+                                disabled={isProcessing}
+                            >
+                                {isProcessing ? (
+                                    <><Loader2 className="animacion-giro" size={18} style={{ marginRight: '10px' }} /> Procesando...</>
+                                ) : `Pagar ₡${selectedSubtotal.toLocaleString()}`}
+                            </button>
+                        </form>
+
+                        <div className="seccion-confianza-pasarela">
+                            <p className="texto-pago-seguro-pasarela"><Lock size={14} style={{ marginRight: '8px' }} /> Pagos encriptados y seguros</p>
+                            <div className="metodos-pago-pasarela">
+                                <span>Visa</span>
+                                <span>Mastercard</span>
+                                <span>Amex</span>
+                                <span>Discover</span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+
+                {showCommentsModal && (
+                    <div className="capa-modal-comentarios-pasarela" onClick={() => setShowCommentsModal(false)}>
+                        <div className="modal-comentarios-pasarela" onClick={(e) => e.stopPropagation()}>
+                            <div className="encabezado-modal-comentarios-pasarela">
+                                <div className="info-producto-modal-comentarios-pasarela">
+                                    <img 
+                                        src={selectedProductInfo?.image?.url || selectedProductInfo?.image || "https://via.placeholder.com/80"} 
+                                        alt={selectedProductInfo?.name} 
+                                        className="imagen-producto-modal-comentarios-pasarela"
                                     />
-                                    <button 
-                                        type="button" 
-                                        className="gateway-cvv-toggle"
-                                        onClick={() => setShowCvv(!showCvv)}
-                                        title={showCvv ? 'Ocultar CVV' : 'Mostrar CVV'}
-                                    >
-                                        {showCvv ? (
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                                                <line x1="1" y1="1" x2="23" y2="23"/>
-                                            </svg>
-                                        ) : (
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                <circle cx="12" cy="12" r="3"/>
-                                            </svg>
-                                        )}
-                                    </button>
-                                    {errors.cvv && <span className="gateway-error-message">{errors.cvv}</span>}
+                                    <div>
+                                        <h3>{selectedProductInfo?.name}</h3>
+                                        <div className="calificacion-modal-comentarios-pasarela">
+                                            <span className="numero-calificacion-pasarela">{selectedProductInfo?.averageRating || "0"}</span>
+                                            <div className="estrellas-calificacion">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star 
+                                                        key={i} 
+                                                        size={14} 
+                                                        fill={i < Math.round(selectedProductInfo?.averageRating || 0) ? "#fbbf24" : "none"} 
+                                                        color={i < Math.round(selectedProductInfo?.averageRating || 0) ? "#fbbf24" : "#ccc"} 
+                                                    />
+                                                ))}
+                                            </div>
+                                            <span className="conteo-calificacion">({selectedProductInfo?.totalComments || 0})</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="cerrar-modal-pasarela" onClick={() => setShowCommentsModal(false)}>
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="cuerpo-modal-comentarios-pasarela">
+                                {loadingProductComments ? (
+                                    <div className="cargando-comentarios-pasarela"><Loader2 className="animacion-giro" /></div>
+                                ) : selectedProductComments.length === 0 ? (
+
+                                    <div className="comentarios-vacios-pasarela">
+                                        <MessageCircle size={40} opacity={0.3} />
+                                        <p>Aún no hay comentarios para este producto.</p>
+                                    </div>
+                                ) : (
+                                    <div className="lista-comentarios-pasarela">
+                                        {selectedProductComments.map((comment) => (
+
+                                            <div key={comment._id} className="item-comentario-pasarela">
+                                                <div className="encabezado-comentario-pasarela">
+                                                    <div className="info-comentario-pasarela">
+                                                        <span className="usuario-comentario-pasarela">{comment.user?.nombre || "Usuario"}</span>
+                                                        <span className="fecha-comentario-pasarela">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className="calificacion-comentario-pasarela">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <Star key={i} size={12} fill={i < comment.rating ? "#fbbf24" : "none"} color={i < comment.rating ? "#fbbf24" : "#ccc"} />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="texto-comentario-pasarela">{comment.text}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showSuccessModal && (
+                    <div className="capa-modal-exito-pasarela">
+                        <div className="modal-exito-pasarela">
+                            <div className="icono-modal-exito-pasarela">
+                                <CheckCircle2 size={60} color="#10b981" />
+                            </div>
+                            <h2>¡Pago Confirmado!</h2>
+                            <div className="detalles-modal-exito-pasarela">
+                                <p>Gracias por tu compra. Tu pedido está siendo procesado.</p>
+                                <div className="tarjeta-modal-exito-pasarela">
+                                    <span>Tarjeta: **** {lastFourDigits}</span>
+                                    <span>Total pagado: ₡{selectedSubtotal.toLocaleString()}</span>
                                 </div>
                             </div>
-                            
-                            <p className="gateway-card-hint">
-                                <span className={`gateway-card-type-indicator ${cardType ? 'active' : ''}`}>
-                                    {cardType ? `💳 ${cardType}` : '💳 Visa/Mastercard/Amex/Discover'}
-                                </span>
-                                <br/>
-                                <span className="gateway-validation-info">
-                                    ✓ Algoritmo de Luhn &nbsp; ✓ Tipo detectado &nbsp; ✓ CVV adaptativo
-                                </span>
-                            </p>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className={`gateway-submit-btn ${isProcessing ? 'processing' : ''}`}
-                            disabled={isProcessing}
-                        >
-                            {isProcessing ? 'Procesando...' : `Pagar ₡${selectedSubtotal.toLocaleString()}`}
-                        </button>
-                    </form>
-
-                    {/* Trust Section */}
-                    <div className="gateway-trust-section">
-                        <p className="gateway-secure-payment-text">🛡️ Opciones de pago seguro</p>
-                        
-                        <div className="gateway-payment-methods">
-                            <span>Visa</span>
-                            <span>Mastercard</span>
-                            <span>Amex</span>
-                            <span>Discover</span>
-                        </div>
-                        
-                        <p className="gateway-trust-disclaimer">
-                            Nexora se compromete a proteger tu información de pago.
-                            Tus datos están encriptados y seguros.
-                        </p>
-                    </div>
-                </div>
-
-                {/* Order Summary */}
-                <aside className="gateway-order-summary">
-                    <h3>Resumen del Pedido</h3>
-                    
-                    <div className="gateway-order-items">
-                        {selectedItems.map((item, index) => (
-                            <div key={index} className="gateway-order-item">
-                                <img src={item.images?.[0] || 'https://via.placeholder.com/60'} alt={item.name} />
-                                <div className="gateway-order-item-info">
-                                    <div className="gateway-order-item-name">{item.name}</div>
-                                    <div className="gateway-order-item-qty">Cantidad: {item.quantity}</div>
-                                </div>
-                                <div className="gateway-order-item-price">
-                                    ₡{(item.price * item.quantity).toLocaleString()}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="gateway-order-totals">
-                        <div className="gateway-total-line">
-                            <span>Subtotal ({selectedCount} items)</span>
-                            <span>₡{selectedSubtotal.toLocaleString()}</span>
-                        </div>
-                        <div className="gateway-total-line">
-                            <span>Envío</span>
-                            <span style={{ color: '#10b981' }}>GRATIS</span>
-                        </div>
-                        <div className="gateway-total-line grand-total">
-                            <span>Total</span>
-                            <span>₡{selectedSubtotal.toLocaleString()}</span>
+                            <button className="boton-modal-exito-pasarela" onClick={handleContinue}>
+                                Volver al Inicio
+                            </button>
                         </div>
                     </div>
-                </aside>
+                )}
             </div>
-
-            {/* Success Modal */}
-            {showSuccessModal && (
-                <div className="gateway-success-modal-overlay" onClick={() => setShowSuccessModal(false)}>
-                    <div className="gateway-success-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="gateway-success-modal-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" strokeLinecap="round" strokeLinejoin="round"/>
-                                <polyline points="22 4 12 14.01 9 11.01" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                        </div>
-                        <h2>¡Pago Exitoso!</h2>
-                        <div className="gateway-success-modal-details">
-                            <p>Tu compra ha sido procesada correctamente</p>
-                            <div className="gateway-success-modal-card">
-                                <span className="gateway-card-label">Tarjeta utilizada:</span>
-                                <span className="gateway-card-number-display">**** **** **** {lastFourDigits}</span>
-                            </div>
-                            <div className="gateway-success-modal-amount">
-                                <span className="gateway-amount-label">Monto pagado:</span>
-                                <span className="gateway-amount-value">₡{selectedSubtotal.toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <button 
-                            className="gateway-success-modal-btn"
-                            onClick={handleContinue}
-                        >
-                            Continuar
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
+        </>
     );
 };
 
