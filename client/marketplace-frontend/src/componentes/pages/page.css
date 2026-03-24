@@ -294,3 +294,56 @@
     transform: rotate(360deg);
   }
 }
+
+/* Responsividad */
+@media (max-width: 1200px) {
+  .rejilla-productos {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .rejilla-productos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .contenedor-mayor {
+    padding: 15px 3% 30px 3%;
+  }
+}
+
+@media (max-width: 768px) {
+  .rejilla-productos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .encabezado-seccion h2 {
+    font-size: 22px;
+  }
+  
+  .nombre-producto {
+    font-size: 1.1rem;
+  }
+  
+  .precio-producto {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rejilla-productos {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .contenedor-mayor {
+    padding: 10px 15px 20px 15px;
+  }
+  
+  .tarjeta-producto {
+    max-width: 350px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
