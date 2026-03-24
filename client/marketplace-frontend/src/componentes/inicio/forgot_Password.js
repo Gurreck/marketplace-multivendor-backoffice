@@ -20,23 +20,41 @@ export default function ForgotPassword() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
+    // ===== ESTADO =====
+    const [email, setEmail] = useState(''); // Correo para recuperación
+    const [loading, setLoading] = useState(false); // Estado de carga de la petición
+    const [isDarkMode, setIsDarkMode] = useState(true); // Tema local de la página
+    const [message, setMessage] = useState(''); // Mensaje de éxito
+    const [error, setError] = useState(''); // Mensaje de error
+
+    // ===== UTILIDADES =====
+    /**
+     * Alterna el tema entre claro y oscuro
+     */
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
     };
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Procesa la solicitud de recuperación de contraseña
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setMessage('');
         setLoading(true);
         setError('');
         setMessage('');
 
+        // Validación básica de email
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
             setError('Por favor, ingresa un email válido');
             setLoading(false);
             return;
         }
 
-        // Simulación de envío de correo
+        // Simulación de envío de correo (integrar con API en el futuro)
         setTimeout(() => {
             console.log('Recuperar contraseña para:', email);
             setMessage(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
@@ -44,6 +62,7 @@ export default function ForgotPassword() {
         }, 1500);
     };
 
+    // ===== RENDERIZADO =====
     return (
         <div className={`contenedor-olvido ${!isDarkMode ? 'modo-claro' : ''}`}>
             <div className="tarjeta-olvido">

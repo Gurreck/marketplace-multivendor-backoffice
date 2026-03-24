@@ -12,6 +12,11 @@ import {
     LogOut 
 } from 'lucide-react';
 
+/**
+ * NavbarSecundario
+ * Una versión simplificada de la barra de navegación utilizada en páginas como
+ * el carrito, la vista de producto o el panel de vendedor.
+ */
 export default function NavbarSecundario({
     user,
     logout,
@@ -23,6 +28,10 @@ export default function NavbarSecundario({
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Cierra la sesión y redirige al inicio
+     */
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -36,6 +45,7 @@ export default function NavbarSecundario({
         }
     };
 
+    // ===== RENDERIZADO =====
     return (
         <header className="encabezado">
             <div className="parte-superior-encabezado">
@@ -47,11 +57,13 @@ export default function NavbarSecundario({
                 </div>
 
                 <div className="barra-encabezado">
+                    {/* Botón Inicio con lógica personalizada */}
                     <button className="boton-inicio" onClick={handleInicio}>
                         <Home size={18} style={{ marginRight: '8px' }} />
                         Inicio
                     </button>
 
+                    {/* Alternar Tema */}
                     <button
                         className="alternar-tema-encabezado"
                         onClick={toggleTheme}
@@ -59,6 +71,8 @@ export default function NavbarSecundario({
                     >
                         {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
+
+                    {/* Menú de Usuario / Login */}
                     <div className="menu-usuario" 
                         onClick={() => {
                             if (disableUserMenu) return;
@@ -66,6 +80,10 @@ export default function NavbarSecundario({
                                 navigate('/login');
                             } else if (user?.role === 'vendedor') {
                                 navigate('/vendedor/dashboard');
+                            } else if (user?.role === 'administrador') {
+                                navigate('/admin/dashboard');
+                            } else {
+                                navigate('/cliente');
                             }
                         }}
                         style={disableUserMenu ? { cursor: 'default' } : {}}
@@ -75,6 +93,8 @@ export default function NavbarSecundario({
                             {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                         </span>
                     </div>
+
+                    {/* Carrito */}
                     <button
                         className="boton-carrito"
                         onClick={() => disableCart ? null : navigate('/checkout')}

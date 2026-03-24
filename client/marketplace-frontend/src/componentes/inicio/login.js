@@ -16,20 +16,30 @@ import {
 } from 'lucide-react';
 
 export default function Login({ onRegisterClick, onForgotClick }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
+  // ===== ESTADO =====
+  const [email, setEmail] = useState(''); // Correo ingresado
+  const [password, setPassword] = useState(''); // Contraseña ingresada
+  const [error, setError] = useState(''); // Mensajes de error de login
+  const [loading, setLoading] = useState(false); // Estado de carga (durante la petición)
+  const [isDarkMode, setIsDarkMode] = useState(true); // Tema local de la página
+  const [showPassword, setShowPassword] = useState(false); // Visibilidad de la contraseña
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // ===== UTILIDADES Y NAVEGACIÓN =====
+  /**
+   * Alterna el tema entre claro y oscuro
+   */
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
 
+  /**
+   * Determina la ruta de redirección según el rol del usuario
+   * @param {string} rol - El rol del usuario (administrador, vendedor, cliente)
+   * @returns {string} La ruta de destino
+   */
   const redirigirPorRol = (rol) => {
     switch (rol) {
       case 'administrador':
@@ -43,6 +53,10 @@ export default function Login({ onRegisterClick, onForgotClick }) {
     }
   };
 
+  // ===== MANEJADORES DE EVENTOS =====
+  /**
+   * Procesa el inicio de sesión enviando las credenciales al servicio de autenticación
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -61,6 +75,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
     }
   };
 
+  // ===== RENDERIZADO =====
   return (
     <div className={`contenedor-inicio-sesion ${!isDarkMode ? 'modo-claro' : ''}`}>
       <div className="tarjeta-inicio-sesion">

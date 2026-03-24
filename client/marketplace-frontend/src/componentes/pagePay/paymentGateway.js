@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 const PaymentGateway = () => {
+    // ===== NAVEGACIÓN Y CONTEXTO =====
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,6 +30,8 @@ const PaymentGateway = () => {
 
     const selectedItems = location.state?.selectedItems || [];
     const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
+
+    // ===== ESTADO DE TARJETA =====
 
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -261,6 +264,7 @@ const PaymentGateway = () => {
         navigate('/');
     };
 
+    // ===== RENDERIZADO PRINCIPAL =====
     return (
         <>
             <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
@@ -494,6 +498,7 @@ const PaymentGateway = () => {
                                 {loadingProductComments ? (
                                     <div className="cargando-comentarios-pasarela"><Loader2 className="animacion-giro" /></div>
                                 ) : selectedProductComments.length === 0 ? (
+
                                     <div className="comentarios-vacios-pasarela">
                                         <MessageCircle size={40} opacity={0.3} />
                                         <p>Aún no hay comentarios para este producto.</p>
@@ -501,6 +506,7 @@ const PaymentGateway = () => {
                                 ) : (
                                     <div className="lista-comentarios-pasarela">
                                         {selectedProductComments.map((comment) => (
+
                                             <div key={comment._id} className="item-comentario-pasarela">
                                                 <div className="encabezado-comentario-pasarela">
                                                     <div className="info-comentario-pasarela">

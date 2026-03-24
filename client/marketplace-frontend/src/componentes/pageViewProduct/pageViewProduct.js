@@ -23,10 +23,16 @@ import {
     ArrowLeft
 } from 'lucide-react';
 
+/**
+ * PageViewProduct
+ * Componente que muestra el detalle completo de un producto, incluyendo carrusel de imágenes,
+ * descripción, precio, vendedor, productos similares y sistema de reseñas.
+ */
 const PageViewProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
  
+    // ===== CONTEXTO =====
     const { user, isAuthenticated, logout } = useAuth();
     const { addToCart, cartCount } = useCart();
     const { isDarkMode, toggleTheme } = useTheme();
@@ -40,11 +46,12 @@ const PageViewProduct = () => {
     const [averageRating, setAverageRating] = useState(0);
     const [loadingComments, setLoadingComments] = useState(true);
 
-    const [newComment, setNewComment] = useState("");
-    const [newRating, setNewRating] = useState(5);
+    const [newComment, setNewComment] = useState(""); // Texto del nuevo comentario a publicar
+    const [newRating, setNewRating] = useState(5); // Calificación del nuevo comentario (1-5)
 
-    const [showNotification, setShowNotification] = useState('');
-    const [showLoginModal, setShowLoginModal] = useState(false);
+    // ===== ESTADO DE UI =====
+    const [showNotification, setShowNotification] = useState(''); // Mensaje de notificación temporal
+    const [showLoginModal, setShowLoginModal] = useState(false); // Control del modal de login sugerido
 
     // Función para cargar comentarios desde el backend
     const fetchComments = useCallback(async () => {
@@ -95,18 +102,29 @@ const PageViewProduct = () => {
         fetchComments();
     }, [fetchProductDetail, fetchComments]);
 
+    // ===== MANEJADORES DE IMÁGENES =====
+    /**
+     * Cambia a la imagen anterior en el carrusel
+     */
     const goToPreviousImage = () => {
         setCurrentImageIndex((prev) =>
             prev === 0 ? selectedProduct.images.length - 1 : prev - 1
         );
     };
 
+    /**
+     * Cambia a la siguiente imagen en el carrusel
+     */
     const goToNextImage = () => {
         setCurrentImageIndex((prev) =>
             prev === selectedProduct.images.length - 1 ? 0 : prev + 1
         );
     };
 
+    // ===== MANEJADORES DE COMENTARIOS =====
+    /**
+     * Valida y envía una nueva reseña al backend
+     */
     const handleSubmitComment = async () => {
         if (newComment.trim() === "") return;
         
@@ -136,6 +154,7 @@ const PageViewProduct = () => {
         }
     };
 
+    // ===== RENDERIZADO CONDICIONAL (CARGA) =====
     if (loading) return (
         <div className="loading" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0094FF', gap: '15px' }}>
             <Loader2 className="animacion-giro" size={48} />
@@ -145,8 +164,10 @@ const PageViewProduct = () => {
 
     if (!selectedProduct) return null;
 
+    // ===== RENDERIZADO PRINCIPAL =====
     return (
         <>
+            {/* Modal de Login Sugerido */}
             <ModalLogin 
                 isOpen={showLoginModal} 
                 onClose={() => setShowLoginModal(false)}
@@ -154,8 +175,9 @@ const PageViewProduct = () => {
                     setShowLoginModal(false);
                     navigate('/login');
                 }}
-                mensaje="Debes iniciar sesión para agregar productos al carrito"
+                mensaje="Debes iniciar sesión para realizar esta acción"
             />
+
             <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
                 <NavbarSecundario
                     toggleTheme={toggleTheme}
@@ -165,7 +187,9 @@ const PageViewProduct = () => {
                     cartCount={cartCount}
                 />
             </div>
+
             <div className={`contenedor-pagina-producto ${!isDarkMode ? 'modo-claro' : ''}`}>
+                {/* Notificación flotante */}
                 {showNotification && (
                     <div className="notificacion">
                         <CheckCircle2 size={18} style={{ marginRight: '8px' }} />
@@ -175,6 +199,7 @@ const PageViewProduct = () => {
 
             <div className="contenido-pagina-producto">
                 <div className="diseno-contenido-principal">
+                    {/* Columna Izquierda: Galería y Comentarios */}
                     <div className="seccion-imagen">
                         <div className="contenedor-imagen-principal">
                             <img
@@ -183,6 +208,7 @@ const PageViewProduct = () => {
                                 className="imagen-principal-producto"
                             />
 
+                            {/* Controles de navegación de imagen */}
                             {selectedProduct.images.length > 1 && (
                                 <>
                                     <button className="boton-navegacion-imagen prev" onClick={goToPreviousImage}>
@@ -195,6 +221,7 @@ const PageViewProduct = () => {
                             )}
                         </div>
 
+                        {/* Miniaturas de la galería */}
                         {selectedProduct.images.length > 1 && (
                             <div className="miniaturas-imagenes">
                                 {selectedProduct.images.map((image, index) => (
@@ -268,7 +295,11 @@ const PageViewProduct = () => {
                                     comments.map((comment) => (
                                         <div key={comment._id} className="item-comentario">
                                             <div className="encabezado-comentario">
-                                                <img src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} alt={comment.user?.nombre || "Usuario"} className="avatar-comentario" />
+                                                <img 
+                                                    src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} 
+                                                    alt={comment.user?.nombre || "Usuario"} 
+                                                    className="avatar-comentario" 
+                                                />
                                                 <div className="informacion-comentario">
                                                     <span className="usuario-comentario">{comment.user?.nombre || "Usuario"}</span>
                                                     <span className="fecha-comentario">{new Date(comment.createdAt).toLocaleDateString("es-CR")}</span>
@@ -292,6 +323,7 @@ const PageViewProduct = () => {
                         </div>
                     </div>
 
+                    {/* Columna Derecha: Información y Acciones */}
                     <div className="seccion-informacion">
                         <div className="navegacion-atras">
                             <button onClick={() => navigate(-1)} className="boton-atras">
@@ -353,6 +385,7 @@ const PageViewProduct = () => {
                                                 setCurrentImageIndex(0);
                                                 window.scrollTo(0, 0);
                                             }}
+                                            title={product.name}
                                         >
                                             <div className="imagen-similar">
                                                 <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />

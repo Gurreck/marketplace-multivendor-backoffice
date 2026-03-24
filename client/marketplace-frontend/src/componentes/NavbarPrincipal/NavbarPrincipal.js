@@ -12,6 +12,11 @@ import {
     LogOut 
 } from 'lucide-react';
 
+/**
+ * NavbarPrincipal
+ * Barra de navegación superior principal que incluye búsqueda, perfil de usuario,
+ * carrito y selector de categorías.
+ */
 export default function NavbarPrincipal({
     searchTerm,
     setSearchTerm,
@@ -25,13 +30,19 @@ export default function NavbarPrincipal({
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Cierra la sesión del usuario y redirige al inicio
+     */
     const handleLogout = () => {
         logout();
         navigate('/');
     };
 
+    // ===== RENDERIZADO =====
     return (
         <header className="encabezado">
+            {/* Parte superior: Logo, Buscador y Acciones */}
             <div className="parte-superior-encabezado">
                 <div className="izquierda-encabezado">
                     <div className="logotipo" onClick={() => navigate('/')}>
@@ -53,6 +64,7 @@ export default function NavbarPrincipal({
                 </div>
 
                 <div className="derecha-encabezado">
+                    {/* Alternar Tema */}
                     <button
                         className="alternar-tema-encabezado"
                         onClick={toggleTheme}
@@ -60,16 +72,24 @@ export default function NavbarPrincipal({
                     >
                         {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
+
+                    {/* Perfil / Login */}
                     <button className="menu-usuario" onClick={() => {
                         if (!user) {
                             navigate('/login');
                         } else if (user?.role === 'vendedor') {
                             navigate('/vendedor/dashboard');
+                        } else if (user?.role === 'administrador') {
+                            navigate('/admin/dashboard');
+                        } else {
+                            navigate('/cliente');
                         }
                     }}>
                         <User size={20} style={{ marginRight: '8px' }} />
                         {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </button>
+
+                    {/* Carrito */}
                     <button
                         className="boton-carrito"
                         onClick={() => navigate('/checkout')}
@@ -84,6 +104,7 @@ export default function NavbarPrincipal({
                 </div>
             </div>
 
+            {/* Barra Inferior: Selector de Categorías */}
             <div className="barra-categorias">
                 {categories.map((category) => (
                     <button

@@ -15,23 +15,39 @@ import {
   PackageSearch
 } from 'lucide-react';
 
+/**
+ * Principal
+ * Componente de la página de inicio (Landing Page) que muestra el catálogo de productos,
+ * promociones y permite filtrar por categorías o búsqueda.
+ */
 export default function Principal() {
   const navigate = useNavigate();
+  
+  // ===== CONTEXTO =====
   const { logout, user ,isAuthenticated } = useAuth();
   const { addToCart, cartCount } = useCart();
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
-  const [showNotification, setShowNotification] = useState('');
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  // ===== ESTADO =====
+  const [products, setProducts] = useState([]); // Lista completa de productos desde la API
+  const [loading, setLoading] = useState(true); // Control de carga inicial de productos
+  const [searchTerm, setSearchTerm] = useState(''); // Texto de búsqueda ingresado en el Navbar
+  const [selectedCategory, setSelectedCategory] = useState('Todos'); // Categoría activa para el filtro
+  const [showNotification, setShowNotification] = useState(''); // Mensaje de éxito al agregar al carrito
+  const [showLoginModal, setShowLoginModal] = useState(false); // Visibilidad del modal de login sugerido
 
+  // ===== EFECTOS =====
+  /**
+   * Carga los productos al montar el componente
+   */
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // ===== CARGA DE DATOS =====
+  /**
+   * Obtiene todos los productos disponibles desde el servidor
+   */
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -54,6 +70,10 @@ export default function Principal() {
     return matchesCategory && matchesSearch;
   });
 
+  // ===== MANEJADORES DE EVENTOS =====
+  /**
+   * Agrega un producto al carrito, validando sesión previa
+   */
   const handleAddToCart = (product) => {
     if (!isAuthenticated) {
       setShowLoginModal(true);
@@ -64,6 +84,9 @@ export default function Principal() {
     setTimeout(() => setShowNotification(''), 3000);
   };
 
+  /**
+   * Agrega un producto en oferta al carrito aplicando un descuento del 10%
+   */
   const handlePromoAddToCart = (product) => {
     if (!isAuthenticated) {
       setShowLoginModal(true);
@@ -80,6 +103,7 @@ export default function Principal() {
     setTimeout(() => setShowNotification(''), 3000);
   };
 
+  // ===== RENDERIZADO PRINCIPAL =====
   return (
     <div className={`contenedor-principal ${!isDarkMode ? 'modo-claro' : ''}`}>
       {showNotification && (
@@ -89,6 +113,7 @@ export default function Principal() {
         </div>
       )}
 
+      {/* Modal Sugerencia Login */}
       <ModalLogin 
         isOpen={showLoginModal} 
         onClose={() => setShowLoginModal(false)}
@@ -99,6 +124,7 @@ export default function Principal() {
         mensaje="Debes iniciar sesión para agregar productos al carrito"
       />
 
+      {/* Navbar Superior */}
       <NavbarPrincipal
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -112,15 +138,18 @@ export default function Principal() {
         setSelectedCategory={setSelectedCategory}
       />
 
+      {/* Sección de Promociones */}
       <DivPromo products={products} handlePromoAddToCart={handlePromoAddToCart} />
 
       <div className="contenedor-mayor">
         <section className="seccion-productos">
+          {/* Encabezado del catálogo */}
           <div className="encabezado-seccion">
             <h2>{selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}</h2>
-            <p>{filteredProducts.length} productos</p>
+            <p>{filteredProducts.length} productos encontrados</p>
           </div>
 
+          {/* Listado de Productos (Grid) */}
           {loading ? (
             <div className="contenedor-carga">
               <Loader2 className="animacion-giro" size={40} />
@@ -130,15 +159,17 @@ export default function Principal() {
             <div className="rejilla-productos">
               {filteredProducts.map((product) => (
                 <div key={product._id || product.id} className="tarjeta-producto">
+                  {/* Imagen y Vendedor */}
                   <div className="imagen-producto" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>
                     <img src={product.images[0]?.url || "https://via.placeholder.com/300"} alt={product.name} className="imagen-real-producto" />
                     <div className="etiqueta-producto">{product.vendor?.nombre || product.vendor}</div>
                   </div>
 
+                  {/* Detalle y Acción */}
                   <div className="informacion-producto">
                     <h3 className="nombre-producto" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>{product.name}</h3>
                     <p className="descripcion-corta-producto">{product.description?.substring(0, 60)}...</p>
-                    <p className="vendedor-producto">vendedor: {product.vendor?.nombre || product.vendor}</p>
+                    <p className="vendedor-producto">Vendedor: {product.vendor?.nombre || product.vendor}</p>
 
                     <div className="pie-producto">
                       <span className="precio-producto">₡{product.price.toLocaleString()}</span>
@@ -150,8 +181,14 @@ export default function Principal() {
                   </div>
                 </div>
               ))}
+
+
+
+
+              
             </div>
           ) : (
+            /* Estado Vacío */
             <div className="estado-vacio">
               <PackageSearch size={60} opacity={0.3} style={{ marginBottom: '20px' }} />
               <p>No se encontraron productos</p>
