@@ -335,7 +335,7 @@ const PaymentGateway = () => {
 
             <div className={`contenedor-pasarela ${!isDarkMode ? 'modo-claro' : ''}`}>
                 <div className="contenido-principal-pasarela">
-                    <div className="diseno-dos-columnas-pasarela">
+                   <div className="diseno-dos-columnas-pasarela"> 
                     <div className="columna-izquierda-pasarela">
                         <div className="direccion-envio direccion-envio-derecha">
                             <h3 className="titulo-direccion-pasarela">📦 Dirección de envío</h3>
@@ -529,17 +529,7 @@ const PaymentGateway = () => {
                         <div className="seccion-confianza-pasarela">
                             <p className="texto-pago-seguro-pasarela">🛡️ Opciones de pago seguro</p>
 
-                            <div className="metodos-pago-pasarela">
-                                <span>Visa</span>
-                                <span>Mastercard</span>
-                                <span>Amex</span>
-                                <span>Discover</span>
-                            </div>
-
-                            <p className="descargo-responsabilidad-pasarela">
-                                Nexora se compromete a proteger tu información de pago.
-                                Tus datos están encriptados y seguros.
-                            </p>
+                            
                         </div>
                     </div>
                     </div>
@@ -582,3 +572,4 @@ const PaymentGateway = () => {
 };
 
 export default PaymentGateway;
+

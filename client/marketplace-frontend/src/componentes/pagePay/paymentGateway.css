@@ -16,6 +16,38 @@
     filter: brightness(1.08);
     box-shadow: 0 6px 20px rgba(0, 148, 255, 0.28);
 }
+/* Two Column Layout for Payment Gateway */
+.diseno-dos-columnas-pasarela {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.columna-izquierda-pasarela {
+    flex: 1;
+    max-width: 460px;
+}
+
+.columna-derecha-pasarela {
+    flex: 1;
+    max-width: 460px;
+}
+
+@media (max-width: 900px) {
+    .diseno-dos-columnas-pasarela {
+        flex-direction: column;
+    }
+    
+    .columna-izquierda-pasarela,
+    .columna-derecha-pasarela {
+        min-width: 100%;
+        max-width: 100%;
+    }
+}
+
 .direccion-envio {
     background: var(--nexora-card);
     backdrop-filter: blur(10px);
@@ -30,6 +62,7 @@
     right: auto;
     position: relative;
     top: auto;
+    margin-left: 15px;
 }
 
 .titulo-direccion-pasarela {
@@ -99,7 +132,7 @@
 }
 
 .encabezado-pasarela {
-    display: grid;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
@@ -153,14 +186,22 @@
 }
 
 .columna-derecha-pasarela .pasarela-de-pago {
-    margin-top: 25px;
+    margin-top: 0;
+}
+
+.columna-izquierda-pasarela,
+.columna-derecha-pasarela {
+    display: flex;
+    flex-direction: column;
 }
 
  .direccion-envio-derecha {
-    margin-left: 0;
+    margin-left: auto;
+    margin-right: 15px;
     min-width: auto;
     max-width: 100%;
     flex: auto;
+
 }
 .gateway-two-column-layout {
     display: flex;
@@ -242,6 +283,7 @@
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
+    margin-bottom: 25px;
 }
 
 .vista-previa-tarjeta-pasarela::after {
