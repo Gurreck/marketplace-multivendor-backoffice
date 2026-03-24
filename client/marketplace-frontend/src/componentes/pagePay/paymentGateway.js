@@ -9,21 +9,17 @@ import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 
 
 const PaymentGateway = () => {
-    // ===== NAVEGACIÓN Y CONTEXTO =====
     const navigate = useNavigate();
     const location = useLocation();
 
 
-    const { clearCart, cartItems, cartTotal, cartCount } = useCart();  // agregar cartCount
-    const { user, logout } = useAuth();  // agregar esta línea nueva
+    const { clearCart, cartItems, cartTotal, cartCount } = useCart();
+    const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
 
-    // Get selected items and total from navigation state
     const selectedItems = location.state?.selectedItems || [];
     const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
     const selectedCount = location.state?.selectedCount || cartItems.length;
-
-    // ===== ESTADO DE TARJETA =====
 
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -36,38 +32,8 @@ const PaymentGateway = () => {
     const [cardType, setCardType] = useState(null);
     const [showCvv, setShowCvv] = useState(false);
 
-    // Estado para el modal de comentarios
-    const [showCommentsModal, setShowCommentsModal] = useState(false);
-    const [selectedProductComments, setSelectedProductComments] = useState([]);
-    const [selectedProductInfo, setSelectedProductInfo] = useState(null);
-    const [loadingProductComments, setLoadingProductComments] = useState(false);
 
-    // ===== CARGA DE DATOS Y COMENTARIOS =====
 
-    // Función para obtener comentarios de un producto
-    const fetchProductComments = async (product) => {
-        setLoadingProductComments(true);
-        try {
-            const productId = product._id || product.id;
-            const response = await commentService.getCommentsByProduct(productId);
-            if (response.data.success) {
-                setSelectedProductComments(response.data.data);
-                setSelectedProductInfo({
-                    name: product.name,
-                    image: product.images?.[0] || product.image,
-                    averageRating: response.data.averageRating,
-                    totalComments: response.data.count
-                });
-                setShowCommentsModal(true);
-            }
-        } catch (error) {
-            console.error("Error fetching product comments:", error);
-        } finally {
-            setLoadingProductComments(false);
-        }
-    };
-
-    // ===== DIRECCIÓN DE ENVÍO =====
     const [address, setAddress] = useState({
         pais: '',
         provincia: '',
@@ -76,10 +42,8 @@ const PaymentGateway = () => {
         direccion: ''
     });
 
-    // Estado para errores de dirección
     const [addressErrors, setAddressErrors] = useState({});
 
-    // Función para validar la dirección
     const validateAddress = () => {
         const newErrors = {};
         if (!address.pais.trim()) newErrors.pais = 'El país es requerido';
@@ -90,7 +54,6 @@ const PaymentGateway = () => {
         return newErrors;
     };
 
-    // Función para guardar dirección con validación
     const handleSaveAddress = () => {
         const errors = validateAddress();
         if (Object.keys(errors).length > 0) {
@@ -104,27 +67,16 @@ const PaymentGateway = () => {
     const handleAddressChange = (e) => {
         const { name, value } = e.target;
         setAddress(prev => ({ ...prev, [name]: value }));
-        // Limpiar error de este campo cuando el usuario escriba
         if (addressErrors[name]) {
             setAddressErrors(prev => ({ ...prev, [name]: null }));
         }
     };
 
-    // ============================================
-    // VALIDACIÓN REAL DE TARJETAS (ALGORITMO DE LUHN)
-    // ============================================
-
-    /**
-     * Algoritmo de Luhn (Mod 10) para validación de números de tarjeta
-     */
-
-    // Algoritmo de Luhn (Mod 10) - El mismo usado en la vida real
     const luhnCheck = (cardNumber) => {
         const cleanNumber = cardNumber.replace(/\s/g, '');
         let sum = 0;
         let isEven = false;
 
-        // Recorrer de derecha a izquierda
         for (let i = cleanNumber.length - 1; i >= 0; i--) {
             let digit = parseInt(cleanNumber[i], 10);
 
@@ -142,32 +94,19 @@ const PaymentGateway = () => {
         return sum % 10 === 0;
     };
 
-    // Detectar tipo de tarjeta basado en IIN/BIN (Industry Identification Number)
     const detectCardType = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
 
-        // Visa: empieza con 4
         if (/^4/.test(cleanNumber)) return 'VISA';
-
-        // Mastercard: 51-55 o 2221-2720
         if (/^5[1-5]/.test(cleanNumber) || /^2[2-7]/.test(cleanNumber)) return 'MASTERCARD';
-
-        // American Express: 34 o 37
         if (/^3[47]/.test(cleanNumber)) return 'AMEX';
-
-        // Discover: 6011, 622126-622925, 644-649, 65
         if (/^6011/.test(cleanNumber) || /^65/.test(cleanNumber) || /^64[4-9]/.test(cleanNumber) || /^622(12[6-9]|1[3-9]\d|[2-8]\d{2}|91\d|92[0-5])/.test(cleanNumber)) return 'DISCOVER';
-
-        // Diners Club: 300-305, 36, 38
         if (/^3[068]/.test(cleanNumber) || /^30[0-5]/.test(cleanNumber)) return 'DINERS';
-
-        // JCB: 3528-3589
         if (/^35[2-8]/.test(cleanNumber)) return 'JCB';
 
         return null;
     };
 
-    // Obtener longitud esperada según tipo de tarjeta
     const getExpectedLength = (cardType) => {
         switch (cardType) {
             case 'AMEX': return 15;
@@ -176,7 +115,6 @@ const PaymentGateway = () => {
         }
     };
 
-    // Obtener CVV esperado según tipo de tarjeta
     const getExpectedCvvLength = (cardType) => {
         switch (cardType) {
             case 'AMEX': return 4;
@@ -184,39 +122,32 @@ const PaymentGateway = () => {
         }
     };
 
-    // Formatear número de tarjeta con asteriscos para los últimos 4 dígitos
     const getMaskedCardNumber = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
         if (cleanNumber.length === 0) {
             return '#### #### #### ####';
         }
         if (cleanNumber.length <= 4) {
-            // Si hay menos de 4 dígitos, mostrar todo como asteriscos
             return '**** **** **** ' + '*'.repeat(cleanNumber.length);
         }
         const firstDigits = cleanNumber.substring(0, cleanNumber.length - 4);
-        // Formatear con espacios cada 4 dígitos y añadir asteriscos al final
         const formatted = firstDigits.replace(/(.{4})/g, '$1 ').trim() + ' ****';
         return formatted;
     };
 
-    // Validar número de tarjeta con algoritmo de Luhn (como en la vida real)
     const validateCardNumber = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
 
-        // Verificar que solo contenga dígitos
         if (!/^\d+$/.test(cleanNumber)) {
             return 'El numero de tarjeta debe contener solo digitos';
         }
 
-        // Detectar tipo de tarjeta
         const detectedType = detectCardType(cleanNumber);
 
         if (!detectedType) {
             return 'Tipo de tarjeta no reconocido. Use Visa, Mastercard, Amex o Discover';
         }
 
-        // Verificar longitud según tipo de tarjeta
         const expectedLength = getExpectedLength(detectedType);
         if (cleanNumber.length !== expectedLength) {
             if (detectedType === 'AMEX') {
@@ -225,7 +156,6 @@ const PaymentGateway = () => {
             return `Las tarjetas ${detectedType} deben tener 16 digitos`;
         }
 
-        // Aplicar algoritmo de Luhn (validación real)
         if (!luhnCheck(cleanNumber)) {
             return 'Numero de tarjeta invalido (fallo validacion Luhn)';
         }
@@ -233,7 +163,6 @@ const PaymentGateway = () => {
         return null;
     };
 
-    // Validar fecha de vencimiento (formato MM/YY y no vencida)
     const validateExpiryDate = (date) => {
         if (!/^\d{2}\/\d{2}$/.test(date)) {
             return 'Formato invalido. Use MM/AA';
@@ -250,7 +179,6 @@ const PaymentGateway = () => {
         return null;
     };
 
-    // Validar CVV (3 dígitos para Visa/MC/Discover, 4 para Amex)
     const validateCvv = (cvvCode, currentCardType = cardType) => {
         const cleanCvv = cvvCode.replace(/\s/g, '');
         const expectedLength = getExpectedCvvLength(currentCardType);
@@ -269,7 +197,6 @@ const PaymentGateway = () => {
         return null;
     };
 
-    // Validar nombre del titular
     const validateCardName = (name) => {
         if (name.trim().length < 3) {
             return 'Ingrese el nombre del titular';
@@ -277,13 +204,11 @@ const PaymentGateway = () => {
         return null;
     };
 
-    // Formatear número de tarjeta según el tipo detectado
     const formatCardNumber = (value) => {
         const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
         const cleanNumber = v.replace(/\s/g, '');
         const detectedType = detectCardType(cleanNumber);
 
-        // American Express: 4-6-5 (cada grupo tiene diferente cantidad)
         if (detectedType === 'AMEX') {
             if (v.length > 4 && v.length <= 10) {
                 return v.substring(0, 4) + ' ' + v.substring(4, 10);
@@ -293,7 +218,6 @@ const PaymentGateway = () => {
             return v;
         }
 
-        // Otros tipos: 4-4-4-4
         const matches = v.match(/\d{4,16}/g);
         const match = (matches && matches[0]) || '';
         const parts = [];
@@ -303,7 +227,6 @@ const PaymentGateway = () => {
         return parts.length ? parts.join(' ') : v;
     };
 
-    // Formatear fecha de vencimiento (MM/AA)
     const formatExpiryDateInput = (value) => {
         const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
         if (v.length >= 2) {
@@ -312,17 +235,14 @@ const PaymentGateway = () => {
         return v;
     };
 
-    // Manejar cambio en número de tarjeta
     const handleCardNumberChange = (e) => {
         const formatted = formatCardNumber(e.target.value);
         setCardNumber(formatted);
 
-        // Detectar tipo de tarjeta en tiempo real
         const cleanNumber = formatted.replace(/\s/g, '');
         const detectedType = detectCardType(cleanNumber);
         setCardType(detectedType);
 
-        // Ajustar longitud máxima del CVV según tipo
         const expectedCvvLength = getExpectedCvvLength(detectedType);
         if (cvv.length > expectedCvvLength) {
             setCvv(cvv.substring(0, expectedCvvLength));
@@ -333,7 +253,6 @@ const PaymentGateway = () => {
         }
     };
 
-    // Manejar cambio en fecha de vencimiento
     const handleExpiryDateChange = (e) => {
         const formatted = formatExpiryDateInput(e.target.value);
         setExpiryDate(formatted);
@@ -342,7 +261,6 @@ const PaymentGateway = () => {
         }
     };
 
-    // Manejar cambio en CVV
     const handleCvvChange = (e) => {
         const expectedLength = getExpectedCvvLength(cardType);
         const v = e.target.value.replace(/[^0-9]/g, '').substring(0, expectedLength);
@@ -352,7 +270,6 @@ const PaymentGateway = () => {
         }
     };
 
-    // Manejar cambio en nombre
     const handleCardNameChange = (e) => {
         setCardName(e.target.value);
         if (errors.cardName) {
@@ -360,11 +277,9 @@ const PaymentGateway = () => {
         }
     };
 
-    // Manejar envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validar todos los campos
         const newErrors = {};
         const cardError = validateCardNumber(cardNumber);
         const expiryError = validateExpiryDate(expiryDate);
@@ -381,11 +296,9 @@ const PaymentGateway = () => {
             return;
         }
 
-        // Simulación de pasarela de pago
         setIsProcessing(true);
         setErrors({});
 
-        // Simular procesamiento con delay
         setTimeout(() => {
             setIsProcessing(false);
             const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
@@ -394,19 +307,16 @@ const PaymentGateway = () => {
         }, 2500);
     };
 
-    // Volver al carrito
     const handleGoBack = () => {
         navigate('/checkout');
     };
 
-    // Finalizar compra
     const handleContinue = () => {
         clearCart();
         setShowSuccessModal(false);
         navigate('/');
     };
 
-    // ===== RENDERIZADO PRINCIPAL =====
     return (
 
         <>
@@ -424,13 +334,8 @@ const PaymentGateway = () => {
 
 
             <div className={`contenedor-pasarela ${!isDarkMode ? 'modo-claro' : ''}`}>
-                {/* Header */}
-
-
                 <div className="contenido-principal-pasarela">
-                    {/* TWO COLUMN LAYOUT: Address (with Reviews at bottom) + Payment */}
                     <div className="diseno-dos-columnas-pasarela">
-                    {/* Left Column: Address + Reviews at bottom */}
                     <div className="columna-izquierda-pasarela">
                         <div className="direccion-envio direccion-envio-derecha">
                             <h3 className="titulo-direccion-pasarela">📦 Dirección de envío</h3>
@@ -494,38 +399,8 @@ const PaymentGateway = () => {
                                 </button>
                             </div>
                         </div>
-
-                        {/* Reviews Section - Inside Address Column at Bottom */}
-                        <div className="resenas-en-direccion-pasarela">
-                            <h3 className="titulo-resenas-pasarela">📝 Reseñas de Productos</h3>
-                            <p className="subtitulo-resenas-pasarela">
-                                Ver opiniones de otros compradores
-                            </p>
-                            
-                            <div className="lista-productos-resenas-pasarela">
-                                {selectedItems.map((item, index) => (
-                                    <div key={item._id || item.id || index} className="tarjeta-producto-resena-pasarela">
-                                        <img 
-                                            src={item.images?.[0] || item.image || "https://via.placeholder.com/60"} 
-                                            alt={item.name} 
-                                            className="imagen-producto-resena-pasarela"
-                                        />
-                                        <div className="info-producto-resena-pasarela">
-                                            <span className="nombre-producto-resena-pasarela">{item.name}</span>
-                                            <button 
-                                                className="boton-ver-resenas-pasarela"
-                                                onClick={() => fetchProductComments(item)}
-                                            >
-                                                💬 Ver reseñas
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                     </div>
 
-                    {/* Right Column: Payment Form */}
                     <div className="columna-derecha-pasarela">
                         <div className="pasarela-de-pago">
                             <h2 className="titulo-pago-pasarela">
@@ -536,7 +411,6 @@ const PaymentGateway = () => {
                             </p>
 
                         <form onSubmit={handleSubmit}>
-                            {/* Card Preview */}
                             <div className={`vista-previa-tarjeta-pasarela ${cardType ? cardType.toLowerCase() : ''}`}>
                                 <div className="interior-vista-previa-tarjeta">
                                     <div className="chip-tarjeta-pasarela"></div>
@@ -568,9 +442,7 @@ const PaymentGateway = () => {
                                 </div>
                             </div>
 
-                            {/* Card Form */}
                             <div className="formulario-pago-pasarela">
-                                {/* Nombre del titular */}
                                 <input
                                     type="text"
                                     className={`entrada-pago-pasarela ${errors.cardName ? 'error-entrada' : ''}`}
@@ -581,7 +453,6 @@ const PaymentGateway = () => {
                                 />
                                 {errors.cardName && <span className="mensaje-error-pasarela">{errors.cardName}</span>}
 
-                                {/* Número de tarjeta */}
                                 <input
                                     type="text"
                                     className={`entrada-pago-pasarela ${errors.cardNumber ? 'error-entrada' : ''}`}
@@ -655,7 +526,6 @@ const PaymentGateway = () => {
                             </button>
                         </form>
 
-                        {/* Trust Section */}
                         <div className="seccion-confianza-pasarela">
                             <p className="texto-pago-seguro-pasarela">🛡️ Opciones de pago seguro</p>
 
@@ -674,101 +544,8 @@ const PaymentGateway = () => {
                     </div>
                     </div>
                     </div>
-                    {/* Se eliminó el gateway-order-summary */}
                 </div>
 
-                {/* Modal de Comentarios del Producto */}
-                {showCommentsModal && (
-                    <div className="capa-modal-comentarios-pasarela" onClick={() => setShowCommentsModal(false)}>
-                        <div className="modal-comentarios-pasarela" onClick={(e) => e.stopPropagation()}>
-                            <div className="encabezado-modal-comentarios-pasarela">
-                                <div className="info-producto-modal-comentarios-pasarela">
-                                    <img 
-                                        src={selectedProductInfo?.image || "https://via.placeholder.com/80"} 
-                                        alt={selectedProductInfo?.name} 
-                                        className="imagen-producto-modal-comentarios-pasarela"
-                                    />
-                                    <div>
-                                        <h3>{selectedProductInfo?.name}</h3>
-                                        <div className="calificacion-modal-comentarios-pasarela">
-                                            <span className="numero-calificacion">{selectedProductInfo?.averageRating || "0"}</span>
-                                            <div className="estrellas-calificacion">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <span key={i} className={i < Math.round(selectedProductInfo?.averageRating || 0) ? "estrella llena" : "estrella"}>★</span>
-                                                ))}
-                                            </div>
-                                            <span className="conteo-calificacion">({selectedProductInfo?.totalComments || 0} comentarios)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button 
-                                    className="cerrar-modal-comentarios-pasarela"
-                                    onClick={() => setShowCommentsModal(false)}
-                                >
-                                    ✕
-                                </button>
-                            </div>
-
-                            <div className="cuerpo-modal-comentarios-pasarela">
-                                {loadingProductComments ? (
-                                    <div className="cargando-comentarios-pasarela">Cargando comentarios...</div>
-                                ) : selectedProductComments.length === 0 ? (
-
-                                    <div className="comentarios-vacios-pasarela">
-                                        <span>💬</span>
-
-                                   
-                                        <p>Aún no hay comentarios para este producto.</p>
-                                        
-                                    </div>
-                                ) : (
-                                    <div className="lista-comentarios-pasarela">
-                                        {selectedProductComments.map((comment) => (
-
-                                            <div key={comment._id} className="item-comentario-pasarela">
-                                                <div className="encabezado-comentario-pasarela">
-                                                    <img 
-                                                        src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} 
-                                                        alt={comment.user?.nombre || "Usuario"} 
-                                                        className="avatar-comentario-pasarela"
-                                                    />
-                                                    <div className="info-comentario-pasarela">
-                                                        <span className="usuario-comentario-pasarela">{comment.user?.nombre || "Usuario"}</span>
-                                                        <span className="fecha-comentario-pasarela">
-
-                                                            {new Date(comment.createdAt).toLocaleDateString("es-CR")}
-                                                        </span>
-                                                    </div>
-                                                    <div className="calificacion-comentario-pasarela">
-                                                        {[...Array(5)].map((_, i) => (
-
-                                                            <span key={i} className={i < comment.rating ? "estrella llena" : "estrella"}>★</span>
-
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <p className="texto-comentario-pasarela">{comment.text}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-
-                            <div className="pie-modal-comentarios-pasarela">
-                                <button 
-                                    className="boton-modal-comentarios-pasarela"
-                                    onClick={() => setShowCommentsModal(false)}
-                                >
-                                    Cerrar
-                                </button>
-
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Success Modal */}
                 {showSuccessModal && (
                     <div className="capa-modal-exito-pasarela" onClick={() => setShowSuccessModal(false)}>
                         <div className="modal-exito-pasarela" onClick={(e) => e.stopPropagation()}>
