@@ -304,6 +304,12 @@ const PaymentGateway = () => {
         setTimeout(async () => {
             try {
                 // Crear el pedido en el backend después del pago exitoso
+                console.log('=== DEBUG ORDER ===');
+                console.log('User:', user);
+                console.log('cartItems:', cartItems);
+                console.log('selectedSubtotal:', selectedSubtotal);
+                console.log('address:', address);
+                
                 const orderData = {
                     items: cartItems.map(item => ({
                         productId: item._id,
@@ -317,16 +323,19 @@ const PaymentGateway = () => {
                     }
                 };
 
-                await orderService.createOrder(orderData);
+                console.log('orderData a enviar:', JSON.stringify(orderData, null, 2));
                 
+                const response = await orderService.createOrder(orderData);
+                console.log('Order created successfully:', response);
                 setIsProcessing(false);
                 const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
                 setLastFourDigits(lastFour);
                 setShowSuccessModal(true);
             } catch (error) {
                 console.error('Error creating order:', error);
+                console.error('Error response:', error.response?.data);
                 setIsProcessing(false);
-                alert('Error al procesar el pedido. Por favor, intenta de nuevo.');
+                alert('Error al procesar el pedido: ' + (error.response?.data?.message || error.message));
             }
         }, 2500);
     };
