@@ -13,7 +13,19 @@ export default function Mascota() {
   let mensajes = [];
 
   // mensajes por página
-  if (location.pathname === "/login") {
+  if (location.pathname === "/") {
+    mensajes = [
+      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Puedes navegar como invitado, pero algunas funciones estarán limitadas",
+      "Registrate para disfrutar de todas las funciones",
+      "Inicia sesión para acceder a tu cuenta y gestionar tus compras",
+      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
+      "Revisa nuestras promociones destacadas!"
+    ];
+  }
+
+  else if (location.pathname === "/login") {
     mensajes = [
       "No compartas tu contraseña con nadie",
       "Si olvidaste tu contraseña, haz clic en 'Olvidé mi contraseña' para recuperarla",
@@ -37,17 +49,7 @@ export default function Mascota() {
     ];
   }
 
-  else if (location.pathname === "/") {
-    mensajes = [
-      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
-      "Puedes navegar como invitado, pero algunas funciones estarán limitadas",
-      "Registrate para disfrutar de todas las funciones",
-      "Inicia sesión para acceder a tu cuenta y gestionar tus compras",
-      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
-      "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
-      "Revisa nuestras promociones destacadas!"
-    ];
-  }
+
 
   else if (location.pathname === "/cliente") {
     mensajes = [
@@ -60,14 +62,6 @@ export default function Mascota() {
     ];
   }
 
-  else if (location.pathname.includes("/product")) {
-    mensajes = [
-      "Aquí puedes ver los detalles del producto",
-      "Revisa la descripción antes de comprar",
-      "Puedes agregarlo al carrito"
-    ];
-  }
-
   else if (location.pathname.includes("/vendedor")) {
     mensajes = [
       "Aquí puedes ver los detalles del producto",
@@ -76,6 +70,15 @@ export default function Mascota() {
     ];
   }
 
+  else if (location.pathname.includes("/product")) {
+    mensajes = [
+      "Aquí puedes ver los detalles del producto",
+      "Revisa la descripción antes de comprar",
+      "Puedes agregarlo al carrito"
+    ];
+  }
+
+  //carrito
   else if (location.pathname.includes("/checkout")) {
     mensajes = [
       "",
@@ -84,14 +87,13 @@ export default function Mascota() {
     ];
   }
 
-
-  else if (location.pathname === "/admin/dashboard") {
-    mensajes = [
-      "Aquí puedes administrar la plataforma",
-      "Revisa las estadísticas del sistema",
-      "Gestiona usuarios y productos"
-    ];
-  }
+  // else if (location.pathname === "/admin/dashboard") {
+  //   mensajes = [
+  //     "Aquí puedes administrar la plataforma",
+  //     "Revisa las estadísticas del sistema",
+  //     "Gestiona usuarios y productos"
+  //   ];
+  // }
 
   else {
     mensajes = [
