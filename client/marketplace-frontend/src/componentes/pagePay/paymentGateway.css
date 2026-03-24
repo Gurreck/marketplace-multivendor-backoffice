@@ -171,7 +171,36 @@
     max-width: 100%;
     flex: auto;
 }
+/* AGREGAR esto en tu paymentGateway.css */
+.gateway-two-column-layout {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    align-items: flex-start;
+}
 
+.gateway-two-column-layout .gateway-left-column {
+    flex: 1;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.gateway-two-column-layout .gateway-right-column {
+    flex: 1.2;
+    min-width: 380px;
+}
+
+@media (max-width: 900px) {
+    .gateway-two-column-layout {
+        flex-direction: column;
+    }
+    .gateway-two-column-layout .gateway-left-column,
+    .gateway-two-column-layout .gateway-right-column {
+        min-width: 100%;
+    }
+}
 /* Order Summary Card */
 
 /* Payment Form '''''''''''''''''''''''''''''''''*/
@@ -346,14 +375,11 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 800;
     color: white;
-    font-style: italic;
+    letter-spacing: 1px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 /* Iconos de tarjetas con colores específicos */
@@ -468,43 +494,30 @@
     flex-direction: column;
 }
 
-.grupo-entrada-cvv-pasarela {
+.campo-cvv-pasarela {
     position: relative;
+    width: 100%;
 }
 
 .alternar-cvv-pasarela {
     position: absolute;
-    right: 10px;
-    top: 0;
-    bottom: 0;
-    margin-top: 9px;
-    height: fit-content;
-    background: rgba(255, 255, 255, 0.1);
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
     border: none;
-    border-radius: 6px;
-    padding: 6px 8px;
+    color: #9ca3af;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+    padding: 5px;
+    transition: color 0.2s;
+    z-index: 5;
 }
 
 .alternar-cvv-pasarela:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.alternar-cvv-pasarela svg {
-    width: 18px;
-    height: 18px;
-    fill: white;
-}
-
-.grupo-entrada-cvv-pasarela .entrada-pago-pasarela {
-    padding-right: 45px;
+    color: var(--nexora-blue);
 }
 
 .mensaje-error-pasarela {
@@ -757,17 +770,32 @@
     .contenido-principal-pasarela {
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        gap: 20px;
     }
     .columna-izquierda-pasarela,
     .columna-derecha-pasarela {
         width: 100%;
-    }
-    .dirección-de-paquetes-right {
-        margin-left: 0;
-        margin-top: 0;
-        width: 100%;
         max-width: 100%;
+    }
+    
+    .pasarela-de-pago {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .contenedor-pasarela {
+        padding: 15px 3%;
+    }
+
+    .encabezado-pasarela {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .direccion-envio {
+        padding: 20px;
     }
 }
 
@@ -793,9 +821,21 @@
     }
     
     .vista-previa-detalles-tarjeta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        flex-direction: row;
+        align-items: flex-end;
+    }
+    
+    .vista-previa-logo-tarjeta {
+        top: 15px;
+        right: 15px;
+    }
+
+    .modal-exito-pasarela {
+        padding: 25px 20px;
+    }
+
+    .fila-detalles-tarjeta-pasarela {
+        grid-template-columns: 1fr;
     }
     
     .gateway-payment-title {
@@ -844,11 +884,13 @@
 }
 
 /* Reviews inside address column */
+
 .resenas-en-direccion-pasarela {
     background: var(--nexora-card-bg, #1a1f3a);
     border: 1px solid var(--nexora-border, rgba(0, 148, 255, 0.2));
     border-radius: 16px;
     padding: 20px;
+
 }
 
 .resenas-en-direccion-pasarela .titulo-resenas-pasarela {
@@ -874,10 +916,10 @@
     align-items: center;
     gap: 10px;
     padding: 10px;
-    background: var(--nexora-input-bg, #0a0e27);
+    background: rgba(   0,   0,   0,   0.1);    
     border-radius: 8px;
-    border: 1px solid var(--nexora-border, rgba(0, 148, 255, 0.2));
-}
+    border: 2px solid var(--nexora-border, rgba(11, 37, 184, 0.2));
+}       
 
 .resenas-en-direccion-pasarela .imagen-producto-resena-pasarela {
     width: 50px;
@@ -891,6 +933,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    margin-left: 100px;
 }
 
 .resenas-en-direccion-pasarela .nombre-producto-resena-pasarela {
@@ -901,6 +944,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 180px;
+    
 }
 
 .resenas-en-direccion-pasarela .boton-ver-resenas-pasarela {
@@ -1052,14 +1096,79 @@
 }
 
 /* Responsive */
-@media (max-width: 900px) {
-    .contenido-principal-pasarela {
+@media (max-width: 1100px) {
+    .diseno-dos-columnas-pasarela {
         flex-direction: column;
+        align-items: center;
+        gap: 30px;
     }
     
     .columna-izquierda-pasarela,
     .columna-derecha-pasarela {
-        flex: 1 1 100%;
-        min-width: 100%;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .pasarela-de-pago {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .contenedor-pasarela {
+        padding: 15px 3%;
+    }
+
+    .encabezado-pasarela {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .direccion-envio {
+        padding: 20px;
+    }
+    
+    .vista-previa-tarjeta-pasarela {
+        padding: 20px;
+        min-height: 160px;
+    }
+    
+    .vista-previa-numero-tarjeta {
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pasarela-de-pago {
+        padding: 25px 15px;
+        border-radius: 16px;
+    }
+    
+    .vista-previa-tarjeta-pasarela {
+        padding: 15px;
+        min-height: 140px;
+        margin-bottom: 20px;
+    }
+    
+    .vista-previa-numero-tarjeta {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    .chip-tarjeta-pasarela {
+        width: 35px;
+        height: 25px;
+        margin-bottom: 15px;
+    }
+    
+    .boton-enviar-pasarela {
+        padding: 15px;
+        font-size: 1rem;
+    }
+    
+    .resenas-en-direccion-pasarela {
+        padding: 20px 15px;
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './pageViewProduct.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -6,9 +6,22 @@ import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 import { commentService } from '../../services/commentService';
-
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
+import { 
+    ChevronLeft, 
+    ChevronRight, 
+    MessageCircle, 
+    Star, 
+    Send, 
+    Plus, 
+    Search, 
+    CheckCircle2, 
+    Loader2,
+    Tag,
+    User,
+    ArrowLeft
+} from 'lucide-react';
 
 /**
  * PageViewProduct
@@ -24,16 +37,14 @@ const PageViewProduct = () => {
     const { addToCart, cartCount } = useCart();
     const { isDarkMode, toggleTheme } = useTheme();
 
-    // ===== ESTADO DEL PRODUCTO =====
-    const [selectedProduct, setSelectedProduct] = useState(null); // Datos del producto actual
-    const [currentImageIndex, setCurrentImageIndex] = useState(0); // Índice de la imagen visible en el carrusel
-    const [loading, setLoading] = useState(true); // Estado de carga inicial
-    const [similarProducts, setSimilarProducts] = useState([]); // Lista de productos de la misma categoría
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [similarProducts, setSimilarProducts] = useState([]);
 
-    // ===== ESTADO DE COMENTARIOS =====
-    const [comments, setComments] = useState([]); // Lista de reseñas del producto
-    const [averageRating, setAverageRating] = useState(0); // Promedio de calificación (0-5)
-    const [loadingComments, setLoadingComments] = useState(true); // Carga específica de comentarios
+    const [comments, setComments] = useState([]);
+    const [averageRating, setAverageRating] = useState(0);
+    const [loadingComments, setLoadingComments] = useState(true);
 
     const [newComment, setNewComment] = useState(""); // Texto del nuevo comentario a publicar
     const [newRating, setNewRating] = useState(5); // Calificación del nuevo comentario (1-5)
@@ -42,20 +53,8 @@ const PageViewProduct = () => {
     const [showNotification, setShowNotification] = useState(''); // Mensaje de notificación temporal
     const [showLoginModal, setShowLoginModal] = useState(false); // Control del modal de login sugerido
 
-    // ===== EFECTOS =====
-    /**
-     * Carga el detalle del producto y sus comentarios cada vez que el ID en la URL cambia
-     */
-    useEffect(() => {
-        fetchProductDetail();
-        fetchComments();
-    }, [id]);
-
-    // ===== CARGA DE DATOS =====
-    /**
-     * Obtiene los comentarios y el promedio de calificación desde el backend
-     */
-    const fetchComments = async () => {
+    // Función para cargar comentarios desde el backend
+    const fetchComments = useCallback(async () => {
         try {
             setLoadingComments(true);
             const response = await commentService.getCommentsByProduct(id);
@@ -68,32 +67,9 @@ const PageViewProduct = () => {
         } finally {
             setLoadingComments(false);
         }
-    };
+    }, [id]);
 
-    /**
-     * Obtiene la información detallada del producto por su ID
-     */
-    const fetchProductDetail = async () => {
-        try {
-            setLoading(true);
-            const response = await api.get(`/products/${id}`);
-            if (response.data.success) {
-                setSelectedProduct(response.data.data);
-                // Una vez cargado el producto, busca otros similares de la misma categoría
-                fetchSimilarProducts(response.data.data.category, response.data.data._id);
-            }
-        } catch (error) {
-            console.error('Error fetching product detail:', error);
-            navigate('/');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    /**
-     * Obtiene productos de la misma categoría excluyendo el actual
-     */
-    const fetchSimilarProducts = async (category, currentId) => {
+    const fetchSimilarProducts = useCallback(async (category, currentId) => {
         try {
             const response = await api.get('/products');
             if (response.data.success) {
@@ -103,7 +79,28 @@ const PageViewProduct = () => {
         } catch (error) {
             console.error('Error fetching similar products:', error);
         }
-    };
+    }, []);
+
+    const fetchProductDetail = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await api.get(`/products/${id}`);
+            if (response.data.success) {
+                setSelectedProduct(response.data.data);
+                fetchSimilarProducts(response.data.data.category, response.data.data._id);
+            }
+        } catch (error) {
+            console.error('Error fetching product detail:', error);
+            navigate('/');
+        } finally {
+            setLoading(false);
+        }
+    }, [id, navigate, fetchSimilarProducts]);
+
+    useEffect(() => {
+        fetchProductDetail();
+        fetchComments();
+    }, [fetchProductDetail, fetchComments]);
 
     // ===== MANEJADORES DE IMÁGENES =====
     /**
@@ -146,7 +143,7 @@ const PageViewProduct = () => {
             if (response.data.success) {
                 setNewComment("");
                 setNewRating(5);
-                fetchComments(); // Recargar la lista actualizada
+                fetchComments();
                 setShowNotification("Comentario publicado exitosamente");
                 setTimeout(() => setShowNotification(""), 3000);
             }
@@ -159,8 +156,9 @@ const PageViewProduct = () => {
 
     // ===== RENDERIZADO CONDICIONAL (CARGA) =====
     if (loading) return (
-        <div className="loading" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0094FF', fontSize: '24px' }}>
-            Cargando producto...
+        <div className="loading" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#0094FF', gap: '15px' }}>
+            <Loader2 className="animacion-giro" size={48} />
+            <p style={{ fontSize: '20px', fontWeight: '500' }}>Cargando producto...</p>
         </div>
     );
 
@@ -194,7 +192,8 @@ const PageViewProduct = () => {
                 {/* Notificación flotante */}
                 {showNotification && (
                     <div className="notificacion">
-                        ✓ {showNotification}
+                        <CheckCircle2 size={18} style={{ marginRight: '8px' }} />
+                        {showNotification}
                     </div>
                 )}
 
@@ -212,8 +211,12 @@ const PageViewProduct = () => {
                             {/* Controles de navegación de imagen */}
                             {selectedProduct.images.length > 1 && (
                                 <>
-                                    <button className="boton-navegacion-imagen prev" onClick={goToPreviousImage}>◀</button>
-                                    <button className="boton-navegacion-imagen next" onClick={goToNextImage}>▶</button>
+                                    <button className="boton-navegacion-imagen prev" onClick={goToPreviousImage}>
+                                        <ChevronLeft size={24} />
+                                    </button>
+                                    <button className="boton-navegacion-imagen next" onClick={goToNextImage}>
+                                        <ChevronRight size={24} />
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -233,34 +236,39 @@ const PageViewProduct = () => {
                             </div>
                         )}
 
-                        {/* SECCIÓN DE COMENTARIOS */}
                         <div className="seccion-comentarios">
                             <div className="encabezado-comentarios">
-                                <h3>💬 Opiniones de Clientes</h3>
+                                <h3><MessageCircle size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Opiniones de Clientes</h3>
                                 <div className="resumen-calificacion">
                                     <span className="numero-calificacion">{averageRating || "0"}</span>
                                     <div className="estrellas-calificacion">
                                         {[...Array(5)].map((_, i) => (
-                                            <span key={i} className={i < Math.round(averageRating || 0) ? "estrella llena" : "estrella"}>★</span>
+                                            <Star 
+                                                key={i} 
+                                                size={16} 
+                                                fill={i < Math.round(averageRating || 0) ? "var(--admin-advertencia)" : "none"} 
+                                                color={i < Math.round(averageRating || 0) ? "var(--admin-advertencia)" : "#ccc"} 
+                                            />
                                         ))}
                                     </div>
                                     <span className="conteo-calificacion">({comments.length} comentarios)</span>
                                 </div>
                             </div>
 
-                            {/* Formulario de Nueva Reseña */}
                             <div className="formulario-comentario">
                                 <div className="seleccion-calificacion">
                                     <label>Tu calificación:</label>
                                     <div className="entrada-estrellas">
                                         {[1, 2, 3, 4, 5].map((star) => (
-                                            <span 
+                                            <Star 
                                                 key={star}
+                                                size={24}
                                                 className={star <= newRating ? "estrella activo" : "estrella"}
                                                 onClick={() => setNewRating(star)}
-                                            >
-                                                ★
-                                            </span>
+                                                fill={star <= newRating ? "var(--admin-advertencia)" : "none"}
+                                                color={star <= newRating ? "var(--admin-advertencia)" : "#ccc"}
+                                                style={{ cursor: 'pointer' }}
+                                            />
                                         ))}
                                     </div>
                                 </div>
@@ -271,16 +279,18 @@ const PageViewProduct = () => {
                                     onChange={(e) => setNewComment(e.target.value)}
                                 />
                                 <button className="boton-enviar-comentario" onClick={handleSubmitComment}>
+                                    <Send size={16} style={{ marginRight: '8px' }} />
                                     Publicar Comentario
                                 </button>
                             </div>
 
-                            {/* Lista de Reseñas cargadas */}
                             <div className="lista-comentarios">
                                 {loadingComments ? (
-                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Cargando comentarios...</p>
+                                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                                        <Loader2 className="animacion-giro" size={24} color="var(--nexora-blue)" />
+                                    </div>
                                 ) : comments.length === 0 ? (
-                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)', padding: '20px'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
                                 ) : (
                                     comments.map((comment) => (
                                         <div key={comment._id} className="item-comentario">
@@ -296,7 +306,12 @@ const PageViewProduct = () => {
                                                 </div>
                                                 <div className="calificacion-comentario">
                                                     {[...Array(5)].map((_, i) => (
-                                                        <span key={i} className={i < comment.rating ? "estrella llena" : "estrella"}>★</span>
+                                                        <Star 
+                                                            key={i} 
+                                                            size={14} 
+                                                            fill={i < comment.rating ? "var(--admin-advertencia)" : "none"}
+                                                            color={i < comment.rating ? "var(--admin-advertencia)" : "#ccc"}
+                                                        />
                                                     ))}
                                                 </div>
                                             </div>
@@ -310,6 +325,12 @@ const PageViewProduct = () => {
 
                     {/* Columna Derecha: Información y Acciones */}
                     <div className="seccion-informacion">
+                        <div className="navegacion-atras">
+                            <button onClick={() => navigate(-1)} className="boton-atras">
+                                <ArrowLeft size={18} style={{ marginRight: '8px' }} /> Volver
+                            </button>
+                        </div>
+                        
                         <h1 className="nombre-producto">{selectedProduct.name}</h1>
 
                         <div className="caja-descripcion">
@@ -318,11 +339,13 @@ const PageViewProduct = () => {
                         </div>
 
                         <div className="etiqueta-categoria">
+                            <Tag size={16} style={{ marginRight: '8px' }} />
                             Categoría: <strong>{selectedProduct.category}</strong>
                         </div>
 
                         <div className="meta-producto">
                             <div className="vendedor">
+                                <User size={16} style={{ marginRight: '8px' }} />
                                 Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
                             </div>
                         </div>
@@ -344,14 +367,14 @@ const PageViewProduct = () => {
                                     setTimeout(() => setShowNotification(''), 3000);
                                 }}
                             >
-                                ➕ Agregar al Carrito
+                                <Plus size={20} style={{ marginRight: '10px' }} />
+                                Agregar al Carrito
                             </button>
                         </div>
 
-                        {/* Carrusel de Productos Similares */}
                         {similarProducts.length > 0 && (
                             <div className="seccion-productos-similares">
-                                <h3>🔍 Productos Similares</h3>
+                                <h3><Search size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Productos Similares</h3>
                                 <div className="cuadricula-productos-similares">
                                     {similarProducts.map((product) => (
                                         <div

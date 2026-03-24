@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './divPromo.css';
+import { Zap, Sparkles } from 'lucide-react';
 
 /**
  * Componente DivPromo
@@ -12,10 +13,6 @@ export default function DivPromo({ products, handlePromoAddToCart }) {
     // ===== ESTADO =====
     const [promoProducts, setPromoProducts] = useState([]); // Productos seleccionados para mostrar en la promo
 
-    // ===== EFECTOS =====
-    /**
-     * Lógica para rotar productos de promoción cada 30 segundos
-     */
     useEffect(() => {
         // Si no hay productos, no iniciar el intervalo
         if (!products || products.length === 0) return;
@@ -24,8 +21,12 @@ export default function DivPromo({ products, handlePromoAddToCart }) {
          * Selecciona 2 productos aleatorios de la lista general
          */
         const getRandomProducts = () => {
-            const shuffled = [...products].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 2);
+            const temp = [...products];
+            for (let i = temp.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [temp[i], temp[j]] = [temp[j], temp[i]];
+            }
+            return temp.slice(0, 2);
         };
 
         // Inicializar con productos aleatorios
@@ -34,7 +35,7 @@ export default function DivPromo({ products, handlePromoAddToCart }) {
         // Establecer el intervalo de cambio
         const interval = setInterval(() => {
             setPromoProducts(getRandomProducts());
-        }, 30000);
+        }, 15000); // Rotar cada 15 seg para dinamismo
 
         // Limpiar el intervalo al desmontar el componente
         return () => clearInterval(interval);
@@ -48,23 +49,27 @@ export default function DivPromo({ products, handlePromoAddToCart }) {
         <div className="transversal-promociones">
             <div className="contenido-promocional">
                 <div className="lado-texto-promo">
-                    <span className="subtitulo-promo">OFERTAS DE TEMPORADA</span>
+                    <div className="etiqueta-viva">
+                        <Zap size={14} fill="currentColor" />
+                        <span>OFERTAS EN VIVO</span>
+                    </div>
                     <h2 className="titulo-promo">
                         Tecnología que <span className="resaltado">Impacta</span>
+                        <Sparkles size={20} className="icono-chispa" />
                     </h2>
                 </div>
 
                 <div className="lado-productos-promo">
-                    {/* Lista de productos destacados */}
                     {promoProducts.map((product) => (
                             <div 
                                 key={product._id} 
                                 className="mini-tarjeta-promo pulsable"
                                 onClick={() => handlePromoAddToCart(product)}
-                                title={`Agregar ${product.name} al carrito`}
+                                title={`Agregar ${product.name} (Oferta)`}
                             >
+                                <div className="etiqueta-descuento-mini">-30%</div>
                                 <div className="imagen-mini-tarjeta">
-                                    <img src={product.images[0]} alt={product.name} />
+                                    <img src={product.images[0]?.url || "https://via.placeholder.com/80"} alt={product.name} />
                                 </div>
                                 <div className="pie-mini-tarjeta">
                                     {/* Precio original calculado un 40% más alto para simular descuento */}

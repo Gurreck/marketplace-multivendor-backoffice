@@ -74,7 +74,9 @@
 }
 
 .marca-barra-lateral-admin span {
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-admin {
@@ -115,9 +117,11 @@
 }
 
 .item-nav-admin span:first-child {
-    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 24px;
-    text-align: center;
+    flex-shrink: 0;
 }
 
 .pie-barra-lateral-admin {
@@ -225,7 +229,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
     flex-shrink: 0;
 }
 
@@ -426,11 +429,24 @@
     align-items: center;
 }
 
+.contenedor-entrada-admin {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.icono-entrada-admin {
+    position: absolute;
+    left: 12px;
+    color: #9ca3af;
+    pointer-events: none;
+}
+
 .entrada-busqueda-admin {
     background: var(--admin-entrada-bg);
     border: 1px solid var(--admin-borde);
     border-radius: 10px;
-    padding: 8px 14px;
+    padding: 8px 14px 8px 36px;
     color: var(--admin-texto);
     font-size: 13px;
     outline: none;
@@ -951,4 +967,63 @@
     .entrada-busqueda-admin { width: 100%; }
     .principal-admin { padding: 20px; }
     .fila-formulario-admin { grid-template-columns: 1fr; }
+}
+
+.boton-menu-movil {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 110;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: var(--admin-azul);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .boton-menu-movil {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .barra-lateral-admin {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+
+    .barra-lateral-admin.abierta {
+        transform: translateX(0);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    }
+    
+    .barra-lateral-admin.abierta .marca-barra-lateral-admin h2,
+    .barra-lateral-admin.abierta .item-nav-admin span:last-child,
+    .barra-lateral-admin.abierta .pie-barra-lateral-admin span:last-child {
+        display: block;
+    }
+
+    .principal-admin {
+        margin-left: 0;
+        padding-top: 80px;
+    }
+
+    .principal-admin {
+        padding: 20px 15px;
+    }
+    
+    .cuadricula-kpi-admin {
+        grid-template-columns: 1fr;
+    }
+    
+    .filtros-admin {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }

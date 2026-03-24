@@ -4,6 +4,44 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import servicioAdmin from "../../services/adminService";
+import { 
+  LayoutDashboard, 
+  Users, 
+  Store, 
+  Tag, 
+  ClipboardList, 
+  Search, 
+  Plus, 
+  Key, 
+  Ban, 
+  Check, 
+  Package, 
+  BarChart3, 
+  Banknote, 
+  Trophy, 
+  Star, 
+  Trash2, 
+  Pencil, 
+  ShieldAlert, 
+  Moon, 
+  Sun, 
+  LogOut, 
+  Menu,
+  X,
+  PlusCircle,
+  Play,
+  Pause,
+  Filter,
+  RefreshCcw,
+  ArrowLeft,
+  ArrowRight,
+  UserPlus,
+  CheckCircle2,
+  XCircle,
+  Zap,
+  Loader2,
+  ShoppingCart
+} from 'lucide-react';
 
 export default function PaginaAdmin() {
   const navegar = useNavigate();
@@ -14,6 +52,7 @@ export default function PaginaAdmin() {
   const [seccionActiva, setSeccionActiva] = useState("dashboard");
   const [notificacion, setNotificacion] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   // ===== DASHBOARD / KPIs =====
   const [kpis, setKpis] = useState(null);
@@ -329,11 +368,11 @@ export default function PaginaAdmin() {
 
   // ===== SECCIONES DE NAVEGACIÓN =====
   const elementosNav = [
-    { clave: "dashboard", icono: "📊", etiqueta: "Dashboard" },
-    { clave: "usuarios", icono: "👥", etiqueta: "Usuarios" },
-    { clave: "vendedores", icono: "🏪", etiqueta: "Vendedores" },
-    { clave: "categorias", icono: "🏷️", etiqueta: "Categorías" },
-    { clave: "auditoria", icono: "📋", etiqueta: "Auditoría" },
+    { clave: "dashboard", icono: <LayoutDashboard size={20} />, etiqueta: "Dashboard" },
+    { clave: "usuarios", icono: <Users size={20} />, etiqueta: "Usuarios" },
+    { clave: "vendedores", icono: <Store size={20} />, etiqueta: "Vendedores" },
+    { clave: "categorias", icono: <Tag size={20} />, etiqueta: "Categorías" },
+    { clave: "auditoria", icono: <ClipboardList size={20} />, etiqueta: "Auditoría" },
   ];
 
   // ===== RENDER: DASHBOARD =====
@@ -341,7 +380,7 @@ export default function PaginaAdmin() {
     if (cargando && !kpis) {
       return (
         <div className="cargando-admin">
-          <div className="spinner-admin"></div>
+          <Loader2 className="animacion-giro" size={40} />
           <p>Cargando métricas...</p>
         </div>
       );
@@ -364,28 +403,28 @@ export default function PaginaAdmin() {
         {/* Tarjetas KPI */}
         <div className="cuadricula-kpi-admin">
           <div className="tarjeta-kpi-admin">
-            <div className="icono-kpi-admin blue">👥</div>
+            <div className="icono-kpi-admin blue"><Users size={24} /></div>
             <div className="info-kpi-admin">
               <h3>{resumen.totalUsuarios}</h3>
               <p>Usuarios totales</p>
             </div>
           </div>
           <div className="tarjeta-kpi-admin">
-            <div className="icono-kpi-admin green">🏪</div>
+            <div className="icono-kpi-admin green"><Store size={24} /></div>
             <div className="info-kpi-admin">
               <h3>{resumen.totalVendedores}</h3>
               <p>Vendedores</p>
             </div>
           </div>
           <div className="tarjeta-kpi-admin">
-            <div className="icono-kpi-admin purple">🛍️</div>
+            <div className="icono-kpi-admin purple"><ShoppingCart size={24} /></div>
             <div className="info-kpi-admin">
               <h3>{resumen.totalClientes}</h3>
               <p>Clientes</p>
             </div>
           </div>
           <div className="tarjeta-kpi-admin">
-            <div className="icono-kpi-admin orange">📦</div>
+            <div className="icono-kpi-admin orange"><Package size={24} /></div>
             <div className="info-kpi-admin">
               <h3>{resumen.totalProductos}</h3>
               <p>Productos</p>
@@ -397,7 +436,7 @@ export default function PaginaAdmin() {
         <div className="cuadricula-graficos-admin">
           {/* Productos por Categoría */}
           <div className="tarjeta-grafico-admin">
-            <h3>📊 Productos por Categoría</h3>
+            <h3><BarChart3 size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Productos por Categoría</h3>
             <div className="grafico-barras-admin">
               {productosPorCategoria.slice(0, 8).map((cat, i) => (
                 <div className="item-barra-admin" key={cat._id}>
@@ -414,7 +453,7 @@ export default function PaginaAdmin() {
               ))}
               {productosPorCategoria.length === 0 && (
                 <div className="vacio-admin">
-                  <span>📊</span>
+                  <BarChart3 size={40} opacity={0.2} />
                   <p>Aún no hay datos de categorías</p>
                 </div>
               )}
@@ -423,7 +462,7 @@ export default function PaginaAdmin() {
 
           {/* Top Vendedores */}
           <div className="tarjeta-grafico-admin">
-            <h3>🏆 Top Vendedores</h3>
+            <h3><Trophy size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Top Vendedores</h3>
             <div className="lista-ranking-admin">
               {topVendedores.slice(0, 5).map((v, i) => (
                 <div className="item-ranking-admin" key={v._id}>
@@ -438,7 +477,7 @@ export default function PaginaAdmin() {
               ))}
               {topVendedores.length === 0 && (
                 <div className="vacio-admin">
-                  <span>🏆</span>
+                  <Trophy size={40} opacity={0.2} />
                   <p>Aún no hay vendedores</p>
                 </div>
               )}
@@ -447,7 +486,7 @@ export default function PaginaAdmin() {
 
           {/* Top Productos */}
           <div className="tarjeta-grafico-admin">
-            <h3>⭐ Top Productos (por stock)</h3>
+            <h3><Star size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Top Productos (por stock)</h3>
             <div className="lista-ranking-admin">
               {topProductos.slice(0, 5).map((p, i) => (
                 <div className="item-ranking-admin" key={p._id}>
@@ -465,7 +504,7 @@ export default function PaginaAdmin() {
               ))}
               {topProductos.length === 0 && (
                 <div className="vacio-admin">
-                  <span>⭐</span>
+                  <Star size={40} opacity={0.2} />
                   <p>Aún no hay productos</p>
                 </div>
               )}
@@ -474,7 +513,7 @@ export default function PaginaAdmin() {
 
           {/* Distribución de Usuarios */}
           <div className="tarjeta-grafico-admin">
-            <h3>📈 Distribución de Usuarios</h3>
+            <h3><BarChart3 size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Distribución de Usuarios</h3>
             <div className="grafico-barras-admin">
               <div className="item-barra-admin">
                 <span className="etiqueta-barra-admin">Clientes</span>
@@ -526,15 +565,18 @@ export default function PaginaAdmin() {
 
       <div className="contenedor-tabla-admin">
         <div className="encabezado-tabla-admin">
-          <h3>👥 Usuarios ({usuariosFiltrados.length})</h3>
+          <h3><Users size={18} style={{ marginRight: '8px' }} /> Usuarios ({usuariosFiltrados.length})</h3>
           <div className="acciones-tabla-admin">
-            <input
-              className="entrada-busqueda-admin"
-              type="text"
-              placeholder="🔍 Buscar usuario..."
-              value={buscarUsuario}
-              onChange={(e) => setBuscarUsuario(e.target.value)}
-            />
+            <div className="contenedor-entrada-admin">
+              <Search size={18} className="icono-entrada-admin" />
+              <input
+                className="entrada-busqueda-admin"
+                type="text"
+                placeholder="Buscar usuario..."
+                value={buscarUsuario}
+                onChange={(e) => setBuscarUsuario(e.target.value)}
+              />
+            </div>
             <button
               className="boton-primario-admin"
               onClick={() => {
@@ -542,14 +584,14 @@ export default function PaginaAdmin() {
                 setMostrarModalUsuario(true);
               }}
             >
-              ➕ Nuevo Usuario
+              <PlusCircle size={18} style={{ marginRight: '8px' }} /> Nuevo Usuario
             </button>
           </div>
         </div>
 
         {cargando ? (
           <div className="cargando-admin">
-            <div className="spinner-admin"></div>
+            <Loader2 className="animacion-giro" size={40} />
             <p>Cargando usuarios...</p>
           </div>
         ) : (
@@ -597,14 +639,14 @@ export default function PaginaAdmin() {
                         }}
                         title="Asignar rol"
                       >
-                        🔑
+                        <Key size={16} />
                       </button>
                       <button
                         className={`boton-accion-admin ${u.activo !== false ? "danger" : "success"}`}
                         onClick={() => manejarCambiarEstadoUsuario(u._id, u.activo !== false)}
                         title={u.activo !== false ? "Desactivar" : "Activar"}
                       >
-                        {u.activo !== false ? "🚫" : "✅"}
+                        {u.activo !== false ? <Ban size={16} /> : <Check size={16} />}
                       </button>
                     </div>
                   </td>
@@ -614,7 +656,7 @@ export default function PaginaAdmin() {
                 <tr>
                   <td colSpan="5">
                     <div className="vacio-admin">
-                      <span>👤</span>
+                      <Users size={40} opacity={0.2} />
                       <p>No se encontraron usuarios</p>
                     </div>
                   </td>
@@ -637,21 +679,24 @@ export default function PaginaAdmin() {
 
       <div className="contenedor-tabla-admin">
         <div className="encabezado-tabla-admin">
-          <h3>🏪 Vendedores ({vendedoresFiltrados.length})</h3>
+          <h3><Store size={18} style={{ marginRight: '8px' }} /> Vendedores ({vendedoresFiltrados.length})</h3>
           <div className="acciones-tabla-admin">
-            <input
-              className="entrada-busqueda-admin"
-              type="text"
-              placeholder="🔍 Buscar vendedor..."
-              value={buscarVendedor}
-              onChange={(e) => setBuscarVendedor(e.target.value)}
-            />
+            <div className="contenedor-entrada-admin">
+              <Search size={18} className="icono-entrada-admin" />
+              <input
+                className="entrada-busqueda-admin"
+                type="text"
+                placeholder="Buscar vendedor..."
+                value={buscarVendedor}
+                onChange={(e) => setBuscarVendedor(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
         {cargando ? (
           <div className="cargando-admin">
-            <div className="spinner-admin"></div>
+            <Loader2 className="animacion-giro" size={40} />
             <p>Cargando vendedores...</p>
           </div>
         ) : (
@@ -684,9 +729,9 @@ export default function PaginaAdmin() {
                   </td>
                   <td>
                     <div className="metricas-vendedor-admin">
-                      <span className="pildora-metrica-admin">📦 {v.metricas?.totalProductos || 0}</span>
-                      <span className="pildora-metrica-admin">📊 {v.metricas?.totalStock || 0} stock</span>
-                      <span className="pildora-metrica-admin">💰 ₡{(v.metricas?.precioPromedio || 0).toLocaleString()}</span>
+                      <span className="pildora-metrica-admin"><Package size={12} /> {v.metricas?.totalProductos || 0}</span>
+                      <span className="pildora-metrica-admin"><BarChart3 size={12} /> {v.metricas?.totalStock || 0} stock</span>
+                      <span className="pildora-metrica-admin"><Banknote size={12} /> ₡{(v.metricas?.precioPromedio || 0).toLocaleString()}</span>
                     </div>
                   </td>
                   <td className="fecha-auditoria-admin">{formatearFecha(v.createdAt)}</td>
@@ -698,7 +743,7 @@ export default function PaginaAdmin() {
                           onClick={() => manejarAprobarVendedor(v._id)}
                           title="Aprobar"
                         >
-                          ✅ Aprobar
+                          <Check size={16} style={{ marginRight: '6px' }} /> Aprobar
                         </button>
                       ) : (
                         <button
@@ -706,7 +751,7 @@ export default function PaginaAdmin() {
                           onClick={() => manejarSuspenderVendedor(v._id)}
                           title="Suspender"
                         >
-                          ⛔ Suspender
+                          <ShieldAlert size={16} style={{ marginRight: '6px' }} /> Suspender
                         </button>
                       )}
                     </div>
@@ -717,7 +762,7 @@ export default function PaginaAdmin() {
                 <tr>
                   <td colSpan="5">
                     <div className="vacio-admin">
-                      <span>🏪</span>
+                      <Store size={40} opacity={0.2} />
                       <p>No se encontraron vendedores</p>
                     </div>
                   </td>
@@ -740,7 +785,7 @@ export default function PaginaAdmin() {
 
       <div className="contenedor-tabla-admin">
         <div className="encabezado-tabla-admin">
-          <h3>🏷️ Categorías ({categorias.length})</h3>
+          <h3><Tag size={18} style={{ marginRight: '8px' }} /> Categorías ({categorias.length})</h3>
           <div className="acciones-tabla-admin">
             <button
               className="boton-primario-admin"
@@ -750,14 +795,14 @@ export default function PaginaAdmin() {
                 setMostrarModalCategoria(true);
               }}
             >
-              ➕ Nueva Categoría
+              <PlusCircle size={18} style={{ marginRight: '8px' }} /> Nueva Categoría
             </button>
           </div>
         </div>
 
         {cargando ? (
           <div className="cargando-admin">
-            <div className="spinner-admin"></div>
+            <Loader2 className="animacion-giro" size={40} />
             <p>Cargando categorías...</p>
           </div>
         ) : (
@@ -793,21 +838,21 @@ export default function PaginaAdmin() {
                         }}
                         title="Editar"
                       >
-                        ✏️
+                        <Pencil size={16} />
                       </button>
                       <button
                         className={`boton-accion-admin ${cat.activa ? "warning" : "success"}`}
                         onClick={() => manejarAlternarCategoria(cat._id)}
                         title={cat.activa ? "Desactivar" : "Activar"}
                       >
-                        {cat.activa ? "⏸️" : "▶️"}
+                        {cat.activa ? <Pause size={16} /> : <Play size={16} />}
                       </button>
                       <button
                         className="boton-accion-admin danger"
                         onClick={() => manejarEliminarCategoria(cat._id)}
                         title="Eliminar"
                       >
-                        🗑️
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
@@ -817,7 +862,7 @@ export default function PaginaAdmin() {
                 <tr>
                   <td colSpan="5">
                     <div className="vacio-admin">
-                      <span>🏷️</span>
+                      <Tag size={40} opacity={0.2} />
                       <p>No hay categorías registradas</p>
                     </div>
                   </td>
@@ -895,7 +940,7 @@ export default function PaginaAdmin() {
           className="boton-filtro-admin"
           onClick={() => cargarAuditoria(1)}
         >
-          🔍 Filtrar
+          <Filter size={16} style={{ marginRight: '6px' }} /> Filtrar
         </button>
         <button
           className="boton-filtro-admin"
@@ -904,18 +949,18 @@ export default function PaginaAdmin() {
             setTimeout(() => cargarAuditoria(1), 100);
           }}
         >
-          🔄 Limpiar
+          <RefreshCcw size={16} style={{ marginRight: '6px' }} /> Limpiar
         </button>
       </div>
 
       <div className="contenedor-tabla-admin">
         <div className="encabezado-tabla-admin">
-          <h3>📋 Registros de Auditoría ({paginacionAuditoria.total})</h3>
+          <h3><ClipboardList size={18} style={{ marginRight: '8px' }} /> Registros de Auditoría ({paginacionAuditoria.total})</h3>
         </div>
 
         {cargando ? (
           <div className="cargando-admin">
-            <div className="spinner-admin"></div>
+            <Loader2 className="animacion-giro" size={40} />
             <p>Cargando registros...</p>
           </div>
         ) : (
@@ -961,7 +1006,7 @@ export default function PaginaAdmin() {
                   <tr>
                     <td colSpan="5">
                       <div className="vacio-admin">
-                        <span>📋</span>
+                        <ClipboardList size={40} opacity={0.2} />
                         <p>No se encontraron registros de auditoría</p>
                       </div>
                     </td>
@@ -978,7 +1023,7 @@ export default function PaginaAdmin() {
                   disabled={paginacionAuditoria.paginaActual === 1}
                   onClick={() => cargarAuditoria(paginacionAuditoria.paginaActual - 1)}
                 >
-                  ← Anterior
+                  <ArrowLeft size={16} />
                 </button>
                 {Array.from({ length: paginacionAuditoria.totalPaginas }, (_, i) => i + 1)
                   .filter((p) =>
@@ -1002,7 +1047,7 @@ export default function PaginaAdmin() {
                   disabled={paginacionAuditoria.paginaActual === paginacionAuditoria.totalPaginas}
                   onClick={() => cargarAuditoria(paginacionAuditoria.paginaActual + 1)}
                 >
-                  Siguiente →
+                  <ArrowRight size={16} />
                 </button>
               </div>
             )}
@@ -1018,14 +1063,20 @@ export default function PaginaAdmin() {
       {/* Notificación */}
       {notificacion && (
         <div className={`notificacion-admin ${notificacion.tipo}`}>
-          {notificacion.tipo === "success" ? "✅" : "❌"} {notificacion.mensaje}
+          {notificacion.tipo === "success" ? <CheckCircle2 size={18} /> : <XCircle size={18} />} 
+          <span style={{ marginLeft: '8px' }}>{notificacion.mensaje}</span>
         </div>
       )}
 
+      {/* Botón menú móvil */}
+      <button className="boton-menu-movil" onClick={() => setMenuAbierto(!menuAbierto)}>
+        {menuAbierto ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
       {/* Barra lateral */}
-      <aside className="barra-lateral-admin">
+      <aside className={`barra-lateral-admin ${menuAbierto ? "abierta" : ""}`}>
         <div className="marca-barra-lateral-admin">
-          <span>⚡</span>
+          <Zap size={24} color="var(--admin-azul)" />
           <h2>Nexora Admin</h2>
         </div>
 
@@ -1034,7 +1085,10 @@ export default function PaginaAdmin() {
             <button
               key={elemento.clave}
               className={`item-nav-admin ${seccionActiva === elemento.clave ? "activo" : ""}`}
-              onClick={() => setSeccionActiva(elemento.clave)}
+              onClick={() => {
+                setSeccionActiva(elemento.clave);
+                if (window.innerWidth <= 768) setMenuAbierto(false);
+              }}
             >
               <span>{elemento.icono}</span>
               <span>{elemento.etiqueta}</span>
@@ -1044,11 +1098,11 @@ export default function PaginaAdmin() {
 
         <div className="pie-barra-lateral-admin">
           <button className="boton-tema-admin" onClick={alternarTema}>
-            <span>{esModoOscuro ? "☀️" : "🌙"}</span>
+            <span>{esModoOscuro ? <Sun size={18} /> : <Moon size={18} />}</span>
             <span>{esModoOscuro ? "Modo Claro" : "Modo Oscuro"}</span>
           </button>
           <button className="boton-cerrar-sesion-admin" onClick={manejarCerrarSesion}>
-            <span>🚪</span>
+            <span><LogOut size={18} /></span>
             <span>Cerrar Sesión</span>
           </button>
         </div>
@@ -1068,8 +1122,8 @@ export default function PaginaAdmin() {
         <div className="superposicion-modal-admin">
           <div className="modal-admin">
             <div className="encabezado-modal-admin">
-              <h2>➕ Nuevo Usuario</h2>
-              <button className="cerrar-modal-admin" onClick={() => setMostrarModalUsuario(false)}>×</button>
+              <h2><UserPlus size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Nuevo Usuario</h2>
+              <button className="cerrar-modal-admin" onClick={() => setMostrarModalUsuario(false)}><X size={20} /></button>
             </div>
             <form className="formulario-admin" onSubmit={manejarCrearUsuario}>
               <div className="grupo-formulario-admin">
@@ -1134,8 +1188,8 @@ export default function PaginaAdmin() {
         <div className="superposicion-modal-admin">
           <div className="modal-admin">
             <div className="encabezado-modal-admin">
-              <h2>🔑 Asignar Rol</h2>
-              <button className="cerrar-modal-admin" onClick={() => setMostrarModalRol(false)}>×</button>
+              <h2><Key size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Asignar Rol</h2>
+              <button className="cerrar-modal-admin" onClick={() => setMostrarModalRol(false)}><X size={20} /></button>
             </div>
             <div className="formulario-admin">
               <p style={{ color: "#9ca3af", margin: "0 0 16px 0" }}>
@@ -1167,8 +1221,8 @@ export default function PaginaAdmin() {
         <div className="superposicion-modal-admin">
           <div className="modal-admin">
             <div className="encabezado-modal-admin">
-              <h2>{categoriaEditando ? "✏️ Editar Categoría" : "➕ Nueva Categoría"}</h2>
-              <button className="cerrar-modal-admin" onClick={() => setMostrarModalCategoria(false)}>×</button>
+              <h2>{categoriaEditando ? <><Pencil size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Editar Categoría</> : <><Plus size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Nueva Categoría</>}</h2>
+              <button className="cerrar-modal-admin" onClick={() => setMostrarModalCategoria(false)}><X size={20} /></button>
             </div>
             <form className="formulario-admin" onSubmit={manejarGuardarCategoria}>
               <div className="grupo-formulario-admin">

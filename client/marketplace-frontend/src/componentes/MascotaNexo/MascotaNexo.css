@@ -22,22 +22,28 @@
 
 .mascota-ayuda{
   border-radius: 50%;
-  width: 25px;
-  height: 25px;
+  width: 32px;
+  height: 32px;
   border: none;
   background: #6c63ff;
   color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mascota-ocultar{
   border-radius: 50%;
-  width: 25px;
-  height: 25px;
+  width: 32px;
+  height: 32px;
   border: none;
-  background: #f80808;
+  background: #ef4444;
   color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mascota-mostrar{
@@ -50,9 +56,12 @@
   border: none;
   background: #6c63ff;
   color: white;
-  font-size: 20px;
   cursor: pointer;
   z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
 }
 
 .mascota-botones{
@@ -61,4 +70,17 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+@media (max-width: 600px) {
+  .mascota {
+    width: 80px;
+  }
+  
+  .mascota-mensaje {
+    bottom: 90px;
+    font-size: 12px;
+    right: -10px;
+    min-width: 120px;
+  }
 }

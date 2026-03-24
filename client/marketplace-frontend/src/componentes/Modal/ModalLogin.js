@@ -1,5 +1,6 @@
 import React from 'react';
 import './ModalLogin.css';
+import { LogIn, X } from 'lucide-react';
 
 /**
  * Componente ModalLogin
@@ -19,7 +20,11 @@ const ModalLogin = ({ isOpen, onClose, onLogin, mensaje }) => {
             {/* stopPropagation evita que el clic dentro del modal lo cierre */}
             <div className="contenido-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="encabezado-modal">
-                    <h3>Por favor inicia sesión</h3>
+                    <LogIn size={24} color="var(--nexora-blue)" />
+                    <h3>Inicia Sesión</h3>
+                    <button className="boton-cerrar-modal" onClick={onClose}>
+                        <X size={20} />
+                    </button>
                 </div>
                 
                 <div className="cuerpo-modal">

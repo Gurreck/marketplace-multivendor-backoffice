@@ -3,6 +3,17 @@ import './login.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { 
+  Sun, 
+  Moon, 
+  Mail, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  AlertTriangle, 
+  UserPlus, 
+  Loader2 
+} from 'lucide-react';
 
 export default function Login({ onRegisterClick, onForgotClick }) {
   // ===== ESTADO =====
@@ -73,7 +84,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
           onClick={toggleTheme}
           title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
-          {isDarkMode ? '☀️' : '🌙'}
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
         <div className="icono-inicio-sesion">
@@ -85,7 +96,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
 
         {error && (
           <div className="error-inicio-sesion">
-            <span>⚠️</span> {error}
+            <AlertTriangle size={18} /> {error}
           </div>
         )}
 
@@ -93,7 +104,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
           <div className="grupo-formulario">
             <label>Correo Electrónico</label>
             <div className="contenedor-entrada-icono">
-              <span className="icono-etiqueta">📧</span>
+              <span className="icono-etiqueta"><Mail size={18} /></span>
               <input
                 type="email"
                 id="email"
@@ -110,7 +121,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
           <div className="grupo-formulario">
             <label>Contraseña</label>
             <div className="contenedor-entrada-icono">
-              <span className="icono-etiqueta">🔒</span>
+              <span className="icono-etiqueta"><Lock size={18} /></span>
               <div className="contenedor-entrada-contrasena">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -128,7 +139,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
                   onClick={() => setShowPassword(!showPassword)}
                   title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  {showPassword ? "👁️" : "🙈"}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -148,7 +159,17 @@ export default function Login({ onRegisterClick, onForgotClick }) {
             className={`boton-inicio-sesion ${loading ? 'cargando' : ''}`}
             disabled={loading}
           >
-            {loading ? '⏳ Iniciando sesión...' : '➕ Iniciar Sesión'}
+            {loading ? (
+              <>
+                <Loader2 className="animacion-giro" size={20} />
+                Iniciando sesión...
+              </>
+            ) : (
+              <>
+                <UserPlus size={20} />
+                Iniciar Sesión
+              </>
+            )}
           </button>
         </form>
 

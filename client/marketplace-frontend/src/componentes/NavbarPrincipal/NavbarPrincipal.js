@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
 import './NavbarPrincipal.css';
+import { 
+    Search, 
+    Sun, 
+    Moon, 
+    User, 
+    ShoppingCart, 
+    LogOut 
+} from 'lucide-react';
 
 /**
  * NavbarPrincipal
@@ -45,7 +53,7 @@ export default function NavbarPrincipal({
 
                 <div className="centro-encabezado">
                     <div className="barra-busqueda">
-                        <span className="icono-busqueda">🔍</span>
+                        <Search className="icono-busqueda" size={20} />
                         <input
                             type="text"
                             placeholder="Busca productos..."
@@ -62,7 +70,7 @@ export default function NavbarPrincipal({
                         onClick={toggleTheme}
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
-                        {isDarkMode ? '☀️' : '🌙'}
+                        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
 
                     {/* Perfil / Login */}
@@ -77,7 +85,8 @@ export default function NavbarPrincipal({
                             navigate('/cliente');
                         }
                     }}>
-                        👤 {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
+                        <User size={20} style={{ marginRight: '8px' }} />
+                        {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
                     </button>
 
                     {/* Carrito */}
@@ -85,12 +94,12 @@ export default function NavbarPrincipal({
                         className="boton-carrito"
                         onClick={() => navigate('/checkout')}
                     >
-                        🛒 {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
+                        <ShoppingCart size={20} />
+                        {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}
                     </button>
-
-                    {/* Salir */}
-                    <button className="boton-salir" onClick={handleLogout} title="Cerrar sesión">
-                        ✖ Salir
+                    <button className="boton-salir" onClick={handleLogout}>
+                        <LogOut size={20} style={{ marginRight: '8px' }} />
+                        Salir
                     </button>
                 </div>
             </div>

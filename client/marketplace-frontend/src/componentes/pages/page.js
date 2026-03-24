@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './page.css';
-import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -9,6 +8,12 @@ import api from '../../services/api';
 import DivPromo from '../divPromo/divPromo';
 import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
 import ModalLogin from '../Modal/ModalLogin';
+import { 
+  Plus, 
+  CheckCircle2, 
+  Loader2,
+  PackageSearch
+} from 'lucide-react';
 
 /**
  * Principal
@@ -57,12 +62,8 @@ export default function Principal() {
     }
   };
 
-  // ===== CONFIGURACIÓN Y FILTRADO =====
   const categories = ['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
 
-  /**
-   * Filtra la lista de productos basada en la categoría seleccionada y el término de búsqueda
-   */
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'Todos' || product.category === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -105,8 +106,12 @@ export default function Principal() {
   // ===== RENDERIZADO PRINCIPAL =====
   return (
     <div className={`contenedor-principal ${!isDarkMode ? 'modo-claro' : ''}`}>
-      {/* Notificación de éxito */}
-      {showNotification && <div className="notificacion">✓ {showNotification}</div>}
+      {showNotification && (
+        <div className="notificacion">
+          <CheckCircle2 size={18} style={{ marginRight: '8px' }} />
+          {showNotification}
+        </div>
+      )}
 
       {/* Modal Sugerencia Login */}
       <ModalLogin 
@@ -147,8 +152,8 @@ export default function Principal() {
           {/* Listado de Productos (Grid) */}
           {loading ? (
             <div className="contenedor-carga">
-              <div className="indicador-carga"></div>
-              <p>Cargando catálogo...</p>
+              <Loader2 className="animacion-giro" size={40} />
+              <p>Cargando productos...</p>
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="rejilla-productos">
@@ -168,16 +173,25 @@ export default function Principal() {
 
                     <div className="pie-producto">
                       <span className="precio-producto">₡{product.price.toLocaleString()}</span>
-                      <button className="boton-agregar" onClick={() => handleAddToCart(product)}>➕ Agregar</button>
+                      <button className="boton-agregar" onClick={() => handleAddToCart(product)}>
+                        <Plus size={16} />
+                        Agregar
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
+
+
+
+
+              
             </div>
           ) : (
             /* Estado Vacío */
             <div className="estado-vacio">
-              <p>😔 No se encontraron productos que coincidan con tu búsqueda.</p>
+              <PackageSearch size={60} opacity={0.3} style={{ marginBottom: '20px' }} />
+              <p>No se encontraron productos</p>
             </div>
           )}
         </section>
