@@ -6,12 +6,12 @@ import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import { commentService } from '../../services/commentService';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
-import { 
-    CheckCircle2, 
-    ShoppingBag, 
-    Trash2, 
-    Star, 
-    ShieldCheck, 
+import {
+    CheckCircle2,
+    ShoppingBag,
+    Trash2,
+    Star,
+    ShieldCheck,
     ChevronRight,
     Loader2
 } from 'lucide-react';
@@ -58,19 +58,19 @@ const PagePay = () => {
                 setLoadingComments(false);
                 return;
             }
-            
+
             setLoadingComments(true);
             const commentsData = {};
-            
+
             for (const item of cartItems) {
                 const productId = item._id || item.id;
                 commentsData[productId] = await fetchProductComments(productId);
             }
-            
+
             setProductComments(commentsData);
             setLoadingComments(false);
         };
-        
+
         loadAllComments();
     }, [cartItems]);
 
@@ -130,13 +130,7 @@ const PagePay = () => {
         });
     };
 
-    // ===== LÓGICA DE CÁLCULO =====
-    const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
-    const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
 
-    const selectedSubtotal = cartItems.reduce((acc, item) => {
-        return selectedItems[getItemId(item)] ? acc + (item.price * item.quantity) : acc;
-    }, 0);
 
     // ===== RENDERIZADO PRINCIPAL =====
 
@@ -219,7 +213,7 @@ const PagePay = () => {
                                         </div>
                                         <div className="caja-detalles-item">
                                             <h4 className="nombre-item-pago">{item.name}</h4>
-                                            
+
                                             {loadingComments ? (
                                                 <div className="cargando-calificacion-item">
                                                     <Loader2 className="animacion-giro" size={14} /> Cargando...
@@ -228,9 +222,9 @@ const PagePay = () => {
                                                 <div className="seccion-calificacion-item">
                                                     <div className="estrellas-calificacion-item">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <Star 
-                                                                key={i} 
-                                                                size={14} 
+                                                            <Star
+                                                                key={i}
+                                                                size={14}
                                                                 fill={i < Math.round(productComments[item._id || item.id]?.averageRating || 0) ? "var(--admin-advertencia)" : "none"}
                                                                 color={i < Math.round(productComments[item._id || item.id]?.averageRating || 0) ? "var(--admin-advertencia)" : "#ccc"}
                                                             />
@@ -248,7 +242,7 @@ const PagePay = () => {
                                                     <Star size={14} style={{ marginRight: '4px' }} /> Este producto aún no tiene opiniones
                                                 </div>
                                             )}
-                                            
+
                                             <p className="vendedor-item-pago">Nexora Premium</p>
                                             <div className="fila-precio-item">
                                                 {item.originalPrice ? (
