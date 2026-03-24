@@ -171,7 +171,36 @@
     max-width: 100%;
     flex: auto;
 }
+/* AGREGAR esto en tu paymentGateway.css */
+.gateway-two-column-layout {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    align-items: flex-start;
+}
 
+.gateway-two-column-layout .gateway-left-column {
+    flex: 1;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.gateway-two-column-layout .gateway-right-column {
+    flex: 1.2;
+    min-width: 380px;
+}
+
+@media (max-width: 900px) {
+    .gateway-two-column-layout {
+        flex-direction: column;
+    }
+    .gateway-two-column-layout .gateway-left-column,
+    .gateway-two-column-layout .gateway-right-column {
+        min-width: 100%;
+    }
+}
 /* Order Summary Card */
 
 /* Payment Form '''''''''''''''''''''''''''''''''*/
@@ -844,11 +873,13 @@
 }
 
 /* Reviews inside address column */
+
 .resenas-en-direccion-pasarela {
     background: var(--nexora-card-bg, #1a1f3a);
     border: 1px solid var(--nexora-border, rgba(0, 148, 255, 0.2));
     border-radius: 16px;
     padding: 20px;
+
 }
 
 .resenas-en-direccion-pasarela .titulo-resenas-pasarela {
@@ -874,10 +905,10 @@
     align-items: center;
     gap: 10px;
     padding: 10px;
-    background: var(--nexora-input-bg, #0a0e27);
+    background: rgba(   0,   0,   0,   0.1);    
     border-radius: 8px;
-    border: 1px solid var(--nexora-border, rgba(0, 148, 255, 0.2));
-}
+    border: 2px solid var(--nexora-border, rgba(11, 37, 184, 0.2));
+}       
 
 .resenas-en-direccion-pasarela .imagen-producto-resena-pasarela {
     width: 50px;
@@ -891,6 +922,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    margin-left: 100px;
 }
 
 .resenas-en-direccion-pasarela .nombre-producto-resena-pasarela {
@@ -901,6 +933,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 180px;
+    
 }
 
 .resenas-en-direccion-pasarela .boton-ver-resenas-pasarela {

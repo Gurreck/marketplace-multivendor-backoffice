@@ -713,14 +713,18 @@ const PaymentGateway = () => {
                                 {loadingProductComments ? (
                                     <div className="cargando-comentarios-pasarela">Cargando comentarios...</div>
                                 ) : selectedProductComments.length === 0 ? (
+
                                     <div className="comentarios-vacios-pasarela">
                                         <span>💬</span>
+
+                                   
                                         <p>Aún no hay comentarios para este producto.</p>
-                                        <p>¡Sé el primero en opinar!</p>
+                                        
                                     </div>
                                 ) : (
                                     <div className="lista-comentarios-pasarela">
                                         {selectedProductComments.map((comment) => (
+
                                             <div key={comment._id} className="item-comentario-pasarela">
                                                 <div className="encabezado-comentario-pasarela">
                                                     <img 
@@ -731,12 +735,15 @@ const PaymentGateway = () => {
                                                     <div className="info-comentario-pasarela">
                                                         <span className="usuario-comentario-pasarela">{comment.user?.nombre || "Usuario"}</span>
                                                         <span className="fecha-comentario-pasarela">
+
                                                             {new Date(comment.createdAt).toLocaleDateString("es-CR")}
                                                         </span>
                                                     </div>
                                                     <div className="calificacion-comentario-pasarela">
                                                         {[...Array(5)].map((_, i) => (
+
                                                             <span key={i} className={i < comment.rating ? "estrella llena" : "estrella"}>★</span>
+
                                                         ))}
                                                     </div>
                                                 </div>
@@ -747,6 +754,7 @@ const PaymentGateway = () => {
                                 )}
                             </div>
 
+
                             <div className="pie-modal-comentarios-pasarela">
                                 <button 
                                     className="boton-modal-comentarios-pasarela"
@@ -754,6 +762,7 @@ const PaymentGateway = () => {
                                 >
                                     Cerrar
                                 </button>
+
                             </div>
                         </div>
                     </div>

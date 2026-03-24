@@ -173,6 +173,11 @@ export default function Principal() {
                   </div>
                 </div>
               ))}
+
+
+
+
+              
             </div>
           ) : (
             /* Estado Vacío */
