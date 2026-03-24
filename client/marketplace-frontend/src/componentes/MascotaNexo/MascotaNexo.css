@@ -62,16 +62,3 @@
   display: flex;
   justify-content: space-between;
 }
-
-@media (max-width: 600px) {
-  .mascota {
-    width: 80px;
-  }
-  
-  .mascota-mensaje {
-    bottom: 90px;
-    font-size: 12px;
-    right: -10px;
-    min-width: 120px;
-  }
-}
