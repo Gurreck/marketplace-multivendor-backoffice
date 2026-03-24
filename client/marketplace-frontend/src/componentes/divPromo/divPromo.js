@@ -1,55 +1,85 @@
 import React, { useState, useEffect } from 'react';
 import './divPromo.css';
+import { Zap, Sparkles } from 'lucide-react';
 
+/**
+ * Componente DivPromo
+ * Muestra una sección transversal con productos en oferta que rotan aleatoriamente.
+ * 
+ * @param {Array} products - Lista de todos los productos disponibles
+ * @param {function} handlePromoAddToCart - Función para manejar el clic en un producto en oferta
+ */
 export default function DivPromo({ products, handlePromoAddToCart }) {
-    const [promoProducts, setPromoProducts] = useState([]);
+    // ===== ESTADO =====
+    const [promoProducts, setPromoProducts] = useState([]); // Productos seleccionados para mostrar en la promo
 
-    // Lógica para rotar productos de promoción cada 30 segundos
     useEffect(() => {
+        // Si no hay productos, no iniciar el intervalo
         if (!products || products.length === 0) return;
 
+        /**
+         * Selecciona 2 productos aleatorios de la lista general
+         */
         const getRandomProducts = () => {
-            const shuffled = [...products].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 2);
+            const temp = [...products];
+            for (let i = temp.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [temp[i], temp[j]] = [temp[j], temp[i]];
+            }
+            return temp.slice(0, 2);
         };
 
+        // Inicializar con productos aleatorios
         setPromoProducts(getRandomProducts());
 
+        // Establecer el intervalo de cambio
         const interval = setInterval(() => {
             setPromoProducts(getRandomProducts());
-        }, 30000);
+        }, 15000); // Rotar cada 15 seg para dinamismo
 
+        // Limpiar el intervalo al desmontar el componente
         return () => clearInterval(interval);
     }, [products]);
 
+    // Si no hay productos promocionales, no mostrar nada
     if (promoProducts.length === 0) return null;
 
+    // ===== RENDERIZADO =====
     return (
-        <section className="promo-banner">
-            <div className="promo-content">
-                <div className="promo-text-side">
-                    <p className="promo-subtitle">— Bueno, Bonito, Barato —</p>
-                    <h2 className="promo-title">HASTA <span className="highlight">10% EN PRODUCTOS</span></h2>
+        <div className="transversal-promociones">
+            <div className="contenido-promocional">
+                <div className="lado-texto-promo">
+                    <div className="etiqueta-viva">
+                        <Zap size={14} fill="currentColor" />
+                        <span>OFERTAS EN VIVO</span>
+                    </div>
+                    <h2 className="titulo-promo">
+                        Tecnología que <span className="resaltado">Impacta</span>
+                        <Sparkles size={20} className="icono-chispa" />
+                    </h2>
                 </div>
 
-                <div className="promo-products-side">
-                    {promoProducts.map((product, index) => (
-                        <div
-                            key={`${product._id || product.id}-${index}`}
-                            className="promo-mini-card clickeable"
-                            onClick={() => handlePromoAddToCart(product)}
-                        >
-                            <div className="mini-card-image">
-                                <img src={product.images[0]} alt={product.name} />
+                <div className="lado-productos-promo">
+                    {promoProducts.map((product) => (
+                            <div 
+                                key={product._id} 
+                                className="mini-tarjeta-promo pulsable"
+                                onClick={() => handlePromoAddToCart(product)}
+                                title={`Agregar ${product.name} (Oferta)`}
+                            >
+                                <div className="etiqueta-descuento-mini">-30%</div>
+                                <div className="imagen-mini-tarjeta">
+                                    <img src={product.images[0]?.url || "https://via.placeholder.com/80"} alt={product.name} />
+                                </div>
+                                <div className="pie-mini-tarjeta">
+                                    {/* Precio original calculado un 40% más alto para simular descuento */}
+                                    <span className="precio-original-mini">₡{(product.price * 1.4).toLocaleString()}</span>
+                                    <span className="precio-mini">₡{product.price.toLocaleString()}</span>
+                                </div>
                             </div>
-                            <div className="mini-card-footer">
-                                <span className="mini-price-original">₡ {product.price.toLocaleString()}</span>
-                                <span className="mini-price">₡ {Math.floor(product.price * 0.90).toLocaleString()}</span>
-                            </div>
-                        </div>
                     ))}
                 </div>
             </div>
-        </section>
+        </div>
     );
 }

@@ -1,5 +1,5 @@
 /* Header */
-.header {
+.encabezado {
     background: var(--header-bg);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--nexora-border);
@@ -8,7 +8,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.header-top {
+.parte-superior-encabezado {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,11 +17,11 @@
     margin-bottom: 20px;
 }
 
-.header-left {
+.izquierda-encabezado {
     flex-shrink: 0;
 }
 
-.logo {
+.logotipo {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -30,11 +30,11 @@
 
 }
 
-.logo:hover {
+.logotipo:hover {
     transform: scale(1.05);
 }
 
-.logo-img-header {
+.imagen-logo-encabezado {
     width: 60px;
     height: auto;
     filter: drop-shadow(0 0 8px rgba(0, 148, 255, 0.5));
@@ -43,7 +43,7 @@
     position: relative;
 }
 
-.logo-text {
+.texto-logo {
     color: var(--nexora-blue);
     font-size: 32px;
     font-weight: bold;
@@ -51,12 +51,12 @@
 }
 
 /* Search Bar */
-.header-center {
+.centro-encabezado {
     flex: 1;
     min-width: 300px;
 }
 
-.search-bar {
+.barra-busqueda {
     display: flex;
     align-items: center;
     background: var(--input-bg);
@@ -67,17 +67,17 @@
     height: 50px;
 }
 
-.search-bar:focus-within {
+.barra-busqueda:focus-within {
     border-color: var(--nexora-blue);
     box-shadow: 0 0 20px rgba(0, 148, 255, 0.2);
 }
 
-.search-icon {
+.icono-busqueda {
     font-size: 18px;
     margin-right: 10px;
 }
 
-.search-bar input {
+.barra-busqueda input {
     flex: 1;
     background: transparent;
     border: none;
@@ -87,12 +87,12 @@
     font-size: 16px;
 }
 
-.search-bar input::placeholder {
+.barra-busqueda input::placeholder {
     color: #6b7280;
 }
 
 /* Header Right */
-.header-right {
+.derecha-encabezado {
     display: flex;
     gap: 15px;
     flex-shrink: 0;
@@ -100,10 +100,10 @@
     justify-content: flex-end;
 }
 
-.user-menu,
-.cart-btn,
-.logout-btn,
-.theme-toggle-header {
+.menu-usuario,
+.boton-carrito,
+.boton-salir,
+.alternar-tema-encabezado {
     background: var(--btn-bg);
     border: 1px solid var(--nexora-border);
     color: var(--nexora-blue);
@@ -116,41 +116,45 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.theme-toggle-header {
+.alternar-tema-encabezado {
     width: 40px;
     height: 40px;
     padding: 0;
     font-size: 18px;
 }
 
-.user-menu:hover,
-.cart-btn:hover,
-.logout-btn:hover,
-.theme-toggle-header:hover {
+.menu-usuario:hover,
+.boton-carrito:hover,
+.boton-salir:hover,
+.alternar-tema-encabezado:hover {
     background: rgba(0, 148, 255, 0.4);
     border-color: var(--nexora-blue);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 148, 255, 0.2);
 }
 
-.logout-btn {
+.boton-salir {
     color: #f87171;
     border-color: rgba(244, 63, 94, 0.3);
     background: rgba(244, 63, 94, 0.1);
 }
 
-.logout-btn:hover {
+.boton-salir:hover {
     background: rgba(244, 63, 94, 0.2);
     border-color: #f87171;
 }
 
-.cart-btn {
+.boton-carrito {
     position: relative;
 }
 
-.cart-badge {
+.etiqueta-carrito {
     position: absolute;
     top: -8px;
     right: -8px;
@@ -167,28 +171,28 @@
 }
 
 /* Categorías */
-.categories-bar {
+.barra-categorias {
     display: flex;
     gap: 10px;
     overflow-x: auto;
-    padding: 0;
+    padding: 10px 0;
     scrollbar-width: thin;
 }
 
-.categories-bar::-webkit-scrollbar {
+.barra-categorias::-webkit-scrollbar {
     height: 4px;
 }
 
-.categories-bar::-webkit-scrollbar-track {
+.barra-categorias::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.categories-bar::-webkit-scrollbar-thumb {
+.barra-categorias::-webkit-scrollbar-thumb {
     background: rgba(0, 148, 255, 0.3);
     border-radius: 2px;
 }
 
-.category-btn {
+.boton-categoria {
     background: transparent;
     border: 1px solid var(--nexora-border);
     color: #9ca3af;
@@ -201,14 +205,105 @@
     flex-shrink: 0;
 }
 
-.category-btn:hover {
+.boton-categoria:hover {
     border-color: var(--nexora-blue);
     color: var(--nexora-blue);
 }
 
-.category-btn.active {
+.boton-categoria.activo {
     background: rgba(0, 148, 255, 0.3);
     border-color: var(--nexora-blue);
     color: var(--nexora-blue);
     font-weight: 600;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+    .encabezado {
+        padding: 15px 30px;
+    }
+    
+    .texto-logo {
+        font-size: 24px;
+    }
+    
+    .imagen-logo-encabezado {
+        width: 45px;
+    }
+}
+
+@media (max-width: 768px) {
+    .parte-superior-encabezado {
+        gap: 15px;
+    }
+
+    .centro-encabezado {
+        order: 3;
+        width: 100%;
+        min-width: 100%;
+        margin-top: 10px;
+    }
+
+    .derecha-encabezado {
+        gap: 8px;
+    }
+
+    .menu-usuario, .boton-carrito, .boton-salir {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .texto-logo {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .encabezado {
+        padding: 10px 15px;
+    }
+
+    .derecha-encabezado {
+        gap: 5px;
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .menu-usuario, 
+    .boton-carrito, 
+    .boton-salir,
+    .alternar-tema-encabezado {
+        padding: 8px 10px;
+        font-size: 13px;
+        border-radius: 20px;
+        flex: 1;
+        min-width: 0; /* Allow shrinking */
+        max-width: fit-content;
+    }
+    
+    .menu-usuario {
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-align: center;
+    }
+
+    .menu-usuario span {
+        display: none;
+    }
+    
+    .texto-logo {
+        font-size: 20px;
+    }
+    
+    .imagen-logo-encabezado {
+        width: 40px;
+        scale: 1.2;
+    }
+    
+    /* On extreme small screens, we might want to hide text if labels are long */
+    /* But since labels are short "Salir", "Iniciar sesión", we'll just keep them but smaller */
 }

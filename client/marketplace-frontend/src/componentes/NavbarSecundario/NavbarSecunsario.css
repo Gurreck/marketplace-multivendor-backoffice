@@ -1,8 +1,36 @@
-/* ===== Navbar Secundario (scopeado con .navbar-secundario) ===== */
+/* ===== Navbar Secundario (scopeado con .barra-navegacion-secundaria) ===== */
+.barra-navegacion-secundaria {
+    --nexora-blue: #0094FF;
+    --nexora-cyan: #00C2FF;
+    --nexora-dark: #000B18;
+    --nexora-deep: #001A2F;
+    --nexora-border: rgba(0, 194, 255, 0.3);
+    --nexora-card: rgba(0, 26, 47, 0.8);
+    --nexora-text: #e5e7eb;
+    --header-bg: rgba(0, 26, 47, 1);
+    --card-bg: rgba(30, 41, 82, 0.6);
+    --input-bg: rgba(30, 41, 82, 0.9);
+    --btn-bg: rgba(0, 148, 255, 0.3);
+}
+
+.barra-navegacion-secundaria.modo-claro {
+    --nexora-blue: #0369a1;
+    --nexora-cyan: #0284c7;
+    --nexora-dark: #f0f9ff;
+    --nexora-deep: #e0f2fe;
+    --nexora-border: rgba(0, 148, 255, 0.2);
+    --nexora-card: rgba(255, 255, 255, 0.9);
+    --nexora-text: #334155;
+    --header-bg: rgba(255, 255, 255, 0.95);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --input-bg: #ffffff;
+    --btn-bg: rgba(14, 165, 233, 0.15);
+}
+
 
 /* Header principal - fijado en la parte superior */
-.navbar-secundario .header {
-    background: rgba(0, 26, 47, 1);
+.barra-navegacion-secundaria .encabezado {
+    background: var(--header-bg);
     border-bottom: 1px solid var(--nexora-border);
     padding: 16px 60px;
     position: sticky;
@@ -13,7 +41,7 @@
 }
 
 /* Contenedor superior - logo + acciones */
-.navbar-secundario .header-top {
+.barra-navegacion-secundaria .parte-superior-encabezado {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,11 +50,11 @@
 }
 
 /* ===== Sección Marca (Logo) ===== */
-.navbar-secundario .header-Marca {
+.barra-navegacion-secundaria .marca-encabezado {
     flex-shrink: 0;
 }
 
-.navbar-secundario .logo {
+.barra-navegacion-secundaria .logotipo {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -34,11 +62,11 @@
     transition: transform 0.3s ease;
 }
 
-.navbar-secundario .logo:hover {
+.barra-navegacion-secundaria .logotipo:hover {
     transform: scale(1.05);
 }
 
-.navbar-secundario .logo-img-header {
+.barra-navegacion-secundaria .imagen-logo-encabezado {
     width: 60px;
     height: auto;
     filter: drop-shadow(0 0 10px rgba(0, 148, 255, 0.5));
@@ -48,11 +76,11 @@
     transition: filter 0.3s ease;
 }
 
-.navbar-secundario .logo:hover .logo-img-header {
+.barra-navegacion-secundaria .logotipo:hover .imagen-logo-encabezado {
     filter: drop-shadow(0 0 16px rgba(0, 148, 255, 0.8));
 }
 
-.navbar-secundario .logo-text {
+.barra-navegacion-secundaria .texto-logo {
     color: var(--nexora-blue);
     font-size: 32px;
     font-weight: bold;
@@ -65,7 +93,7 @@
 }
 
 /* ===== Sección Barra de acciones ===== */
-.navbar-secundario .header-barra {
+.barra-navegacion-secundaria .barra-encabezado {
     display: flex;
     gap: 12px;
     flex-shrink: 0;
@@ -75,11 +103,11 @@
 }
 
 /* Botones del header */
-.navbar-secundario .user-menu,
-.navbar-secundario .cart-btn,
-.navbar-secundario .logout-btn,
-.navbar-secundario .theme-toggle-header,
-.navbar-secundario .inicio-btn {
+.barra-navegacion-secundaria .menu-usuario,
+.barra-navegacion-secundaria .boton-carrito,
+.barra-navegacion-secundaria .boton-salir,
+.barra-navegacion-secundaria .alternar-tema-encabezado,
+.barra-navegacion-secundaria .boton-inicio {
     background: var(--btn-bg);
     border: 1px solid var(--nexora-border);
     color: var(--nexora-blue);
@@ -95,14 +123,15 @@
     gap: 6px;
     position: relative;
     overflow: hidden;
-    right: 100px;
+    max-width: 200px;
+    text-overflow: ellipsis;
 }
 
 /* Efecto glow sutil en botones */
-.navbar-secundario .user-menu::before,
-.navbar-secundario .cart-btn::before,
-.navbar-secundario .theme-toggle-header::before,
-.navbar-secundario .inicio-btn::before {
+.barra-navegacion-secundaria .menu-usuario::before,
+.barra-navegacion-secundaria .boton-carrito::before,
+.barra-navegacion-secundaria .alternar-tema-encabezado::before,
+.barra-navegacion-secundaria .boton-inicio::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -111,15 +140,15 @@
     transition: opacity 0.3s ease;
 }
 
-.navbar-secundario .user-menu:hover::before,
-.navbar-secundario .cart-btn:hover::before,
-.navbar-secundario .theme-toggle-header:hover::before,
-.navbar-secundario .inicio-btn:hover::before {
+.barra-navegacion-secundaria .menu-usuario:hover::before,
+.barra-navegacion-secundaria .boton-carrito:hover::before,
+.barra-navegacion-secundaria .alternar-tema-encabezado:hover::before,
+.barra-navegacion-secundaria .boton-inicio:hover::before {
     opacity: 1;
 }
 
 /* Toggle de tema */
-.navbar-secundario .theme-toggle-header {
+.barra-navegacion-secundaria .alternar-tema-encabezado {
     width: 42px;
     height: 42px;
     padding: 0;
@@ -127,24 +156,31 @@
 }
 
 /* Hover en botones */
-.navbar-secundario .user-menu:hover,
-.navbar-secundario .cart-btn:hover,
-.navbar-secundario .theme-toggle-header:hover,
-.navbar-secundario .inicio-btn:hover {
-    background: rgba(0, 148, 255, 0.4);
+.barra-navegacion-secundaria .menu-usuario:hover,
+.barra-navegacion-secundaria .boton-carrito:hover,
+.barra-navegacion-secundaria .alternar-tema-encabezado:hover,
+.barra-navegacion-secundaria .boton-inicio:hover {
+    background: var(--nexora-blue);
+    color: white;
     border-color: var(--nexora-blue);
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0, 148, 255, 0.25);
 }
 
 /* Botón de cerrar sesión */
-.navbar-secundario .logout-btn {
+.barra-navegacion-secundaria .boton-salir {
     color: #f87171;
     border-color: rgba(244, 63, 94, 0.3);
     background: rgba(244, 63, 94, 0.1);
 }
 
-.navbar-secundario .logout-btn:hover {
+.barra-navegacion-secundaria.modo-claro .boton-salir {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.barra-navegacion-secundaria .boton-salir:hover {
     background: rgba(244, 63, 94, 0.25);
     border-color: #f87171;
     transform: translateY(-2px);
@@ -152,12 +188,12 @@
 }
 
 /* Carrito con badge */
-.navbar-secundario .cart-btn {
+.barra-navegacion-secundaria .boton-carrito {
     position: relative;
     overflow: visible;
 }
 
-.navbar-secundario .cart-badge {
+.barra-navegacion-secundaria .etiqueta-carrito {
     position: absolute;
     top: -8px;
     right: -8px;
@@ -176,57 +212,61 @@
 }
 
 @keyframes badgePulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .barra-navegacion-secundaria .encabezado {
+        padding: 12px 30px;
+    }
+    
+    .barra-navegacion-secundaria .parte-superior-encabezado {
+        gap: 15px;
+    }
+}
+
 @media (max-width: 768px) {
-    .navbar-secundario .header {
+    .barra-navegacion-secundaria .encabezado {
         padding: 12px 20px;
     }
 
-    .navbar-secundario .header-top {
+    .barra-navegacion-secundaria .parte-superior-encabezado {
         flex-direction: column;
         gap: 15px;
     }
 
-    .navbar-secundario .header-Marca {
+    .barra-navegacion-secundaria .marca-encabezado {
         width: 100%;
         display: flex;
         justify-content: center;
     }
 
-    .navbar-secundario .header-barra {
+    .barra-navegacion-secundaria .barra-encabezado {
         width: 100%;
         justify-content: center;
         gap: 10px;
     }
 
-    .navbar-secundario .logo-text {
+    .barra-navegacion-secundaria .texto-logo {
         font-size: 24px;
     }
 
-    .navbar-secundario .logo-img-header {
+    .barra-navegacion-secundaria .imagen-logo-encabezado {
         width: 45px;
         scale: 1.4;
     }
 
-    .navbar-secundario .user-menu,
-    .navbar-secundario .cart-btn,
-    .navbar-secundario .logout-btn {
+    .barra-navegacion-secundaria .menu-usuario,
+    .barra-navegacion-secundaria .boton-carrito,
+    .barra-navegacion-secundaria .boton-salir,
+    .barra-navegacion-secundaria .boton-inicio {
         padding: 8px 14px;
         font-size: 13px;
     }
 
-    .navbar-secundario .theme-toggle-header {
+    .barra-navegacion-secundaria .alternar-tema-encabezado {
         width: 36px;
         height: 36px;
         font-size: 16px;
@@ -234,20 +274,40 @@
 }
 
 @media (max-width: 480px) {
-    .navbar-secundario .header {
+    .barra-navegacion-secundaria .encabezado {
         padding: 10px 12px;
     }
 
-    .navbar-secundario .header-barra {
+    .barra-navegacion-secundaria .barra-encabezado {
         flex-wrap: wrap;
         gap: 8px;
+        width: 100%;
+        justify-content: center;
     }
 
-    .navbar-secundario .user-menu,
-    .navbar-secundario .cart-btn,
-    .navbar-secundario .logout-btn {
-        padding: 7px 12px;
-        font-size: 12px;
+    .barra-navegacion-secundaria .menu-usuario,
+    .barra-navegacion-secundaria .boton-carrito,
+    .barra-navegacion-secundaria .boton-salir,
+    .barra-navegacion-secundaria .boton-inicio {
+        padding: 7px 10px;
+        font-size: 11px;
         border-radius: 20px;
+        flex: 1;
+        min-width: 0;
+        max-width: fit-content;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-align: center;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario span,
+    .barra-navegacion-secundaria .boton-salir span {
+        display: none;
     }
 }

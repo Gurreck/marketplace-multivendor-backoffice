@@ -3,24 +3,40 @@ import "./pageVendedor.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useTheme } from "../../context/ThemeContext";
 import api from "../../services/api";
-import DivPromo from "../divPromo/divPromo";
+import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
+import { 
+  PlusCircle, 
+  RotateCcw, 
+  Package, 
+  Pencil, 
+  Trash2, 
+  X, 
+  UploadCloud, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Loader2,
+  Image as ImageIcon,
+  Tag,
+  Boxes,
+  Briefcase
+} from 'lucide-react';
 
 export default function PageVendedor() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const { addToCart } = useCart();
+
+  const { cartCount } = useCart();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const [products, setProducts] = useState([]);
-  //const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showNotification, setShowNotification] = useState("");
 
-  // State for Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -31,9 +47,9 @@ export default function PageVendedor() {
     brand: "",
     stock: "",
   });
-  const [imageFiles, setImageFiles] = useState([]); // Archivos seleccionados
-  const [imagePreviews, setImagePreviews] = useState([]); // Vista previa de imágenes
-  const [existingImages, setExistingImages] = useState([]); // Imágenes existentes (al editar)
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   const categories = [
     "Todos",
@@ -47,17 +63,19 @@ export default function PageVendedor() {
     "Accesorios",
   ];
 
+  // ===== CARGA DE DATOS =====
   useEffect(() => {
     fetchMyProducts();
-    //fetchAllProducts();
   }, []);
 
+  /**
+   * Obtiene los productos del vendedor autenticado
+   */
   const fetchMyProducts = async () => {
     try {
       setLoading(true);
       const response = await api.get("/products/vendor/me");
       if (response.data.success) {
-        // Ordenar por fecha de creación descendente (más recientes primero)
         const sorted = [...response.data.data].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
         );
@@ -73,18 +91,6 @@ export default function PageVendedor() {
     }
   };
 
-  const handlePromoAddToCart = (product) => {
-    const discountedProduct = {
-      ...product,
-      originalPrice: product.price,
-      price: Math.floor(product.price * 0.9),
-      isPromo: true,
-    };
-    addToCart(discountedProduct);
-    setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
-    setTimeout(() => setShowNotification(""), 3000);
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -93,11 +99,13 @@ export default function PageVendedor() {
     });
   };
 
+  /**
+   * Maneja la selección de archivos de imagen y genera vistas previas
+   */
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    // Limitar a 5 imágenes en total
     const totalImages = imageFiles.length + files.length;
     if (totalImages > 5) {
       alert("Máximo 5 imágenes permitidas.");
@@ -106,7 +114,6 @@ export default function PageVendedor() {
 
     setImageFiles((prev) => [...prev, ...files]);
 
-    // Generar vista previa
     files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -115,7 +122,6 @@ export default function PageVendedor() {
       reader.readAsDataURL(file);
     });
 
-    // Limpiar el input para permitir seleccionar el mismo archivo de nuevo
     e.target.value = "";
   };
 
@@ -128,6 +134,10 @@ export default function PageVendedor() {
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // ===== ACCIONES DE MODAL =====
+  /**
+   * Prepara el modal para agregar un nuevo producto
+   */
   const openAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -144,6 +154,9 @@ export default function PageVendedor() {
     setIsModalOpen(true);
   };
 
+  /**
+   * Prepara el modal para editar un producto existente
+   */
   const openEditModal = (product) => {
     setEditingProduct(product);
     setFormData({
@@ -160,16 +173,18 @@ export default function PageVendedor() {
     setIsModalOpen(true);
   };
 
+  // ===== PERSISTENCIA Y API =====
+  /**
+   * Envía los datos del producto (crear o editar) al servidor
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Validar que haya al menos una imagen (nueva o existente)
       if (imageFiles.length === 0 && existingImages.length === 0) {
         alert("Debes incluir al menos una imagen.");
         return;
       }
 
-      // Construir FormData para enviar archivos
       const submitData = new FormData();
       submitData.append("name", formData.name);
       submitData.append("description", formData.description);
@@ -178,20 +193,17 @@ export default function PageVendedor() {
       submitData.append("category", formData.category);
       submitData.append("brand", formData.brand);
 
-      // Agregar archivos nuevos
       imageFiles.forEach((file) => {
         submitData.append("images", file);
       });
 
-      // Si estamos editando y mantenemos imágenes existentes (sin subir nuevas)
-      // ✅ Enviar imágenes a eliminar (para Cloudinary)
       if (editingProduct) {
         const imagesToRemove = editingProduct.images.filter(
           (img) => !existingImages.some((e) => e.public_id === img.public_id),
         );
-
         submitData.append("removeImages", JSON.stringify(imagesToRemove));
       }
+
       let response;
       if (editingProduct) {
         response = await api.put(
@@ -210,30 +222,26 @@ export default function PageVendedor() {
       if (response.data.success) {
         setIsModalOpen(false);
         fetchMyProducts();
-        alert(
-          editingProduct
-            ? "Producto actualizado con éxito"
-            : "Producto creado con éxito",
-        );
+        setShowNotification(editingProduct ? "Producto actualizado con éxito" : "Producto creado con éxito");
+        setTimeout(() => setShowNotification(""), 3000);
       }
     } catch (err) {
       console.error("Error saving product:", err);
-      alert(
-        "Error al guardar el producto: " +
-          (err.response?.data?.message || err.message),
-      );
+      alert("Error al guardar el producto: " + (err.response?.data?.message || err.message));
     }
   };
 
+  /**
+   * Elimina un producto tras confirmación del usuario
+   */
   const handleDelete = async (id) => {
-    if (
-      window.confirm("¿Estás seguro de que quieres eliminar este producto?")
-    ) {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
       try {
         const response = await api.delete(`/products/${id}`);
         if (response.data.success) {
           fetchMyProducts();
-          alert("Producto eliminado");
+          setShowNotification("Producto eliminado");
+          setTimeout(() => setShowNotification(""), 3000);
         }
       } catch (err) {
         console.error("Error deleting product:", err);
@@ -242,318 +250,297 @@ export default function PageVendedor() {
     }
   };
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
   const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === "Todos" || product.category === selectedCategory;
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "Todos" || product.category === selectedCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
+  // ===== RENDERIZADO PRINCIPAL =====
   return (
-    <div className={`principal-container ${!isDarkMode ? "light-mode" : ""}`}>
-      {showNotification && (
-        <div className="notification">{showNotification}</div>
-      )}
-      <DivPromo
-        //products={allProducts}
-        handlePromoAddToCart={handlePromoAddToCart}
-      />
-      <div className="main-container">
-        <section className="products-section">
-          <div className="section-header">
-            <h2>
-              Mis Productos{" "}
-              {selectedCategory !== "Todos" && `— ${selectedCategory}`}
-            </h2>
-            <div className="header-actions">
-              <button
-                className="btn-exit-vendedor"
-                onClick={() => {
-                  logout();
-                  navigate("/login");
-                }}
-              >
-                ✖ Salir
-              </button>
-              <p>{filteredProducts.length} productos publicados</p>
-              <button className="add-btn-vendedor" onClick={openAddModal}>
-                ➕ Nuevo Producto
-              </button>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p>Cargando tus productos...</p>
-            </div>
-          ) : error ? (
-            <div className="empty-state">
-              <p>⚠️ {error}</p>
-              <button className="add-btn" onClick={fetchMyProducts}>
-                Reintentar
-              </button>
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="empty-state">
-              <p>📦 No tienes productos en esta categoría</p>
-              <button className="add-btn" onClick={openAddModal}>
-                ➕ Agregar Producto
-              </button>
-            </div>
-          ) : (
-            <div className="products-grid">
-              {filteredProducts.map((product) => (
-                <div key={product._id} className="product-card">
-                  <div className="product-image">
-                    <img
-                      src={
-                        product.images[0]?.url ||
-                        "https://via.placeholder.com/300"
-                      }
-                      alt={product.name}
-                      className="product-real-image"
-                    />
-                    <div className="product-badge">{product.category}</div>
-                  </div>
-
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="product-short-desc">
-                      {product.description?.substring(0, 60)}...
-                    </p>
-                    <div className="card-meta">
-                      <span className="product-price">
-                        ₡{product.price.toLocaleString()}
-                      </span>
-                      <span className="card-stock">Stock: {product.stock}</span>
-                    </div>
-
-                    <div className="product-footer-vendedor">
-                      <button
-                        className="btn-edit"
-                        onClick={() => openEditModal(product)}
-                      >
-                        ✏️ Editar
-                      </button>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDelete(product._id)}
-                      >
-                        🗑️ Borrar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+    <>
+      <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
+        <NavbarSecundario
+          toggleTheme={toggleTheme}
+          isDarkMode={isDarkMode}
+          user={user}
+          logout={logout}
+          cartCount={cartCount}
+          onInicio={() => {
+            logout();
+            navigate('/');
+          }}
+          disableCart={true}
+          disableUserMenu={true}
+        />
       </div>
+      <div className={`contenedor-principal-vendedor ${!isDarkMode ? "modo-claro" : ""}`}>
+        {showNotification && (
+          <div className="notificacion">
+            <CheckCircle2 size={18} style={{ marginRight: '8px' }} />
+            {showNotification}
+          </div>
+        )}
 
-      {/* Modal for Add/Edit */}
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
+        <div className="contenedor-principal-productos">
+          <section className="seccion-productos">
+            <div className="encabezado-seccion">
               <h2>
-                {editingProduct ? "Editar Producto" : "Subir Nuevo Producto"}
+                <Package size={24} style={{ marginRight: '10px', verticalAlign: 'middle' }} />
+                Mis Productos{" "}
+                {selectedCategory !== "Todos" && `— ${selectedCategory}`}
               </h2>
-              <button
-                className="close-modal"
-                onClick={() => setIsModalOpen(false)}
-              >
-                ×
-              </button>
+              <div className="acciones-encabezado">
+                <p>{filteredProducts.length} productos publicados</p>
+                <button className="boton-agregar-vendedor" onClick={openAddModal}>
+                  <PlusCircle size={18} style={{ marginRight: '8px' }} /> Nuevo Producto
+                </button>
+              </div>
             </div>
 
-            <form className="product-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Nombre del Producto</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Ej: Laptop Dell XPS 15"
-                  required
-                />
+            {loading ? (
+              <div className="contenedor-carga">
+                <Loader2 className="animacion-giro" size={40} />
+                <p>Cargando tus productos...</p>
               </div>
-
-              <div className="form-group">
-                <label>Descripción</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Describe las características principales..."
-                  rows="4"
-                  required
-                />
+            ) : error ? (
+              <div className="estado-vacio">
+                <AlertTriangle size={40} color="var(--admin-peligro)" />
+                <p>{error}</p>
+                <button className="add-btn" onClick={fetchMyProducts}>
+                  <RotateCcw size={16} style={{ marginRight: '8px' }} /> Reintentar
+                </button>
               </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Precio (₡)</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Stock Disponible</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleInputChange}
-                    placeholder="0"
-                    min="0"
-                    required
-                  />
-                </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="empty-state">
+                <Boxes size={48} opacity={0.3} />
+                <p>No tienes productos en esta categoría</p>
+                <button className="add-btn" onClick={openAddModal}>
+                  <PlusCircle size={18} style={{ marginRight: '8px' }} /> Agregar Producto
+                </button>
               </div>
+            ) : (
+              <div className="cuadricula-productos">
+                {filteredProducts.map((product) => (
+                  <div key={product._id} className="tarjeta-producto">
+                    <div className="imagen-producto">
+                      <img
+                        src={product.images[0]?.url || "https://via.placeholder.com/300"}
+                        alt={product.name}
+                        className="imagen-real-producto"
+                      />
+                      <div className="etiqueta-producto">{product.category}</div>
+                    </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Categoría</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                  >
-                    {categories
-                      .filter((c) => c !== "Todos")
-                      .map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Marca (Opcional)</label>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleInputChange}
-                    placeholder="Ej: Dell, Sony..."
-                  />
-                </div>
-              </div>
+                    <div className="informacion-producto">
+                      <h3 className="nombre-producto">{product.name}</h3>
+                      <p className="descripcion-corta-producto">
+                        {product.description?.substring(0, 60)}...
+                      </p>
+                      <div className="meta-tarjeta">
+                        <span className="precio-producto">
+                          ₡{product.price.toLocaleString()}
+                        </span>
+                        <span className="existencias-tarjeta">Stock: {product.stock}</span>
+                      </div>
 
-              <div className="form-group">
-                <label>Imágenes del Producto</label>
-
-                {/* Imágenes existentes (al editar) */}
-                {existingImages.length > 0 && (
-                  <div className="image-previews-container">
-                    <p
-                      style={{
-                        fontSize: "0.85rem",
-                        color: "#aaa",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      Imágenes actuales:
-                    </p>
-                    <div className="image-previews-grid">
-                      {existingImages.map((img, index) => (
-                        <div
-                          key={`existing-${index}`}
-                          className="image-preview-item"
+                      <div className="pie-pagina-producto-vendedor">
+                        <button
+                          className="boton-editar"
+                          onClick={() => openEditModal(product)}
                         >
-                          <img src={img.url} alt={`Existente ${index + 1}`} />
-                          <button
-                            type="button"
-                            className="btn-remove-preview"
-                            onClick={() => removeExistingImage(index)}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                          <Pencil size={14} style={{ marginRight: '6px' }} /> Editar
+                        </button>
+                        <button
+                          className="boton-eliminar"
+                          onClick={() => handleDelete(product._id)}
+                        >
+                          <Trash2 size={14} style={{ marginRight: '6px' }} /> Borrar
+                        </button>
+                      </div>
                     </div>
                   </div>
-                )}
-
-                {/* Vista previa de nuevas imágenes */}
-                {imagePreviews.length > 0 && (
-                  <div className="image-previews-container">
-                    <p
-                      style={{
-                        fontSize: "0.85rem",
-                        color: "#aaa",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      Nuevas imágenes:
-                    </p>
-                    <div className="image-previews-grid">
-                      {imagePreviews.map((preview, index) => (
-                        <div
-                          key={`new-${index}`}
-                          className="image-preview-item"
-                        >
-                          <img src={preview} alt={`Preview ${index + 1}`} />
-                          <button
-                            type="button"
-                            className="btn-remove-preview"
-                            onClick={() => removeNewImage(index)}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Botón para seleccionar archivos */}
-                <div className="file-upload-area">
-                  <label className="btn-file-upload">
-                    📁 Seleccionar imágenes
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                      multiple
-                      onChange={handleFileSelect}
-                      style={{ display: "none" }}
-                    />
-                  </label>
-                  <span className="file-upload-hint">
-                    Máx. 5 imágenes (JPEG, PNG, GIF, WebP) — 5MB c/u
-                  </span>
-                </div>
+                ))}
               </div>
+            )}
+          </section>
+        </div>
 
-              <div className="form-actions-modal">
+        {isModalOpen && (
+          <div className="capa-modal">
+            <div className="contenido-modal">
+              <div className="encabezado-modal">
+                <h2>
+                  {editingProduct ? <><Pencil size={20} style={{ marginRight: '10px' }} /> Editar Producto</> : <><PlusCircle size={20} style={{ marginRight: '10px' }} /> Subir Nuevo Producto</>}
+                </h2>
                 <button
-                  type="button"
-                  className="btn-secondary-modal"
+                  className="cerrar-modal"
                   onClick={() => setIsModalOpen(false)}
                 >
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-primary-modal">
-                  {editingProduct ? "Guardar Cambios" : "Publicar Producto"}
+                  <X size={24} />
                 </button>
               </div>
-            </form>
+
+              <form className="formulario-producto" onSubmit={handleSubmit}>
+                <div className="grupo-formulario">
+                  <label><Briefcase size={14} style={{ marginRight: '6px' }} /> Nombre del Producto</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Ej: Laptop Dell XPS 15"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Descripción</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Describe las características principales..."
+                    rows="4"
+                    required
+                  />
+                </div>
+
+                <div className="fila-formulario">
+                  <div className="form-group">
+                    <label>Precio (₡)</label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label><Boxes size={14} style={{ marginRight: '6px' }} /> Stock Disponible</label>
+                    <input
+                      type="number"
+                      name="stock"
+                      value={formData.stock}
+                      onChange={handleInputChange}
+                      placeholder="0"
+                      min="0"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label><Tag size={14} style={{ marginRight: '6px' }} /> Categoría</label>
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                    >
+                      {categories
+                        .filter((c) => c !== "Todos")
+                        .map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Marca (Opcional)</label>
+                    <input
+                      type="text"
+                      name="brand"
+                      value={formData.brand}
+                      onChange={handleInputChange}
+                      placeholder="Ej: Dell, Sony..."
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label><ImageIcon size={14} style={{ marginRight: '6px' }} /> Imágenes del Producto</label>
+
+                  {existingImages.length > 0 && (
+                    <div className="contenedor-vistas-previas-imagenes">
+                      <p className="subtitulo-imagenes">Imágenes actuales:</p>
+                      <div className="cuadricula-vistas-previas-imagenes">
+                        {existingImages.map((img, index) => (
+                          <div key={`existing-${index}`} className="item-vista-previa-imagen">
+                            <img src={img.url} alt={`Existente ${index + 1}`} />
+                            <button
+                              type="button"
+                              className="boton-quitar-vista-previa"
+                              onClick={() => removeExistingImage(index)}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {imagePreviews.length > 0 && (
+                    <div className="image-previews-container">
+                      <p className="subtitulo-imagenes">Nuevas imágenes:</p>
+                      <div className="image-previews-grid">
+                        {imagePreviews.map((preview, index) => (
+                          <div key={`new-${index}`} className="image-preview-item">
+                            <img src={preview} alt={`Preview ${index + 1}`} />
+                            <button
+                              type="button"
+                              className="btn-remove-preview"
+                              onClick={() => removeNewImage(index)}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="area-carga-archivos">
+                    <label className="boton-carga-archivos">
+                      <UploadCloud size={20} style={{ marginRight: '10px' }} />
+                      Seleccionar imágenes
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        multiple
+                        onChange={handleFileSelect}
+                        style={{ display: "none" }}
+                      />
+                    </label>
+                    <span className="sugerencia-carga-archivos">
+                      Máx. 5 imágenes (JPEG, PNG, GIF, WebP) — 5MB c/u
+                    </span>
+                  </div>
+                </div>
+
+                <div className="acciones-formulario-modal">
+                  <button
+                    type="button"
+                    className="boton-secundario-modal"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className="boton-primario-modal">
+                    {editingProduct ? "Guardar Cambios" : "Publicar Producto"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

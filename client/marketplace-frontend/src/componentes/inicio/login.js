@@ -3,26 +3,47 @@ import './login.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { 
+  Sun, 
+  Moon, 
+  Mail, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  AlertTriangle, 
+  UserPlus, 
+  Loader2 
+} from 'lucide-react';
 
 export default function Login({ onRegisterClick, onForgotClick }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
+  // ===== ESTADO =====
+  const [email, setEmail] = useState(''); // Correo ingresado
+  const [password, setPassword] = useState(''); // Contraseña ingresada
+  const [error, setError] = useState(''); // Mensajes de error de login
+  const [loading, setLoading] = useState(false); // Estado de carga (durante la petición)
+  const [isDarkMode, setIsDarkMode] = useState(true); // Tema local de la página
+  const [showPassword, setShowPassword] = useState(false); // Visibilidad de la contraseña
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // ===== UTILIDADES Y NAVEGACIÓN =====
+  /**
+   * Alterna el tema entre claro y oscuro
+   */
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  const redirectByRole = (role) => {
-    switch (role) {
+  /**
+   * Determina la ruta de redirección según el rol del usuario
+   * @param {string} rol - El rol del usuario (administrador, vendedor, cliente)
+   * @returns {string} La ruta de destino
+   */
+  const redirigirPorRol = (rol) => {
+    switch (rol) {
       case 'administrador':
-        return '/admin';
+        return '/admin/dashboard';
       case 'vendedor':
         return '/vendedor';        
       case 'cliente':
@@ -32,6 +53,10 @@ export default function Login({ onRegisterClick, onForgotClick }) {
     }
   };
 
+  // ===== MANEJADORES DE EVENTOS =====
+  /**
+   * Procesa el inicio de sesión enviando las credenciales al servicio de autenticación
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -39,7 +64,7 @@ export default function Login({ onRegisterClick, onForgotClick }) {
 
     try {
       const userData = await login(email, password);
-      navigate(redirectByRole(userData.role));
+      navigate(redirigirPorRol(userData.role));
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -50,101 +75,109 @@ export default function Login({ onRegisterClick, onForgotClick }) {
     }
   };
 
+  // ===== RENDERIZADO =====
   return (
-    <div className={`login-container ${!isDarkMode ? 'light-mode' : ''}`}>
-      <div className="login-card">
-        <button
-          className="theme-toggle"
+    <div className={`contenedor-inicio-sesion ${!isDarkMode ? 'modo-claro' : ''}`}>
+      <div className="tarjeta-inicio-sesion">
+        <button 
+          className="alternador-tema" 
           onClick={toggleTheme}
           title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
-          {isDarkMode ? '☀️' : '🌙'}
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
-        <div className="login-icon">
-          <img src={logo} alt="Nexora Logo" className="logo-img" />
+        <div className="icono-inicio-sesion">
+          <img src={logo} alt="Nexora Logo" className="imagen-logotipo" />
         </div>
 
-        <h1 className="login-title">Nexora</h1>
-        <p className="login-subtitle">Inicia sesión en tu cuenta</p>
+        <h2 className="titulo-inicio-sesion">Bienvenido a Nexora</h2>
+        <p className="subtitulo-inicio-sesion">Tu marketplace premium</p>
 
-        {error && <div className="login-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">
-              <span className="label-icon">📧</span> Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              placeholder="tú@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              required
-              autoComplete="email"
-            />
+        {error && (
+          <div className="error-inicio-sesion">
+            <AlertTriangle size={18} /> {error}
           </div>
+        )}
 
-          <div className="form-group">
-            <label htmlFor="password">
-              <span className="label-icon">🔐</span> Contraseña
-            </label>
-            <div className="password-input-container">
-              <input 
-                type={showPassword ? "text" : "password"}
-                id="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+        <form onSubmit={handleSubmit} className="formulario-inicio-sesion">
+          <div className="grupo-formulario">
+            <label>Correo Electrónico</label>
+            <div className="contenedor-entrada-icono">
+              <span className="icono-etiqueta"><Mail size={18} /></span>
+              <input
+                type="email"
+                id="email"
+                placeholder="ejemplo@correo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 required
-                autoComplete="current-password"
+                autoComplete="email"
               />
+            </div>
+          </div>
+
+          <div className="grupo-formulario">
+            <label>Contraseña</label>
+            <div className="contenedor-entrada-icono">
+              <span className="icono-etiqueta"><Lock size={18} /></span>
+              <div className="contenedor-entrada-contrasena">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="boton-alternar-contrasena"
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '8px' }}>
               <button
                 type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                className="boton-enlace-olvido"
+                onClick={() => navigate('/forgot-password')}
               >
-                  {showPassword ? (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                      <line x1="1" y1="1" x2="23" y2="23"/>
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  )}
+                ¿Olvidaste tu contraseña?
               </button>
             </div>
           </div>
 
           <button
-            type="button"
-            className="forgot-link-btn"
-            onClick={() => navigate('/forgot-password')}
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-
-          <button
             type="submit"
-            className="login-button"
+            className={`boton-inicio-sesion ${loading ? 'cargando' : ''}`}
             disabled={loading}
           >
-            {loading ? '⏳ Iniciando sesión...' : '➕ Iniciar Sesión'}
+            {loading ? (
+              <>
+                <Loader2 className="animacion-giro" size={20} />
+                Iniciando sesión...
+              </>
+            ) : (
+              <>
+                <UserPlus size={20} />
+                Iniciar Sesión
+              </>
+            )}
           </button>
         </form>
 
-        <div className="login-footer">
+        <div className="pie-inicio-sesion">
           <span>¿No tienes cuenta? </span>
           <button
             type="button"
-            className="link-button"
+            className="boton-enlace"
             onClick={() => navigate('/register')}
           >
             Regístrate aquí

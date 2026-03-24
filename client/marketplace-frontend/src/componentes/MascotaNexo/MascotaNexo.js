@@ -2,17 +2,28 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Nexo from "../../resource/MascotaNexo/Nexo.svg";
 import "./MascotaNexo.css";
+import { 
+  HelpCircle, 
+  Minus, 
+  PawPrint, 
+  Bell 
+} from 'lucide-react';
 
+/**
+ * Componente Mascota (Nexo)
+ * Proporciona mensajes de ayuda y consejos dinámicos según la página en la que se encuentre el usuario.
+ */
 export default function Mascota() {
-
   const location = useLocation();
 
-  const [visible, setVisible] = useState(true);
-  const [indiceMensaje, setIndiceMensaje] = useState(0);
+  // ===== ESTADO =====
+  const [visible, setVisible] = useState(true); // Controla si la mascota está expandida o minimizada
+  const [indiceMensaje, setIndiceMensaje] = useState(0); // Índice del mensaje actual en el carrusel de consejos
 
+  // ===== CONFIGURACIÓN DE MENSAJES =====
   let mensajes = [];
 
-  // mensajes por página
+  // Definición de mensajes dinámicos según la ruta actual (pathname)
   if (location.pathname === "/login") {
     mensajes = [
       "No compartas tu contraseña con nadie",
@@ -39,24 +50,24 @@ export default function Mascota() {
 
   else if (location.pathname === "/") {
     mensajes = [
-      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Hola, soy Nexo, tu asistente virtual. Pulsa el botón de ayuda para consejos útiles.",
       "Puedes navegar como invitado, pero algunas funciones estarán limitadas",
       "Registrate para disfrutar de todas las funciones",
       "Inicia sesión para acceder a tu cuenta y gestionar tus compras",
-      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes filtrar productos por categoría para encontrar lo que buscas más rápido",
       "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
-      "Revisa nuestras promociones destacadas!"
+      "¡Revisa nuestras promociones destacadas!"
     ];
   }
 
   else if (location.pathname === "/cliente") {
     mensajes = [
-      "Hola, soy Nexo, tu asistente virtual, pulsa \"?\" para ver consejos útiles o \"-\" para ocultarme.",
+      "Hola, soy Nexo, tu asistente virtual. Pulsa el botón de ayuda para consejos útiles.",
       "Explora nuevas categorías de productos",
       "Revisa tus productos en el carrito antes de finalizar tu compra",
-      "Puedes filtar productos por categoría para encontrar lo que buscas más rápido",
+      "Puedes filtrar productos por categoría para encontrar lo que buscas más rápido",
       "Puedes buscar productos por nombre o descripción usando el buscador en la parte superior",
-      "Revisa nuestras promociones destacadas!"
+      "¡Revisa nuestras promociones destacadas!"
     ];
   }
 
@@ -78,12 +89,11 @@ export default function Mascota() {
 
   else if (location.pathname.includes("/checkout")) {
     mensajes = [
-      "",
-      "",
-      ""
+      "Completa tus datos de envío y pago para finalizar la compra",
+      "Verifica el resumen de tu pedido antes de proceder",
+      "Tu compra es segura con nosotros"
     ];
   }
-
 
   else if (location.pathname === "/admin/dashboard") {
     mensajes = [
@@ -96,30 +106,35 @@ export default function Mascota() {
   else {
     mensajes = [
       "Puedes usar el menú para navegar",
-      "Revisa tus notificaciones 🔔",
+      "Revisa tus notificaciones",
       "Usa el buscador para encontrar cosas",
       "Si necesitas ayuda estoy aquí"
     ];
   }
 
-const cambiarMensaje = () => {
-  setIndiceMensaje((indiceMensaje + 1) % mensajes.length);
-};
+  // ===== MANEJADORES DE EVENTOS =====
+  /**
+   * Cambia al siguiente mensaje disponible en la lista actual
+   */
+  const cambiarMensaje = () => {
+    setIndiceMensaje((indiceMensaje + 1) % mensajes.length);
+  };
 
-  // 🔹 si está oculta mostramos solo botón para abrir
   if (!visible) {
     return (
       <button
         className="mascota-mostrar"
         onClick={() => setVisible(true)}
+        title="Mostrar asistente"
       >
-        🐾
+        <PawPrint size={24} />
       </button>
     );
   }
 
+  // ===== RENDERIZADO PRINCIPAL =====
   return (
-    <div className="mascota-container">
+    <div className="contenedor-mascota">
 
       <img
         src={Nexo}
@@ -135,15 +150,17 @@ const cambiarMensaje = () => {
         <button
             className="mascota-ayuda"
             onClick={cambiarMensaje}
+            title="Siguiente consejo"
         >
-            ?
+            <HelpCircle size={18} />
         </button>
 
         <button
             className="mascota-ocultar"
             onClick={() => setVisible(false)}
+            title="Ocultar asistente"
         >
-            —
+            <Minus size={18} />
         </button>
        </div>
     </div>
