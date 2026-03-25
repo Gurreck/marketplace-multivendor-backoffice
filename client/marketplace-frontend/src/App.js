@@ -11,7 +11,9 @@ import PagePay from "./componentes/pagePay/pagePay";
 import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
 import PaginaAdmin from "./componentes/pageAdmin/pageAdmin";
+import PaginaSoporte from "./componentes/pageSoporte/pageSoporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
+import PerfilCliente from "./componentes/perfil/PerfilCliente";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -22,6 +24,8 @@ const obtenerRutaPorRol = (rol) => {
       return "/admin/dashboard";
     case "vendedor":
       return "/vendedor";
+    case "soporte":
+      return "/soporte";
     case "cliente":
       return "/cliente";
     default:
@@ -63,6 +67,11 @@ const RutaRaiz = () => {
   // Si es vendedor, redirigir a su panel
   if (user && user.role === "vendedor") {
     return <Navigate to="/vendedor" replace />;
+  }
+
+  // Si es soporte, redirigir a su panel
+  if (user && user.role === "soporte") {
+    return <Navigate to="/soporte" replace />;
   }
 
   // Para clientes o visitantes, mostrar la página principal
@@ -128,10 +137,28 @@ function App() {
         />
 
         <Route
+          path="/soporte"
+          element={
+            <RutaProtegida rolesPermitidos={["soporte"]}>
+              <PaginaSoporte />
+            </RutaProtegida>
+          }
+        />
+
+        <Route
           path="/cliente"
           element={
             <RutaProtegida rolesPermitidos={["cliente"]}>
               <Principal />
+            </RutaProtegida>
+          }
+        />
+
+        <Route
+          path="/cliente/perfil/*"
+          element={
+            <RutaProtegida rolesPermitidos={["cliente"]}>
+              <PerfilCliente />
             </RutaProtegida>
           }
         />

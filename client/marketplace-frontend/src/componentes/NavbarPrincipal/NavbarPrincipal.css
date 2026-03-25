@@ -117,9 +117,16 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.menu-usuario {
+    padding: 6px 16px 6px 6px;
+    gap: 10px;
+    max-width: 360px;
+    justify-content: flex-start;
+    border-radius: 30px;
 }
 
 .alternar-tema-encabezado {
@@ -139,6 +146,46 @@
     box-shadow: 0 4px 12px rgba(0, 148, 255, 0.2);
 }
 
+.foto-perfil {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--nexora-blue);
+    background: #1e293b;
+    flex-shrink: 0;
+}
+
+.info-usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.nombre-usuario {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--nexora-text, #e5e7eb);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+.email-usuario {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
 .boton-salir {
     color: #f87171;
     border-color: rgba(244, 63, 94, 0.3);
@@ -152,6 +199,7 @@
 
 .boton-carrito {
     position: relative;
+    overflow: visible;
 }
 
 .etiqueta-carrito {
@@ -248,9 +296,27 @@
         gap: 8px;
     }
 
-    .menu-usuario, .boton-carrito, .boton-salir {
+    .boton-carrito, .boton-salir {
         padding: 8px 12px;
         font-size: 14px;
+    }
+    
+    .menu-usuario {
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        max-width: none;
+        flex: 0 0 auto;
+    }
+
+    .menu-usuario .info-usuario {
+        display: none;
+    }
+    
+    .foto-perfil {
+        margin: 0;
     }
     
     .texto-logo {
@@ -270,7 +336,6 @@
         margin-top: 10px;
     }
 
-    .menu-usuario, 
     .boton-carrito, 
     .boton-salir,
     .alternar-tema-encabezado {
@@ -280,19 +345,6 @@
         flex: 1;
         min-width: 0; /* Allow shrinking */
         max-width: fit-content;
-    }
-    
-    .menu-usuario {
-        max-width: 120px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-        text-align: center;
-    }
-
-    .menu-usuario span {
-        display: none;
     }
     
     .texto-logo {

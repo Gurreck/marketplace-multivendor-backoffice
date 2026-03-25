@@ -2,26 +2,26 @@ import React, { useState } from 'react';
 import './forgot_Password.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
-import { 
-    Sun, 
-    Moon, 
-    Mail, 
-    CheckCircle, 
-    AlertTriangle, 
+import {
+    Sun,
+    Moon,
+    Mail,
+    CheckCircle,
+    AlertTriangle,
     Loader2,
     ArrowLeft
 } from 'lucide-react';
 
 export default function ForgotPassword() {
-    // ===== ESTADO =====
     const navigate = useNavigate();
-    const [email, setEmail] = useState(''); // Correo para recuperación
-    const [loading, setLoading] = useState(false); // Estado de carga de la petición
-    const [isDarkMode, setIsDarkMode] = useState(true); // Tema local de la página
-    const [message, setMessage] = useState(''); // Mensaje de éxito
-    const [error, setError] = useState(''); // Mensaje de error
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
-    // ===== UTILIDADES =====
+
+
     /**
      * Alterna el tema entre claro y oscuro
      */

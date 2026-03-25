@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ["cliente", "vendedor", "administrador"],
-      message: "Rol no válido. Debe ser: cliente, vendedor o administrador",
+      values: ["cliente", "vendedor", "administrador", "soporte"],
+      message: "Rol no válido. Debe ser: cliente, vendedor, administrador o soporte",
     },
     default: "cliente",
   },
@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
   activo: {
     type: Boolean,
     default: true,
+  },
+  profilePicture: {
+    type: String,
+    default: "",
   },
 }, {
   timestamps: true,
