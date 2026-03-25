@@ -167,6 +167,54 @@
     box-shadow: 0 4px 16px rgba(0, 148, 255, 0.25);
 }
 
+.barra-navegacion-secundaria .menu-usuario {
+    padding: 6px 16px 6px 6px;
+    gap: 10px;
+    max-width: 360px;
+    justify-content: flex-start;
+    border-radius: 30px;
+}
+
+.barra-navegacion-secundaria .foto-perfil {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid white;
+    background: #1e293b;
+    flex-shrink: 0;
+}
+
+.barra-navegacion-secundaria .info-usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.barra-navegacion-secundaria .nombre-usuario {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--nexora-text, #e5e7eb);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+.barra-navegacion-secundaria .email-usuario {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
 /* Botón de cerrar sesión */
 .barra-navegacion-secundaria .boton-salir {
     color: #f87171;
@@ -258,7 +306,6 @@
         scale: 1.4;
     }
 
-    .barra-navegacion-secundaria .menu-usuario,
     .barra-navegacion-secundaria .boton-carrito,
     .barra-navegacion-secundaria .boton-salir,
     .barra-navegacion-secundaria .boton-inicio {
@@ -270,6 +317,25 @@
         width: 36px;
         height: 36px;
         font-size: 16px;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        max-width: none;
+        flex: 0 0 auto;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario .info-usuario {
+        display: none;
+    }
+
+    .barra-navegacion-secundaria .menu-usuario .foto-perfil {
+        width: 28px;
+        height: 28px;
     }
 }
 
@@ -285,7 +351,6 @@
         justify-content: center;
     }
 
-    .barra-navegacion-secundaria .menu-usuario,
     .barra-navegacion-secundaria .boton-carrito,
     .barra-navegacion-secundaria .boton-salir,
     .barra-navegacion-secundaria .boton-inicio {
@@ -297,16 +362,6 @@
         max-width: fit-content;
     }
     
-    .barra-navegacion-secundaria .menu-usuario {
-        max-width: 100px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-        text-align: center;
-    }
-    
-    .barra-navegacion-secundaria .menu-usuario span,
     .barra-navegacion-secundaria .boton-salir span {
         display: none;
     }
