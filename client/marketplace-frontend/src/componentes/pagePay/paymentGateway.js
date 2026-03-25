@@ -60,7 +60,6 @@ const PaymentGateway = () => {
                         </div>
                     </div>
                 </div>
-            </div>
         </>
     );
 };
