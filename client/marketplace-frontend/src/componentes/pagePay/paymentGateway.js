@@ -56,8 +56,7 @@ const PaymentGateway = () => {
                                 onPaymentSuccess={handlePaymentSuccess}
                             />
                         </div>
-                        <div className="columna-izquierda-pasarela">
-                            <Address />
+
                         </div>
                     </div>
                 </div>

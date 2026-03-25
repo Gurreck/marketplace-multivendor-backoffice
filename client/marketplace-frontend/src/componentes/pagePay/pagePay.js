@@ -74,6 +74,7 @@ const PagePay = () => {
         loadAllComments();
     }, [cartItems]);
 
+        // ===== LÓGICA DE CÁLCULO =====
     const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
     const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
 
