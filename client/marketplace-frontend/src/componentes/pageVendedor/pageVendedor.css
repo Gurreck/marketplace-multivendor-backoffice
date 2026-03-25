@@ -335,9 +335,9 @@
     gap: 20px;
 }
 
-.grupo-formulario input,
-.grupo-formulario textarea,
-.grupo-formulario select {
+.contenedor-principal-vendedor .grupo-formulario input,
+.contenedor-principal-vendedor .grupo-formulario textarea,
+.contenedor-principal-vendedor .grupo-formulario select {
     background: var(--input-bg);
     border: 1px solid var(--nexora-border);
     border-radius: 12px;
