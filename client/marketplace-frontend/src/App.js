@@ -12,6 +12,7 @@ import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
 import PaginaAdmin from "./componentes/pageAdmin/pageAdmin";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
+import PerfilCliente from "./componentes/perfil/PerfilCliente";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -132,6 +133,15 @@ function App() {
           element={
             <RutaProtegida rolesPermitidos={["cliente"]}>
               <Principal />
+            </RutaProtegida>
+          }
+        />
+
+        <Route
+          path="/cliente/perfil/*"
+          element={
+            <RutaProtegida rolesPermitidos={["cliente"]}>
+              <PerfilCliente />
             </RutaProtegida>
           }
         />

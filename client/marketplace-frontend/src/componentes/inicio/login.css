@@ -125,20 +125,24 @@
     align-items: center;
 }
 
-.icono-etiqueta {
+.contenedor-entrada-icono .icono-etiqueta {
     position: absolute;
-    left: 15px;
-    font-size: 18px;
-    color: var(--nexora-blue);
+    left: 14px;
+    font-size: 16px;
+    color: var(--title-color);
     z-index: 5;
     pointer-events: none;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-.grupo-formulario input {
+.contenedor-inicio-sesion .grupo-formulario input {
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 12px;
-    padding: 14px 16px 14px 45px;
+    padding: 14px 16px 14px 52px;
     color: var(--input-text);
     font-size: 15px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

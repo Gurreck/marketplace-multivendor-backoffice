@@ -71,14 +71,6 @@ export default function Mascota() {
     ];
   }
 
-  else if (location.pathname.includes("/product")) {
-    mensajes = [
-      "Aquí puedes ver los detalles del producto",
-      "Revisa la descripción antes de comprar",
-      "Puedes agregarlo al carrito"
-    ];
-  }
-
   else if (location.pathname.includes("/vendedor")) {
     mensajes = [
       "Aquí puedes ver los detalles del producto",
@@ -87,6 +79,15 @@ export default function Mascota() {
     ];
   }
 
+  else if (location.pathname.includes("/product")) {
+    mensajes = [
+      "Aquí puedes ver los detalles del producto",
+      "Revisa la descripción antes de comprar",
+      "Puedes agregarlo al carrito"
+    ];
+  }
+
+  //carrito
   else if (location.pathname.includes("/checkout")) {
     mensajes = [
       "Completa tus datos de envío y pago para finalizar la compra",

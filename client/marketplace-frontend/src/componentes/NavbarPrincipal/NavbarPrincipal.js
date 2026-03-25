@@ -82,11 +82,24 @@ export default function NavbarPrincipal({
                         } else if (user?.role === 'administrador') {
                             navigate('/admin/dashboard');
                         } else {
-                            navigate('/cliente');
+                            navigate('/cliente/perfil');
                         }
                     }}>
-                        <User size={20} style={{ marginRight: '8px' }} />
-                        {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
+                        {user ? (
+                            <img 
+                                src={user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nombre || user.email)}&background=0094FF&color=fff`} 
+                                alt="Perfil" 
+                                className="foto-perfil" 
+                            />
+                        ) : (
+                            <User size={20} />
+                        )}
+                        <div className="info-usuario">
+                            <span className="nombre-usuario">
+                                {user ? (user.nombre || user.email?.split('@')[0]) : 'Iniciar sesión'}
+                            </span>
+                            {user && <span className="email-usuario">{user.email}</span>}
+                        </div>
                     </button>
 
                     {/* Carrito */}
