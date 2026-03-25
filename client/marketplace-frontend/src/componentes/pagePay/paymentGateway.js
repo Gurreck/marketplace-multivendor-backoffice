@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { commentService } from '../../services/commentService';
+import { orderService } from '../../services/orderService';
 import './paymentGateway.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -151,6 +152,8 @@ const PaymentGateway = () => {
         }
     };
 
+    const getProductId = (item) => item._id || item.id;
+
     const getMaskedCardNumber = (number) => {
         const cleanNumber = number.replace(/\s/g, '');
         if (cleanNumber.length === 0) return '#### #### #### ####';
@@ -235,7 +238,7 @@ const PaymentGateway = () => {
         if (errors.cvv) setErrors(prev => ({ ...prev, cvv: null }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const newErrors = {};
         const cardError = validateCardNumber(cardNumber);
@@ -249,13 +252,41 @@ const PaymentGateway = () => {
             setErrors(newErrors);
             return;
         }
+
+        if (Object.keys(validateAddress()).length > 0) {
+            setAddressErrors(validateAddress());
+            return;
+        }
+
         setIsProcessing(true);
-        setTimeout(() => {
-            setIsProcessing(false);
+
+        const orderPayload = {
+            items: selectedItems.map((item) => ({
+                product: getProductId(item),
+                quantity: item.quantity,
+            })),
+            shippingAddress: address,
+            subtotal: selectedSubtotal,
+            shipping: 0,
+            total: selectedSubtotal,
+        };
+
+        try {
+            const response = await orderService.createOrder(orderPayload);
+            if (!response.data.success) {
+                throw new Error(response.data.message || 'Error al crear la orden');
+            }
+
             const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
             setLastFourDigits(lastFour);
             setShowSuccessModal(true);
-        }, 2000);
+            clearCart();
+        } catch (error) {
+            const msg = error?.response?.data?.message || error.message || 'No se pudo procesar el pago';
+            setErrors((prev) => ({ ...prev, submit: msg }));
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const handleContinue = () => {
@@ -434,6 +465,7 @@ const PaymentGateway = () => {
                                 {errors.expiryDate && <span className="mensaje-error-pasarela">{errors.expiryDate}</span>}
                                 {errors.cvv && <span className="mensaje-error-pasarela">{errors.cvv}</span>}
                                 {errors.cardName && <span className="mensaje-error-pasarela">{errors.cardName}</span>}
+                                {errors.submit && <span className="mensaje-error-pasarela">{errors.submit}</span>}
                             </div>
 
                             <button

@@ -74,6 +74,7 @@ const PagePay = () => {
         loadAllComments();
     }, [cartItems]);
 
+        // ===== LÓGICA DE CÁLCULO =====
     const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
     const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
 
@@ -130,13 +131,6 @@ const PagePay = () => {
         });
     };
 
-    // ===== LÓGICA DE CÁLCULO =====
-    const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
-    const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
-
-    const selectedSubtotal = cartItems.reduce((acc, item) => {
-        return selectedItems[getItemId(item)] ? acc + (item.price * item.quantity) : acc;
-    }, 0);
 
     // ===== RENDERIZADO PRINCIPAL =====
 

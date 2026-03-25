@@ -13,14 +13,8 @@ import {
 } from 'lucide-react';
 
 export default function ForgotPassword() {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
-
     // ===== ESTADO =====
+    const navigate = useNavigate();
     const [email, setEmail] = useState(''); // Correo para recuperación
     const [loading, setLoading] = useState(false); // Estado de carga de la petición
     const [isDarkMode, setIsDarkMode] = useState(true); // Tema local de la página
