@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import "./paymentGateway.css";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -67,3 +68,4 @@ const PaymentGateway = () => {
 };
 
 export default PaymentGateway;
+
