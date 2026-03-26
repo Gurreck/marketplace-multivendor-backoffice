@@ -1,10 +1,10 @@
-.promo-banner {
+.transversal-promociones {
     background-color: var(--nexora-dark);
     background-image:
-        radial-gradient(rgba(0, 194, 255, 0.1) 2px, transparent 2px),
-        linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-deep) 100%);
+    radial-gradient(rgba(0, 194, 255, 0.1) 2px, transparent 2px),
+    linear-gradient(135deg, var(--nexora-dark) 0%, var(--nexora-deep) 100%);
     background-size: 30px 30px, 100% 100%;
-    position: sticky;
+
     top: 0;
     z-index: 100;
     overflow: hidden;
@@ -13,7 +13,7 @@
     border-bottom: 1px solid var(--nexora-border);
 }
 
-.promo-content {
+.contenido-promocional {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -24,42 +24,64 @@
     z-index: 2;
 }
 
-.promo-text-side {
+.lado-texto-promo {
     color: var(--nexora-text);
     text-align: center;
     flex: 1;
 }
 
-.promo-subtitle {
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 20px;
-    margin-bottom: 5px;
-    color: var(--nexora-cyan);
-    letter-spacing: 2px;
-    text-transform: uppercase;
+.etiqueta-viva {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    animation: pulso-suave 2s infinite;
 }
 
-.promo-title {
+@keyframes pulso-suave {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.titulo-promo {
     font-size: 56px;
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 15px;
     color: var(--nexora-text);
     text-shadow: 0 0 20px rgba(0, 148, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
 }
 
-.promo-title .highlight {
+.titulo-promo .resaltado {
     color: var(--nexora-blue);
 }
 
-.promo-products-side {
+.icono-chispa {
+    color: #fbbf24;
+    filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+}
+
+.lado-productos-promo {
     display: flex;
     gap: 20px;
     align-items: center;
     position: relative;
 }
 
-.promo-mini-card {
+.mini-tarjeta-promo {
     background: var(--nexora-card);
     backdrop-filter: blur(10px);
     border: 1px solid var(--nexora-border);
@@ -68,15 +90,29 @@
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
+    position: relative;
 }
 
-.promo-mini-card:hover {
+.etiqueta-descuento-mini {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 5;
+}
+
+.mini-tarjeta-promo:hover {
     transform: translateY(-8px) scale(1.02);
     border-color: var(--nexora-blue);
     box-shadow: 0 15px 35px rgba(0, 148, 255, 0.3);
 }
 
-.mini-card-image {
+.imagen-mini-tarjeta {
     height: 130px;
     background: rgba(255, 255, 255, 0.05);
     display: flex;
@@ -85,20 +121,20 @@
     padding: 15px;
 }
 
-.mini-card-image img {
+.imagen-mini-tarjeta img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
 }
 
-.mini-card-footer {
+.pie-mini-tarjeta {
     padding: 12px;
     text-align: center;
     background: rgba(0, 0, 0, 0.2);
 }
 
-.mini-price-original {
+.precio-original-mini {
     display: block;
     color: #64748b;
     text-decoration: line-through;
@@ -106,7 +142,7 @@
     margin-bottom: 2px;
 }
 
-.mini-price {
+.precio-mini {
     color: var(--nexora-blue);
     font-weight: 800;
     font-size: 17px;
@@ -144,17 +180,62 @@
 }
 
 @media (max-width: 992px) {
-    .promo-content {
+    .contenido-promocional {
         flex-direction: column;
-        gap: 30px;
-        padding: 0 20px;
+        gap: 20px;
+        padding: 0 30px;
     }
 
-    .promo-title {
+    .titulo-promo {
         font-size: 40px;
     }
+}
 
-    .promo-products-side {
-        display: none;
+@media (max-width: 768px) {
+    .titulo-promo {
+        font-size: 32px;
+    }
+    
+    .subtitulo-promo {
+        font-size: 16px;
+    }
+
+    .lado-productos-promo {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .mini-tarjeta-promo {
+        width: 130px;
+    }
+    
+    .imagen-mini-tarjeta {
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lado-productos-promo {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        width: 100%;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .mini-tarjeta-promo {
+        flex-shrink: 0;
+        width: 140px;
+    }
+    
+    .transversal-promociones {
+        padding: 20px 0;
+    }
+    
+    .titulo-promo {
+        font-size: 28px;
     }
 }

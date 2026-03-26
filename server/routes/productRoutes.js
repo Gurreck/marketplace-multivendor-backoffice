@@ -2,6 +2,7 @@ const express = require("express");
 const {
   createProduct,
   getProducts,
+  getVendorProducts,
   getProductById,
   updateProduct,
   deleteProduct,
@@ -26,7 +27,7 @@ router.get("/", getProducts);
 router.post("/", protect, authorize("vendedor", "administrador"), upload.array("images", 5), createProduct);
 
 // Ruta para obtener "mis productos" como vendedor
-router.get("/vendor/me", protect, authorize("vendedor"), getProducts);
+router.get("/vendor/me", protect, authorize("vendedor"), getVendorProducts);
 
 // Rutas para producto específico
 router.get("/:id", getProductById);

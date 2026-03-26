@@ -68,6 +68,28 @@ const getProducts = async (req, res) => {
   }
 };
 
+// @desc    Obtener productos del vendedor autenticado
+const getVendorProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ vendor: req.user.id }).populate(
+      "vendor",
+      "nombre email"
+    );
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Error en getVendorProducts:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // @desc    Obtener producto por ID
 const getProductById = async (req, res) => {
   try {
@@ -209,6 +231,7 @@ const deleteProduct = async (req, res) => {
 module.exports = {
   createProduct,
   getProducts,
+  getVendorProducts,
   getProductById,
   updateProduct,
   deleteProduct,

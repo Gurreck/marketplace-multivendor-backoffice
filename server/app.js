@@ -17,6 +17,8 @@ const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
 const productRoutes = require("./routes/productRoutes");
+const commentRoutes = require("./routes/commentRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
@@ -52,8 +54,14 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // 4️⃣ CUARTO: Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api", protectedRoutes);
-app.use("/api/products", productRoutes);
+app.use("/api/products", productRoutes); // <-- PÚBLICA ANTES
+const addressRoutes = require("./routes/addressRoutes");
+app.use("/api/address", addressRoutes);
+app.use("/api/orders", orderRoutes); // Nueva ruta de órdenes
+app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
+
+// Rutas de comentarios
+app.use("/api/comments", commentRoutes);
 
 // Ruta de prueba
 app.get("/", (req, res) => {

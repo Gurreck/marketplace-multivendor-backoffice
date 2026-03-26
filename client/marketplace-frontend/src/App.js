@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Login from "./componentes/inicio/login";
 import Register from "./componentes/inicio/register";
@@ -8,152 +8,196 @@ import ForgotPassword from "./componentes/inicio/forgot_Password";
 import Principal from "./componentes/pages/page";
 import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
 import PagePay from "./componentes/pagePay/pagePay";
+import PaymentGateway from "./componentes/pagePay/paymentGateway";
 import PageVendedor from "./componentes/pageVendedor/pageVendedor";
+import PaginaAdmin from "./componentes/pageAdmin/pageAdmin";
+import PaginaSoporte from "./componentes/pageSoporte/pageSoporte";
+import Mascota from "./componentes/MascotaNexo/MascotaNexo";
+import PerfilCliente from "./componentes/perfil/PerfilCliente";
 
 import { useAuth } from "./context/AuthContext";
 
+// ⭐ función para redirigir por rol
+const obtenerRutaPorRol = (rol) => {
+  switch (rol) {
+    case "administrador":
+      return "/admin/dashboard";
+    case "vendedor":
+      return "/vendedor";
+    case "soporte":
+      return "/soporte";
+    case "cliente":
+      return "/cliente";
+    default:
+      return "/";
+  }
+};
+
 // 🔐 Componente para proteger rutas
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const RutaProtegida = ({ children, rolesPermitidos }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) return <div>Cargando...</div>;
 
-  if (!user) return <Navigate to="/login" replace />;
+  // Si no hay usuario
+  if (!user) {
+    // si ya está en "/", permitir acceso
+    if (location.pathname === "/") {
+      return children;
+    }
+    return <Navigate to="/" replace />;
+  }
 
-  if (allowedRoles && !allowedRoles.includes(user.role))
-    return <Navigate to={getDashboardByRole(user.role)} replace />;
+  if (rolesPermitidos && !rolesPermitidos.includes(user.role))
+    return <Navigate to={obtenerRutaPorRol(user.role)} replace />;
 
   return children;
 };
 
+// ⭐ Componente inteligente para la ruta raíz
+const RutaRaiz = () => {
+  const { user } = useAuth();
+
+  // Si el usuario es administrador, redirigir al panel admin
+  if (user && user.role === "administrador") {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  // Si es vendedor, redirigir a su panel
+  if (user && user.role === "vendedor") {
+    return <Navigate to="/vendedor" replace />;
+  }
+
+  // Si es soporte, redirigir a su panel
+  if (user && user.role === "soporte") {
+    return <Navigate to="/soporte" replace />;
+  }
+
+  // Para clientes o visitantes, mostrar la página principal
+  return <Principal />;
+};
+
 function App() {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) return <div>Cargando...</div>;
 
   return (
-    <div className="App">
+    <div className="Aplicacion">
       <Routes>
+
         {/* ⭐ rutas públicas */}
         <Route
           path="/login"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Login />
-            )
-          }
+          element={<Login />}
         />
 
         <Route
           path="/register"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Register />
-            )
-          }
+          element={<Register />}
         />
 
         <Route
           path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/product/:id"
           element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <ForgotPassword />
-            )
+              <PageViewProduct />
           }
         />
 
-        {/* ⭐ rutas protegidas */}
+
+        {/* ⭐ rutas protegidas - Administrador */}
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute allowedRoles={["administrador"]}>
-              <Principal />
-            </ProtectedRoute>
+            <RutaProtegida rolesPermitidos={["administrador"]}>
+              <PaginaAdmin />
+            </RutaProtegida>
           }
+        />
+
+        {/* ⭐ Redirigir /admin a /admin/dashboard */}
+        <Route
+          path="/admin"
+          element={<Navigate to="/admin/dashboard" replace />}
         />
 
         <Route
           path="/vendedor"
           element={
-            <ProtectedRoute allowedRoles={["vendedor"]}>
+            <RutaProtegida rolesPermitidos={["vendedor"]}>
               <PageVendedor />
-            </ProtectedRoute>
+            </RutaProtegida>
+          }
+        />
+
+        <Route
+          path="/soporte"
+          element={
+            <RutaProtegida rolesPermitidos={["soporte"]}>
+              <PaginaSoporte />
+            </RutaProtegida>
           }
         />
 
         <Route
           path="/cliente"
           element={
-            <ProtectedRoute allowedRoles={["cliente"]}>
+            <RutaProtegida rolesPermitidos={["cliente"]}>
               <Principal />
-            </ProtectedRoute>
+            </RutaProtegida>
           }
         />
 
         <Route
-          path="/product/:id"
+          path="/cliente/perfil/*"
           element={
-            <ProtectedRoute>
-              <PageViewProduct />
-            </ProtectedRoute>
+            <RutaProtegida rolesPermitidos={["cliente"]}>
+              <PerfilCliente />
+            </RutaProtegida>
           }
         />
 
         <Route
           path="/checkout"
           element={
-            <ProtectedRoute>
+            <RutaProtegida>
               <PagePay />
-            </ProtectedRoute>
+            </RutaProtegida>
           }
         />
 
-        {/* ⭐ ruta raiz inteligente */}
+        <Route
+          path="/paymentGateway"
+          element={
+            <RutaProtegida>
+              <PaymentGateway />
+            </RutaProtegida>
+          }
+        />
+
+        {/* ⭐ ruta raíz inteligente — redirige según rol */}
         <Route
           path="/"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<RutaRaiz />}
         />
 
         {/* ⭐ fallback */}
         <Route
           path="*"
-          element={
-            user ? (
-              <Navigate to={getDashboardByRole(user.role)} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<RutaRaiz />}
         />
       </Routes>
+
+      {/*  DEJAR SIEMPRE FUERA DE </Routes> */}
+      <Mascota />
     </div>
   );
 }
-
-// ⭐ función para redirigir por rol
-const getDashboardByRole = (role) => {
-  switch (role) {
-    case "administrador":
-      return "/admin/dashboard";
-    case "vendedor":
-      return "/vendedor";
-    case "cliente":
-      return "/cliente";
-    default:
-      return "/login";
-  }
-};
 
 export default App;

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
-
+import { useCart } from "./CartContext";
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const {clearCart} = useCart();
 
   // Cargar datos de localStorage al iniciar
   useEffect(() => {
@@ -82,8 +83,11 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("marketplace_cart");
+    clearCart();
     setToken(null);
     setUser(null);
+    
   };
 
   const value = {

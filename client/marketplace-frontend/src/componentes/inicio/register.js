@@ -3,25 +3,48 @@ import './register.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { 
+    Sun, 
+    Moon, 
+    User, 
+    Mail, 
+    Lock, 
+    Eye, 
+    EyeOff, 
+    UserPlus, 
+    Loader2,
+    ShieldCheck
+} from 'lucide-react';
 
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useAuth();
+
+    // ===== ESTADO =====
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
         role: 'cliente'
-    });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    }); // Datos del formulario
+    const [error, setError] = useState(''); // Mensajes de error
+    const [loading, setLoading] = useState(false); // Estado de carga (submitting)
+    const [isDarkMode, setIsDarkMode] = useState(true); // Tema local
+    const [showPassword, setShowPassword] = useState(false); // Visibilidad contraseña
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Visibilidad confirmación
 
+    // ===== MANEJADORES DE EVENTOS =====
+    /**
+     * Alterna el tema entre claro y oscuro
+     */
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
     };
 
+    /**
+     * Actualiza el estado del formulario al escribir
+     */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -30,6 +53,9 @@ export default function Register() {
         }));
     };
 
+    /**
+     * Procesa el registro del usuario
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -61,48 +87,48 @@ export default function Register() {
         }
 
         try {
-            // Llamar a la API de registro usando el contexto
             await register(formData.name, formData.email, formData.password, formData.role);
-
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
             setError('');
-
-            // Limpiar formulario y volver al login
             setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'cliente' });
             navigate('/login');
-
         } catch (err) {
             setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
             console.error(err);
         } finally {
             setLoading(false);
         }
-    };
+    }
 
     return (
-        <div className={`register-container ${!isDarkMode ? 'light-mode' : ''}`}>
-            <div className="register-card">
+        <div className={`contenedor-registro ${!isDarkMode ? 'modo-claro' : ''}`}>
+            <div className="tarjeta-registro">
                 <button
-                    className="theme-toggle"
+                    className="alternador-tema"
                     onClick={toggleTheme}
                     title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                 >
-                    {isDarkMode ? '☀️' : '🌙'}
+                    {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
 
-                <div className="register-icon">
-                    <img src={logo} alt="Nexora Logo" className="logo-img" />
+                <div className="icono-registro">
+                    <img src={logo} alt="Nexora Logo" className="imagen-logotipo" />
                 </div>
 
-                <h1 className="register-title">Crear Cuenta</h1>
-                <p className="register-subtitle">Únete al marketplace</p>
+                <h1 className="titulo-registro">Crear Cuenta</h1>
+                <p className="subtitulo-registro">Únete al marketplace</p>
 
-                {error && <div className="register-error">{error}</div>}
+                {error && (
+                    <div className="error-registro">
+                        <ShieldCheck size={18} style={{ marginRight: '8px' }} />
+                        {error}
+                    </div>
+                )}
 
-                <form onSubmit={handleSubmit} className="register-form">
-                    <div className="form-group">
+                <form onSubmit={handleSubmit} className="formulario-registro">
+                    <div className="grupo-formulario">
                         <label htmlFor="name">
-                            <span className="label-icon">👤</span> Nombre completo
+                            <span className="icono-etiqueta"><User size={18} /></span> Nombre completo
                         </label>
                         <input
                             type="text"
@@ -115,9 +141,9 @@ export default function Register() {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className="grupo-formulario">
                         <label htmlFor="email">
-                            <span className="label-icon">📧</span> Email
+                            <span className="icono-etiqueta"><Mail size={18} /></span> Email
                         </label>
                         <input
                             type="email"
@@ -130,71 +156,98 @@ export default function Register() {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className="grupo-formulario">
                         <label htmlFor="password">
-                            <span className="label-icon">🔐</span> Contraseña
+                            <span className="icono-etiqueta"><Lock size={18} /></span> Contraseña
                         </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Mínimo 6 caracteres"
-                            value={formData.password}
-                            onChange={handleChange}
-                            disabled={loading}
-                        />
+                        <div className="contenedor-entrada-contrasena">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                placeholder="Mínimo 6 caracteres"
+                                value={formData.password}
+                                onChange={handleChange}
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                className="boton-alternar-contrasena"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className="grupo-formulario">
                         <label htmlFor="confirmPassword">
-                            <span className="label-icon">🔐</span> Confirmar contraseña
+                            <span className="icono-etiqueta"><Lock size={18} /></span> Confirmar contraseña
                         </label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            placeholder="Repite tu contraseña"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            disabled={loading}
-                        />
+                        <div className="contenedor-entrada-contrasena">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Repite tu contraseña"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                className="boton-alternar-contrasena"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                             >
+                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className="grupo-formulario">
                         <label htmlFor="role">
-                            <span className="label-icon">🏷️</span> Tipo de cuenta
+                            <span className="icono-etiqueta"><ShieldCheck size={18} /></span> Tipo de cuenta
                         </label>
                         <select
                             id="role"
                             name="role"
+                            className="seleccion-rol"
                             value={formData.role}
                             onChange={handleChange}
                             disabled={loading}
-                            className="role-select"
                         >
-                            <option value="cliente">🛒 Cliente</option>
-                            <option value="vendedor">🏪 Vendedor</option>
+                            <option value="cliente">Cliente (Comprador)</option>
+                            <option value="vendedor">Vendedor (Comerciante)</option>
                         </select>
                     </div>
 
                     <button
                         type="submit"
-                        className="register-button"
+                        className={`boton-registro ${loading ? 'cargando' : ''}`}
                         disabled={loading}
                     >
-                        {loading ? '⏳ Creando cuenta...' : '➕ Crear Cuenta'}
+                        {loading ? (
+                            <>
+                                <Loader2 className="animacion-giro" size={20} />
+                                Creando cuenta...
+                            </>
+                        ) : (
+                            <>
+                                <UserPlus size={20} />
+                                Registrarse
+                            </>
+                        )}
                     </button>
                 </form>
 
-                <div className="register-footer">
+                <div className="pie-registro">
                     <span>¿Ya tienes cuenta? </span>
                     <button
                         type="button"
-                        className="link-button"
+                        className="boton-enlace"
                         onClick={() => navigate('/login')}
-                        disabled={loading}
                     >
-                        Inicia sesión
+                        Inicia sesión aquí
                     </button>
                 </div>
             </div>
