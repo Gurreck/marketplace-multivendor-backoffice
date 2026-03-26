@@ -69,65 +69,6 @@ const PagePay = () => {
 
       setProductComments(commentsData);
       setLoadingComments(false);
-
-        loadAllComments();
-    }, [cartItems]);
-
-        // ===== LÓGICA DE CÁLCULO =====
-    const selectedCount = cartItems.filter(item => selectedItems[getItemId(item)]).length;
-    const isAllSelected = cartItems.length > 0 && selectedCount === cartItems.length;
-
-    const selectedSubtotal = cartItems.reduce((acc, item) => {
-        return selectedItems[getItemId(item)] ? acc + (item.price * item.quantity) : acc;
-    }, 0);
-
-    const toggleSelection = (id) => {
-        setSelectedItems(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
-    };
-
-    /**
-     * Alterna entre seleccionar todos los items o ninguno
-     */
-    const toggleSelectAll = () => {
-        if (isAllSelected) {
-            setSelectedItems({});
-        } else {
-            const allSelected = {};
-            cartItems.forEach(item => {
-                allSelected[getItemId(item)] = true;
-            });
-            setSelectedItems(allSelected);
-        }
-    };
-
-    /**
-     * Remueve un item del carrito y de la lista de seleccionados
-     */
-    const handleRemove = (id) => {
-        removeFromCart(id);
-        const newSelected = { ...selectedItems };
-        delete newSelected[id];
-        setSelectedItems(newSelected);
-    };
-
-    const handleProceedToPayment = () => {
-        if (selectedCount === 0) {
-            alert('Por favor selecciona al menos un producto');
-            return;
-        }
-
-        const selectedCartItems = cartItems.filter(item => selectedItems[getItemId(item)]);
-
-        navigate('/paymentGateway', {
-            state: {
-                selectedItems: selectedCartItems,
-                selectedSubtotal: selectedSubtotal,
-                selectedCount: selectedCount
-            }
-        });
     };
 
     loadAllComments();
