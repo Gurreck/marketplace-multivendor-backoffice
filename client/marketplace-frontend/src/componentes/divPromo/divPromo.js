@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './divPromo.css';
-import { Zap, Sparkles } from 'lucide-react';
 
 /**
  * Componente DivPromo
@@ -50,33 +49,32 @@ export default function DivPromo({ products, handlePromoAddToCart }) {
             <div className="contenido-promocional">
                 <div className="lado-texto-promo">
                     <div className="etiqueta-viva">
-                        <Zap size={14} fill="currentColor" />
-                        <span>OFERTAS EN VIVO</span>
+                        <span>— BUENO, BONITO, BARATO —</span>
                     </div>
                     <h2 className="titulo-promo">
-                        Tecnología que <span className="resaltado">Impacta</span>
-                        <Sparkles size={20} className="icono-chispa" />
+                        HASTA <span className="resaltado">10% EN</span><br />
+                        <span className="resaltado">PRODUCTOS</span>
                     </h2>
                 </div>
 
                 <div className="lado-productos-promo">
                     {promoProducts.map((product) => (
-                            <div 
-                                key={product._id} 
-                                className="mini-tarjeta-promo pulsable"
-                                onClick={() => handlePromoAddToCart(product)}
-                                title={`Agregar ${product.name} (Oferta)`}
-                            >
-                                <div className="etiqueta-descuento-mini">-30%</div>
-                                <div className="imagen-mini-tarjeta">
-                                    <img src={product.images[0]?.url || "https://via.placeholder.com/80"} alt={product.name} />
-                                </div>
-                                <div className="pie-mini-tarjeta">
-                                    {/* Precio original calculado un 40% más alto para simular descuento */}
-                                    <span className="precio-original-mini">₡{(product.price * 1.4).toLocaleString()}</span>
-                                    <span className="precio-mini">₡{product.price.toLocaleString()}</span>
-                                </div>
+                        <div
+                            key={product._id}
+                            className="mini-tarjeta-promo pulsable"
+                            onClick={() => handlePromoAddToCart(product)}
+                            title={`Agregar ${product.name} (Oferta)`}
+                        >
+                            <div className="etiqueta-descuento-mini">-30%</div>
+                            <div className="imagen-mini-tarjeta">
+                                <img src={product.images[0]?.url || "https://via.placeholder.com/80"} alt={product.name} />
                             </div>
+                            <div className="pie-mini-tarjeta">
+                                {/* Precio original calculado un 40% más alto para simular descuento */}
+                                <span className="precio-original-mini">₡{(product.price * 1.4).toLocaleString()}</span>
+                                <span className="precio-mini">₡{product.price.toLocaleString()}</span>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
