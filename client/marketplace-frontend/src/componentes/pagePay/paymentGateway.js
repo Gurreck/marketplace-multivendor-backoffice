@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import "./paymentGateway.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
@@ -19,6 +20,18 @@ const PaymentGateway = () => {
 
   const selectedItems = location.state?.selectedItems || [];
   const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
+
+  const [shippingAddress, setShippingAddress] = useState(null);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  const handleAddressSave = (address) => {
+    setShippingAddress(address);
+  };
 
   const handlePaymentSuccess = (lastFourDigits, shouldClearCart = false) => {
     if (shouldClearCart) {
@@ -53,11 +66,13 @@ const PaymentGateway = () => {
             <div className="columna-derecha-pasarela">
               <CardPay
                 selectedSubtotal={selectedSubtotal}
+                selectedItems={selectedItems}
+                address={shippingAddress}
                 onPaymentSuccess={handlePaymentSuccess}
               />
             </div>
             <div className="columna-izquierda-pasarela">
-              <Address />
+              <Address onAddressSave={handleAddressSave} />
             </div>
           </div>
         </div>
@@ -67,3 +82,4 @@ const PaymentGateway = () => {
 };
 
 export default PaymentGateway;
+

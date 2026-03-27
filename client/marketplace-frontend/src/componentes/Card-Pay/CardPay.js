@@ -8,8 +8,11 @@ import {
     Loader2, 
     Lock
 } from 'lucide-react';
+import { orderService } from '../../services/orderService';
+import { useAuth } from '../../context/AuthContext';
 
-const CardPay = ({ selectedSubtotal, onPaymentSuccess, onPaymentError }) => {
+const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, onPaymentError }) => {
+    const { user } = useAuth();
     // ===== ESTADO DE TARJETA =====
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -21,6 +24,7 @@ const CardPay = ({ selectedSubtotal, onPaymentSuccess, onPaymentError }) => {
     const [lastFourDigits, setLastFourDigits] = useState('');
     const [cardType, setCardType] = useState(null);
     const [showCvv, setShowCvv] = useState(false);
+    const [generalError, setGeneralError] = useState('');
 
     const luhnCheck = (cardNumber) => {
         const cleanNumber = cardNumber.replace(/\s/g, '');
@@ -148,8 +152,9 @@ const CardPay = ({ selectedSubtotal, onPaymentSuccess, onPaymentError }) => {
         if (errors.cvv) setErrors(prev => ({ ...prev, cvv: null }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setGeneralError('');
         const newErrors = {};
         const cardError = validateCardNumber(cardNumber);
         const expiryError = validateExpiryDate(expiryDate);
@@ -158,20 +163,45 @@ const CardPay = ({ selectedSubtotal, onPaymentSuccess, onPaymentError }) => {
         if (expiryError) newErrors.expiryDate = expiryError;
         if (cvvError) newErrors.cvv = cvvError;
         if (cardName.trim().length < 3) newErrors.cardName = 'Ingrese el nombre del titular';
+        if (!address) newErrors.general = 'Selecciona una dirección de envío';
+        if (!user) newErrors.general = 'Debes iniciar sesión para realizar el pago';
+        const token = localStorage.getItem("token");
+        if (!token || token === "undefined" || token === "null") newErrors.general = 'Sesión expirada. Inicia sesión nuevamente';
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            if (newErrors.general) setGeneralError(newErrors.general);
             return;
         }
         setIsProcessing(true);
-        setTimeout(() => {
+        try {
+            const orderData = {
+                items: selectedItems.map(item => ({ product: item._id, quantity: parseInt(item.quantity) })),
+                shippingAddress: {
+                    pais: 'Argentina',
+                    provincia: address.provincia,
+                    ciudad: address.ciudad,
+                    codigoPostal: address.codigoPostal,
+                    direccion: address.direccion
+                },
+                subtotal: parseFloat(selectedSubtotal),
+                shipping: 0,
+                total: parseFloat(selectedSubtotal)
+            };
+            const response = await orderService.createOrder(orderData);
             setIsProcessing(false);
             const lastFour = cardNumber.replace(/\s/g, '').slice(-4);
             setLastFourDigits(lastFour);
             setShowSuccessModal(true);
             if (onPaymentSuccess) {
-                onPaymentSuccess(lastFour);
+                onPaymentSuccess(lastFour, true);
             }
-        }, 2000);
+        } catch (error) {
+            setIsProcessing(false);
+            console.log('Error response:', error.response);
+            const errorMessage = error.response?.data?.message || 'Error al procesar el pago';
+            alert('Error: ' + errorMessage); // Debug
+            setGeneralError(errorMessage);
+        }
     };
 
     const handleContinue = () => {
@@ -191,6 +221,11 @@ const CardPay = ({ selectedSubtotal, onPaymentSuccess, onPaymentError }) => {
                 <p className="subtitulo-pago-pasarela">
                     Ingresa los datos de tu tarjeta
                 </p>
+                {generalError && (
+                    <div className="error-general-pago">
+                        {generalError}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     <div className={`vista-previa-tarjeta-pasarela ${cardType ? cardType.toLowerCase() : ''}`}>
