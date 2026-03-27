@@ -3,6 +3,8 @@ const Product = require("../models/Product");
 
 exports.createOrder = async (req, res, next) => {
   try {
+    console.log('Creating order for user:', req.user.id);
+    console.log('Request body:', req.body);
     const { items, shippingAddress, subtotal, shipping, total } = req.body;
 
     if (!Array.isArray(items) || items.length === 0) {
@@ -41,7 +43,7 @@ exports.createOrder = async (req, res, next) => {
     }
 
     const order = await Order.create({
-      user: req.user._id,
+      user: req.user.id,
       items: preparedItems,
       shippingAddress,
       subtotal,
@@ -51,8 +53,10 @@ exports.createOrder = async (req, res, next) => {
       paidAt: new Date(),
     });
 
-    res.status(201).json({ success: true, message: "Orden creada y pagada", data: order });
+    console.log('Order created successfully:', order._id);
+    res.status(201).json({ success: true, message: "Orden creada y pagada", data: order.toObject() });
   } catch (error) {
-    next(error);
+    console.error('Error creating order:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
