@@ -248,3 +248,63 @@
         position: static;
     }
 }
+
+.input-field {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background: var(--info-bg);
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.input-field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 5px rgba(0, 148, 255, 0.5);
+}
+
+.input-field::placeholder {
+    color: var(--text-muted);
+}
+
+.boton-primario {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.boton-primario:hover {
+    background: #0077cc;
+}
+
+.boton-primario:disabled, .boton-secundario:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mensaje-alerta {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.mensaje-alerta.exito {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.mensaje-alerta.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}

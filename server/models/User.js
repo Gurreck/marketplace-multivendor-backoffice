@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema({
     codigoPostal: { type: String },
     direccion: { type: String }
   },
+  debitCard: {
+    cardNumber: { type: String },
+    cardName: { type: String },
+    expiryDate: { type: String },
+    cvv: { type: String }
+  },
   activo: {
     type: Boolean,
     default: true,

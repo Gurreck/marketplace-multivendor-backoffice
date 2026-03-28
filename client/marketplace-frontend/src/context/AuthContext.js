@@ -80,6 +80,22 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
+  const updateProfile = async (data) => {
+    try {
+      const response = await api.put("/auth/profile", data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Update the whole user object or just specific properties
+      const updatedUser = { ...user, ...response.data.data };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return updatedUser;
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -96,6 +112,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
+    updateProfile,
     logout,
     isAuthenticated: !!token,
   };
