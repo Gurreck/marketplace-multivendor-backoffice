@@ -273,11 +273,17 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
             setMaskedCardDisplay(maskedFirst);
             setShowSuccessModal(true);
             if (onPaymentSuccess) {
-
                 onPaymentSuccess(lastEight);
-
-                onPaymentSuccess(lastFour, true);
-
+                onPaymentSuccess(lastFourDigits, true);
+            }
+        } catch (error) {
+            setIsProcessing(false);
+            setGeneralError('Error al procesar el pago. Intenta nuevamente.');
+            if (onPaymentError) {
+                onPaymentError(error);
+            }
+        }
+    };
 
     const handleContinue = () => {
         setShowSuccessModal(false);
