@@ -169,13 +169,19 @@
 
 .vista-previa-logo-tarjeta {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 1rem;
-    font-weight: 800;
-    color: white;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    top: 15px;
+    right: 15px;
+    width: 70px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vista-previa-logo-tarjeta svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 /* Iconos de tarjetas con colores específicos */
@@ -501,8 +507,9 @@
 .detalles-modal-exito-pasarela {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 16px;
-    padding: 20px;
+    padding: 15px;
     margin-bottom: 25px;
+    margin-left: auto;
 }
 
 .modal-exito-pasarela-details p {
@@ -514,7 +521,7 @@
 .tarjeta-modal-exito-pasarela,
 .monto-modal-exito-pasarela {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -533,7 +540,7 @@
 
 .pantalla-numero-tarjeta-pasarela {
     color: #10b981;
-    font-weight: 600;
+    font-weight: 60;
     font-family: 'Courier New', monospace;
 }
 
