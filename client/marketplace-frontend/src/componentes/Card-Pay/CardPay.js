@@ -370,11 +370,16 @@ const CardPay = ({ selectedSubtotal, onPaymentSuccess, onPaymentError }) => {
                         </div>
                         <h2>¡Pago Confirmado!</h2>
                         <div className="detalles-modal-exito-pasarela">
-                            <p>Gracias por tu compra. </p> 
-                            <p>Tu pedido está siendo procesado.</p>
-                            <div className="tarjeta-modal-exito-pasarela">
-                                <span>Tarjeta: {maskedCardDisplay} ********</span>
-                                <span>Total pagado: ₡{selectedSubtotal.toLocaleString()}</span>
+                            <p className="mensaje-exito-pasarela">Gracias por tu compra. Tu pedido está siendo procesado.</p>
+                            <div className="info-tarjeta-modal-pasarela">
+                                <div className="fila-info-modal-pasarela">
+                                    <span className="etiqueta-modal-pasarela">Tarjeta</span>
+                                    <span className="valor-modal-pasarela">{maskedCardDisplay} ********</span>
+                                </div>
+                                <div className="fila-info-modal-pasarela">
+                                    <span className="etiqueta-modal-pasarela">Total pagado</span>
+                                    <span className="valor-modal-pasarela monto-modal-pasarela">₡{selectedSubtotal.toLocaleString()}</span>
+                                </div>
                             </div>
                         </div>
                         <button className="boton-modal-exito-pasarela" onClick={handleContinue}>
