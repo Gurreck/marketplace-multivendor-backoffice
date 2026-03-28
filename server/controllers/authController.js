@@ -128,4 +128,57 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+// @desc    Actualizar perfil
+// @route   PUT /api/auth/profile
+// @access  Privado
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    user.nombre = req.body.nombre || user.nombre;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+      // Note: If you have a pre-save hook in User model it will hash automatically. 
+      // Based on typical implementations, if not handled, should be hashed here.
+      const bcrypt = require("bcryptjs");
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    if (req.body.debitCard) {
+      user.debitCard = req.body.debitCard;
+    }
+
+    if (req.body.shippingAddress) {
+      user.shippingAddress = req.body.shippingAddress;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Perfil actualizado exitosamente.",
+      data: {
+        id: updatedUser._id,
+        nombre: updatedUser.nombre,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        debitCard: updatedUser.debitCard,
+        shippingAddress: updatedUser.shippingAddress,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error al actualizar perfil:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar el perfil.",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, updateProfile };
