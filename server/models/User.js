@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ["cliente", "vendedor", "administrador"],
-      message: "Rol no válido. Debe ser: cliente, vendedor o administrador",
+      values: ["cliente", "vendedor", "administrador", "soporte"],
+      message: "Rol no válido. Debe ser: cliente, vendedor, administrador o soporte",
     },
     default: "cliente",
   },
@@ -36,6 +36,12 @@ const userSchema = new mongoose.Schema({
     ciudad: { type: String },
     codigoPostal: { type: String },
     direccion: { type: String }
+  },
+  debitCard: {
+    cardNumber: { type: String },
+    cardName: { type: String },
+    expiryDate: { type: String },
+    cvv: { type: String }
   },
   activo: {
     type: Boolean,
