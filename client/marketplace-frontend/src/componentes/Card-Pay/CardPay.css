@@ -399,6 +399,21 @@
     to { transform: rotate(360deg); }
 }
 
+/* Address Warning Message */
+.advertencia-direccion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    margin-bottom: 20px;
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 14px;
+    font-weight: 500;
+}
+
 /* Trust Section */
 .seccion-confianza-pasarela {
     text-align: center;

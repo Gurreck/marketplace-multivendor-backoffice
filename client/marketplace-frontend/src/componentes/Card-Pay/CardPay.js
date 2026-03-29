@@ -6,7 +6,8 @@ import {
     EyeOff, 
     CheckCircle2, 
     Loader2, 
-    Lock
+    Lock,
+    MapPin
 } from 'lucide-react';
 import { orderService } from '../../services/orderService';
 import { useAuth } from '../../context/AuthContext';
@@ -378,13 +379,22 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
 
                     <button
                         type="submit"
-                        className={`boton-enviar-pasarela ${isProcessing ? 'procesando' : ''}`}
-                        disabled={isProcessing}
+                        className={`boton-enviar-pasarela ${isProcessing ? 'procesando' : ''} ${!address ? 'deshabilitado' : ''}`}
+                        disabled={isProcessing || !address}
                     >
                         {isProcessing ? (
                             <><Loader2 className="animacion-giro" size={18} style={{ marginRight: '10px' }} /> Procesando...</>
+                        ) : !address ? (
+                            'Ingresa dirección de envío'
                         ) : `Pagar ₡${selectedSubtotal.toLocaleString()}`}
                     </button>
+
+                    {!address && (
+                        <div className="advertencia-direccion">
+                            <MapPin size={16} style={{ marginRight: '8px' }} />
+                            Debes ingresar una dirección de envío para continuar
+                        </div>
+                    )}
                 </form>
 
                 <div className="seccion-confianza-pasarela">
