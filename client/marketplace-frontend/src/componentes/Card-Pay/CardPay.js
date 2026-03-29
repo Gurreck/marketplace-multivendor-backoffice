@@ -273,10 +273,6 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
             setLastFourDigits(lastEight);
             setMaskedCardDisplay(maskedFirst);
             setShowSuccessModal(true);
-            if (onPaymentSuccess) {
-                onPaymentSuccess(lastEight);
-                onPaymentSuccess(lastFourDigits, true);
-            }
         } catch (error) {
             setIsProcessing(false);
             setGeneralError('Error al procesar el pago. Intenta nuevamente.');
@@ -427,6 +423,18 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
                                     <span className="valor-modal-pasarela monto-modal-pasarela">₡{selectedSubtotal.toLocaleString()}</span>
                                 </div>
                             </div>
+                            {address && (
+                                <div className="info-direccion-modal-pasarela">
+                                    <div className="fila-info-modal-pasarela">
+                                        <span className="etiqueta-modal-pasarela">Dirección de envío</span>
+                                    </div>
+                                    <div className="direccion-detalle-modal">
+                                        <p>{address.nombre}</p>
+                                        <p>{address.direccion}</p>
+                                        <p>{address.ciudad}, {address.provincia} {address.codigoPostal}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <button className="boton-modal-exito-pasarela" onClick={handleContinue}>
                             Volver al Inicio
