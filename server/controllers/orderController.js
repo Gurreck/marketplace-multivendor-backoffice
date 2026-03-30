@@ -3,8 +3,10 @@ const Product = require("../models/Product");
 
 exports.createOrder = async (req, res, next) => {
   try {
-    console.log('Creating order for user:', req.user.id);
-    console.log('Request body:', req.body);
+    console.log('--- 🛒 PROCESO DE CREACIÓN DE ORDEN ---');
+    console.log('ID Usuario (req.user.id):', req.user.id);
+    console.log('Tipo de ID Usuario:', typeof req.user.id);
+    console.log('Body recibido:', JSON.stringify(req.body, null, 2));
     const { items, shippingAddress, subtotal, shipping, total } = req.body;
 
     if (!Array.isArray(items) || items.length === 0) {
@@ -57,6 +59,26 @@ exports.createOrder = async (req, res, next) => {
     res.status(201).json({ success: true, message: "Orden creada y pagada", data: order.toObject() });
   } catch (error) {
     console.error('Error creating order:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getMyOrders = async (req, res, next) => {
+  try {
+    console.log('--- 📋 CONSULTA DE ÓRDENES ---');
+    console.log('ID Usuario (req.user.id):', req.user.id);
+    
+    const orders = await Order.find({ user: req.user.id }).sort("-createdAt");
+    
+    console.log(`Órdenes encontradas para el usuario ${req.user.id}: ${orders.length}`);
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      data: orders
+    });
+  } catch (error) {
+    console.error('Error fetching my orders:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

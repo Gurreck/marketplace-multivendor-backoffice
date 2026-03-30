@@ -252,7 +252,10 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
         setIsProcessing(true);
         try {
             const orderData = {
-                items: selectedItems.map(item => ({ product: item._id, quantity: parseInt(item.quantity) })),
+                items: selectedItems.map(item => ({ 
+                    product: item._id || item.id, 
+                    quantity: parseInt(item.quantity) 
+                })),
                 shippingAddress: {
                     pais: 'Argentina',
                     provincia: address.provincia,
