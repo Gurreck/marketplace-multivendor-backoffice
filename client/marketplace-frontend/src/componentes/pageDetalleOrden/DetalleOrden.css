@@ -6,18 +6,19 @@
 .boton-retroceder {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: none;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-bottom: 30px;
     transition: color 0.3s;
+    padding: 0;
 }
 
 .boton-retroceder:hover {
-    color: var(--accent);
+    color: white;
 }
 
 .detalle-header {
@@ -29,8 +30,8 @@
 
 .detalle-header h1 {
     margin: 0 0 10px;
-    font-size: 2.2rem;
-    color: var(--title-color);
+    font-size: 1.7rem;
+    color: white;
 }
 
 .id-resaltado {
@@ -45,42 +46,46 @@
     gap: 8px;
 }
 
-.estado-badge-grande {
+.estado-badge {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 24px;
-    background: var(--info-bg);
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
     border: 1px solid var(--accent);
     color: var(--accent);
     border-radius: 30px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 600;
 }
+
+.estado-badge.entregado { border-color: #10b981; color: #10b981; }
+.estado-badge.pendiente { border-color: #f59e0b; color: #f59e0b; }
+.estado-badge.cancelado { border-color: #ef4444; color: #ef4444; }
+.estado-badge.en-proceso { border-color: var(--accent); color: var(--accent); }
 
 .detalle-grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr;
+    grid-template-columns: 1.8fr 1fr;
     gap: 30px;
 }
 
 .detalle-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
+    background: rgba(14, 25, 45, 0.7);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
     padding: 25px;
-    margin-bottom: 30px;
-    backdrop-filter: blur(5px);
+    margin-bottom: 20px;
 }
 
 .detalle-card h3 {
     margin: 0 0 20px;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     color: var(--accent);
     display: flex;
     align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid var(--info-bg);
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
     padding-bottom: 15px;
 }
 
@@ -92,12 +97,30 @@
     border-bottom: 1px solid var(--divisor);
 }
 
-.producto-item-detalle img {
-    width: 80px;
-    height: 80px;
-    border-radius: 12px;
-    object-fit: cover;
+.prod-img-wrapper {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    overflow: hidden;
     background: white;
+    border: 1px solid var(--card-border);
+}
+
+.prod-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: var(--info-bg);
 }
 
 .prod-info {
@@ -145,9 +168,9 @@
     gap: 10px;
     color: var(--accent);
     font-size: 0.95rem;
-    background: var(--info-bg);
-    padding: 10px 15px;
-    border-radius: 10px;
+    background: rgba(0, 148, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 8px;
 }
 
 .nombre-receptor {
@@ -208,6 +231,15 @@
     margin: 5px 0 0;
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: rotate 1.5s linear infinite;
 }
 
 @media (max-width: 1100px) {

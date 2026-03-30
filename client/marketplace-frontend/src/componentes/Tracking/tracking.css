@@ -24,6 +24,12 @@
   padding: 0 4rem;
 }
 
+.seguimiento-embebido {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
 /* Botón Volver con Estilo Nexora */
 .boton-volver {
   background: var(--btn-bg, rgba(0, 148, 255, 0.3));

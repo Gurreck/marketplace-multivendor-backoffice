@@ -105,6 +105,22 @@ export default function MisOrdenes() {
                                 </div>
                                 
                                 <div className="orden-body">
+                                    <div className="orden-visual">
+                                        {(orderItems[0]?.image || orderItems[0]?.product?.images?.[0]?.url) ? (
+                                            <img 
+                                                src={orderItems[0]?.image || orderItems[0]?.product?.images?.[0]?.url} 
+                                                alt={orderItems[0]?.name} 
+                                                className="orden-img-mini"
+                                            />
+                                        ) : (
+                                            <div className="orden-img-placeholder">
+                                                <Package size={24} />
+                                            </div>
+                                        )}
+                                        {orderItems.length > 1 && (
+                                            <span className="orden-extra-count">+{orderItems.length - 1}</span>
+                                        )}
+                                    </div>
                                     <div className="orden-info">
                                         <p className="orden-fecha">Fecha: {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
                                         <p className="orden-productos">

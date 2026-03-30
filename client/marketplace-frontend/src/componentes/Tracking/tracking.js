@@ -35,7 +35,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
  * Componente Tracking
  * Vista premium sincronizada con el estilo Nexora para el seguimiento de paquetes.
  */
-const Tracking = () => {
+const Tracking = ({ isEmbedded = false }) => {
   const { isDarkMode } = useTheme();
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
@@ -105,18 +105,22 @@ const Tracking = () => {
   }
 
   return (
-    <div className={`contenedor-seguimiento-externo ${!isDarkMode ? 'modo-claro' : ''}`}>
-      <NavbarSecundario 
-        user={user} 
-        logout={logout} 
-        cartCount={cartCount} 
-      />
+    <div className={isEmbedded ? '' : `contenedor-seguimiento-externo ${!isDarkMode ? 'modo-claro' : ''}`}>
+      {!isEmbedded && (
+        <NavbarSecundario 
+          user={user} 
+          logout={logout} 
+          cartCount={cartCount} 
+        />
+      )}
       <div className="contenedor-seguimiento">
         {/* Botón para regresar opcional */}
-      <button className="boton-volver" onClick={() => window.history.back()}>
-        <ArrowLeft size={18} />
-        Volver a mis pedidos
-      </button>
+      {!isEmbedded && (
+        <button className="boton-volver" onClick={() => window.history.back()}>
+          <ArrowLeft size={18} />
+          Volver a mis pedidos
+        </button>
+      )}
 
       {/* Encabezado Principal */}
       <header className="encabezado-rastreo">

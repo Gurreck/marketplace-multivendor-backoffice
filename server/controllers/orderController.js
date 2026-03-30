@@ -7,7 +7,7 @@ exports.createOrder = async (req, res, next) => {
     console.log('ID Usuario (req.user.id):', req.user.id);
     console.log('Tipo de ID Usuario:', typeof req.user.id);
     console.log('Body recibido:', JSON.stringify(req.body, null, 2));
-    const { items, shippingAddress, subtotal, shipping, total } = req.body;
+    const { items, shippingAddress, subtotal, shipping, total, paymentMethod } = req.body;
 
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ success: false, message: "La orden debe incluir al menos un producto" });
@@ -41,6 +41,7 @@ exports.createOrder = async (req, res, next) => {
         name: product.name,
         price: product.price,
         quantity: item.quantity,
+        image: product.images && product.images.length > 0 ? product.images[0].url : null,
       });
     }
 
@@ -51,6 +52,7 @@ exports.createOrder = async (req, res, next) => {
       subtotal,
       shipping,
       total,
+      paymentMethod,
       status: "paid",
       paidAt: new Date(),
     });
@@ -68,7 +70,12 @@ exports.getMyOrders = async (req, res, next) => {
     console.log('--- 📋 CONSULTA DE ÓRDENES ---');
     console.log('ID Usuario (req.user.id):', req.user.id);
     
-    const orders = await Order.find({ user: req.user.id }).sort("-createdAt");
+    const orders = await Order.find({ user: req.user.id })
+      .populate({
+        path: "items.product",
+        select: "images",
+      })
+      .sort("-createdAt");
     
     console.log(`Órdenes encontradas para el usuario ${req.user.id}: ${orders.length}`);
 
@@ -79,6 +86,46 @@ exports.getMyOrders = async (req, res, next) => {
     });
   } catch (error) {
     console.error('Error fetching my orders:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getOrderById = async (req, res, next) => {
+  try {
+    console.log(`🔍 Buscando detalle de orden ID: ${req.params.id}`);
+    console.log(`👤 Usuario solicitante: ${req.user.id}`);
+    
+    const order = await Order.findById(req.params.id)
+      .populate({
+        path: "items.product",
+        select: "name images price category",
+      })
+      .populate("user", "nombre email");
+
+    console.log(`📦 Resultado de búsqueda: ${order ? 'Encontrada' : 'No encontrada'}`);
+    if (order) {
+        console.log(`👤 Usuario de la orden (poblado):`, JSON.stringify(order.user, null, 2));
+    }
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Orden no encontrada" });
+    }
+
+    // Verificar propiedad (el usuario debe ser dueño o admin)
+    const orderUserId = order.user._id || order.user;
+    const isOwner = orderUserId.toString().toLowerCase() === req.user.id.toString().toLowerCase();
+    const isAdmin = req.user.role === 'administrador';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ success: false, message: "No tienes permiso para ver esta orden" });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: order
+    });
+  } catch (error) {
+    console.error('Error fetching order detail:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

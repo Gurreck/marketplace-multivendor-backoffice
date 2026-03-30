@@ -42,6 +42,8 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        debitCard: user.debitCard,
+        shippingAddress: user.shippingAddress,
       },
     });
   } catch (error) {
@@ -116,6 +118,8 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        debitCard: user.debitCard,
+        shippingAddress: user.shippingAddress,
       },
     });
   } catch (error) {
