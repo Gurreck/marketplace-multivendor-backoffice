@@ -13,7 +13,7 @@ import { orderService } from '../../services/orderService';
 import { useAuth } from '../../context/AuthContext';
 
 const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, onPaymentError }) => {
-    const { user } = useAuth();
+    const { user, updateProfile } = useAuth();
     // ===== ESTADO DE TARJETA =====
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
@@ -257,7 +257,7 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
                     quantity: parseInt(item.quantity) 
                 })),
                 shippingAddress: {
-                    pais: 'Argentina',
+                    pais: address.pais || 'Costa Rica',
                     provincia: address.provincia,
                     ciudad: address.ciudad,
                     codigoPostal: address.codigoPostal,
@@ -265,9 +265,36 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
                 },
                 subtotal: parseFloat(selectedSubtotal),
                 shipping: 0,
-                total: parseFloat(selectedSubtotal)
+                total: parseFloat(selectedSubtotal),
+                paymentMethod: {
+                    brand: cardType ? cardType.charAt(0).toUpperCase() + cardType.slice(1).toLowerCase() : 'Tarjeta',
+                    last4: cardNumber.replace(/\s/g, '').slice(-4) || '****'
+                }
             };
             const response = await orderService.createOrder(orderData);
+
+            // Guardar datos de tarjeta y dirección en el perfil del usuario
+            try {
+                const cleanNum = cardNumber.replace(/\s/g, '');
+                await updateProfile({
+                    debitCard: {
+                        cardNumber: cleanNum,
+                        cardName: cardName,
+                        expiryDate: expiryDate,
+                        cvv: cvv
+                    },
+                    shippingAddress: {
+                        pais: address.pais || 'Costa Rica',
+                        provincia: address.provincia,
+                        ciudad: address.ciudad,
+                        codigoPostal: address.codigoPostal,
+                        direccion: address.direccion
+                    }
+                });
+            } catch (profileError) {
+                console.error('Error al guardar datos en perfil:', profileError);
+            }
+
             setIsProcessing(false);
             const cleanNumber = cardNumber.replace(/\s/g, '');
             const lastEight = cleanNumber.slice(-8);
