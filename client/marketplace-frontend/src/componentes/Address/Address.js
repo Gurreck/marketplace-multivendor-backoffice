@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './Address.css';
-import { MapPin, Phone, User } from 'lucide-react';
+import { MapPin, Phone, User, CheckCircle } from 'lucide-react';
 
-const Address = ({ onAddressSave, initialAddress }) => {
+const Address = ({ onAddressSave, initialAddress, user }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         direccion: '',
@@ -13,6 +13,7 @@ const Address = ({ onAddressSave, initialAddress }) => {
     });
     const [errors, setErrors] = useState({});
     const [savedAddress, setSavedAddress] = useState(null);
+    const [showProfileSuggestion, setShowProfileSuggestion] = useState(false);
 
     useEffect(() => {
         if (initialAddress) {
@@ -20,6 +21,13 @@ const Address = ({ onAddressSave, initialAddress }) => {
             setSavedAddress(initialAddress);
         }
     }, [initialAddress]);
+
+    // Verificar si el usuario tiene dirección guardada en perfil
+    useEffect(() => {
+        if (user?.shippingAddress?.direccion && !initialAddress) {
+            setShowProfileSuggestion(true);
+        }
+    }, [user, initialAddress]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -80,12 +88,52 @@ const Address = ({ onAddressSave, initialAddress }) => {
         }
     };
 
+    const handleUseProfileAddress = () => {
+        if (user?.shippingAddress) {
+            const profileAddress = {
+                nombre: user.nombre || '',
+                direccion: user.shippingAddress.direccion || '',
+                ciudad: user.shippingAddress.ciudad || '',
+                provincia: user.shippingAddress.provincia || '',
+                codigoPostal: user.shippingAddress.codigoPostal || '',
+                telefono: user.telefono || ''
+            };
+            setFormData(profileAddress);
+            setSavedAddress(profileAddress);
+            setShowProfileSuggestion(false);
+            if (onAddressSave) {
+                onAddressSave(profileAddress);
+            }
+        }
+    };
+
     return (
         <div className="direccion-envio">
             <h2 className="titulo-direccion-pasarela">
                 <MapPin size={20} style={{ marginRight: '10px' }} /> 
                 Dirección de Envío
             </h2>
+
+            {showProfileSuggestion && user?.shippingAddress?.direccion && (
+                <div className="sugerencia-direccion-perfil">
+                    <div className="sugerencia-direccion-header">
+                        <CheckCircle size={18} color="#10b981" />
+                        <span>Tienes una dirección guardada en tu perfil</span>
+                    </div>
+                    <div className="sugerencia-direccion-info">
+                        <p><strong>{user.nombre}</strong></p>
+                        <p>{user.shippingAddress.direccion}</p>
+                        <p>{user.shippingAddress.ciudad}, {user.shippingAddress.provincia} {user.shippingAddress.codigoPostal}</p>
+                    </div>
+                    <button 
+                        type="button" 
+                        className="boton-usar-direccion-perfil"
+                        onClick={handleUseProfileAddress}
+                    >
+                        Usar esta dirección
+                    </button>
+                </div>
+            )}
             
             <form className="formulario-direccion-pasarela" onSubmit={handleSubmit}>
                 <div className="campo-formulario">

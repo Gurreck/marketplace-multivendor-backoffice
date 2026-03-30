@@ -19,36 +19,41 @@ export const AuthProvider = ({ children }) => {
 
   // Cargar datos de localStorage al iniciar
   useEffect(() => {
-  const initAuth = async () => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem("token");
 
-    if (!storedToken || !storedUser) {
+      if (!storedToken) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Obtener datos frescos del perfil desde el servidor (esto también valida el token)
+        const response = await api.get("/auth/profile", {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+
+        const userData = response.data.data;
+
+        localStorage.setItem("user", JSON.stringify(userData));
+        setToken(storedToken);
+        setUser(userData);
+      } catch (error) {
+        console.error("Error al inicializar sesión:", error);
+        // token inválido o error de red → borrar storage si es error de auth
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setToken(null);
+          setUser(null);
+        }
+      }
+
       setLoading(false);
-      return;
-    }
+    };
 
-    try {
-      // validar token con backend
-      await api.get("/auth/verify", {
-        headers: { Authorization: `Bearer ${storedToken}` }
-      });
-
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    } catch (error) {
-      // token inválido → borrar storage
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      setToken(null);
-      setUser(null);
-    }
-
-    setLoading(false);
-  };
-
-  initAuth();
-}, []);
+    initAuth();
+  }, []);
 
   const login = async (email, password) => {
     const response = await api.post("/auth/login", { email, password });
@@ -80,6 +85,22 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
+  const updateProfile = async (data) => {
+    try {
+      const response = await api.put("/auth/profile", data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Update the whole user object or just specific properties
+      const updatedUser = { ...user, ...response.data.data };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return updatedUser;
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -96,6 +117,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
+    updateProfile,
     logout,
     isAuthenticated: !!token,
   };

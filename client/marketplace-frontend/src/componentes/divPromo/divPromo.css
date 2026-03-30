@@ -31,25 +31,13 @@
 }
 
 .etiqueta-viva {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    display: inline-block;
+    color: var(--nexora-blue);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
     margin-bottom: 20px;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    animation: pulso-suave 2s infinite;
-}
-
-@keyframes pulso-suave {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.05); opacity: 0.8; }
-    100% { transform: scale(1); opacity: 1; }
+    text-transform: uppercase;
 }
 
 .titulo-promo {
@@ -59,10 +47,7 @@
     margin-bottom: 15px;
     color: var(--nexora-text);
     text-shadow: 0 0 20px rgba(0, 148, 255, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
+    text-align: center;
 }
 
 .titulo-promo .resaltado {
