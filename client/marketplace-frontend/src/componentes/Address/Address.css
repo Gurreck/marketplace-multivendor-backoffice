@@ -16,11 +16,13 @@
     margin-top: 10px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 148, 255, 0.18);
+    margin-bottom: 20px;
 }
 
 .boton-guardar-direccion:hover {
     filter: brightness(1.08);
     box-shadow: 0 6px 20px rgba(0, 148, 255, 0.28);
+    transform: translateY(-2px);
 }
 
 /* Address Section */
@@ -107,6 +109,68 @@
     .direccion-envio {
         padding: 20px;
     }
+}
+
+/* Sugerencia de dirección del perfil */
+.sugerencia-direccion-perfil {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sugerencia-direccion-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #10b981;
+}
+
+.sugerencia-direccion-info {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.sugerencia-direccion-info p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: var(--nexora-text);
+}
+
+.sugerencia-direccion-info p strong {
+    color: var(--nexora-blue);
+}
+
+.boton-usar-direccion-perfil {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.boton-usar-direccion-perfil:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    transform: translateY(-1px);
 }
 
 

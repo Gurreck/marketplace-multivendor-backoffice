@@ -72,7 +72,7 @@ const PaymentGateway = () => {
               />
             </div>
             <div className="columna-izquierda-pasarela">
-              <Address onAddressSave={handleAddressSave} />
+              <Address onAddressSave={handleAddressSave} user={user} />
             </div>
           </div>
         </div>

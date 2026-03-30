@@ -169,13 +169,20 @@
 
 .vista-previa-logo-tarjeta {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 1rem;
-    font-weight: 800;
-    color: white;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    top: 15px;
+    bottom: 15px;
+    right: 15px;
+    width: 50px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vista-previa-logo-tarjeta svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 /* Iconos de tarjetas con colores específicos */
@@ -392,6 +399,21 @@
     to { transform: rotate(360deg); }
 }
 
+/* Address Warning Message */
+.advertencia-direccion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    margin-bottom: 20px;
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 14px;
+    font-weight: 500;
+}
+
 /* Trust Section */
 .seccion-confianza-pasarela {
     text-align: center;
@@ -452,14 +474,14 @@
 
 .modal-exito-pasarela {
     background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 24px;
-    padding: 40px;
-    max-width: 420px;
-    width: 90%;
+    border-radius: 28px;
+    padding: 30px 40px;
+    max-width: 600px;
+    width: 92%;
     text-align: center;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    animation: gatewaySlideUp 0.4s ease;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(16, 185, 129, 0.15);
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    animation: gatewaySlideUp 0.5s ease;
 }
 
 @keyframes gatewaySlideUp {
@@ -481,8 +503,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 25px;
-    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    margin: 0 auto 20px;
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
+    animation: pulseSuccess 2s ease-in-out infinite;
+}
+
+@keyframes pulseSuccess {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
 .icono-modal-exito-pasarela svg {
@@ -494,25 +522,37 @@
 .modal-exito-pasarela h2 {
     color: #10b981;
     font-size: 1.8rem;
-    margin-bottom: 20px;
-    font-weight: 700;
+    margin-bottom: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
 }
 
 .detalles-modal-exito-pasarela {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 20px 15px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mensaje-exito-pasarela {
+    color: #d1d5db;
+    font-size: 1.05rem;
+    line-height: 1.6;
     margin-bottom: 25px;
 }
 
-.modal-exito-pasarela-details p {
-    color: #9ca3af;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
+.info-tarjeta-modal-pasarela {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
 }
 
-.tarjeta-modal-exito-pasarela,
-.monto-modal-exito-pasarela {
+.fila-info-modal-pasarela {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -520,45 +560,122 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.tarjeta-modal-exito-pasarela:last-child,
-.monto-modal-exito-pasarela:last-child {
+.fila-info-modal-pasarela:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
-.etiqueta-tarjeta-pasarela,
-.etiqueta-monto-pasarela {
+.fila-info-modal-pasarela:first-child {
+    padding-top: 0;
+}
+
+.etiqueta-modal-pasarela {
     color: #9ca3af;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.pantalla-numero-tarjeta-pasarela {
+.valor-modal-pasarela {
     color: #10b981;
     font-weight: 600;
     font-family: 'Courier New', monospace;
+    font-size: 1.05rem;
 }
 
-.valor-monto-pasarela {
-    color: #10b981;
+.monto-modal-pasarela {
+    font-size: 1.3rem;
     font-weight: 700;
-    font-size: 1.2rem;
 }
+
+
 
 .boton-modal-exito-pasarela {
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
     border: none;
-    padding: 16px 40px;
-    border-radius: 12px;
+    padding: 14px 40px;
+    border-radius: 14px;
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    letter-spacing: 0.5px;
 }
 
 .boton-modal-exito-pasarela:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    filter: brightness(1.1);
+}
+
+.mensaje-exito-pasarela {
+    color: #d1d5db;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.info-tarjeta-modal-pasarela {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.fila-info-modal-pasarela {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fila-info-modal-pasarela:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.fila-info-modal-pasarela:first-child {
+    padding-top: 0;
+}
+
+.etiqueta-modal-pasarela {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.valor-modal-pasarela {
+    color: #10b981;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    font-size: 1.05rem;
+}
+
+.monto-modal-pasarela {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.info-direccion-modal-pasarela {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.direccion-detalle-modal {
+    margin-top: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.direccion-detalle-modal p {
+    margin: 4px 0;
+    color: #d1d5db;
+    font-size: 0.95rem;
 }
 
 /* Responsive */
