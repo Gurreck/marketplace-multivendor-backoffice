@@ -181,4 +181,35 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, updateProfile };
+// @desc    Obtener perfil del usuario actual
+// @route   GET /api/auth/profile
+// @access  Privado
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        shippingAddress: user.shippingAddress,
+        debitCard: user.debitCard,
+        profilePicture: user.profilePicture,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener el perfil.",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, updateProfile, getProfile };

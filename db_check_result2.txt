@@ -1,0 +1,8 @@
+User found: camilo nuñez role=cliente
+Orders for user (string query): 5
+Orders for user (ObjectId query): 5
+Token decoded id: 69a1e47acec00950aa95cb9f (type: string)
+User _id: 69a1e47acec00950aa95cb9f (type: object)
+Are they equal? true
+Strict equal? true
+Orders for user (decoded token id): 5

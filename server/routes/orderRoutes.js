@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
-const { createOrder } = require("../controllers/orderController");
+const { createOrder, getMyOrders } = require("../controllers/orderController");
 
-// Solo clientes pueden crear órdenes desde la pasarela de pagos
+// Rutas de órdenes
 router.post("/", authMiddleware, authorize("cliente"), createOrder);
+router.get("/my-orders", authMiddleware, authorize("cliente"), getMyOrders);
 
 module.exports = router;
