@@ -42,6 +42,8 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        debitCard: user.debitCard,
+        shippingAddress: user.shippingAddress,
       },
     });
   } catch (error) {
@@ -116,6 +118,8 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        debitCard: user.debitCard,
+        shippingAddress: user.shippingAddress,
       },
     });
   } catch (error) {
@@ -142,11 +146,7 @@ const updateProfile = async (req, res) => {
 
     if (req.body.password) {
       user.password = req.body.password;
-      // Note: If you have a pre-save hook in User model it will hash automatically. 
-      // Based on typical implementations, if not handled, should be hashed here.
-      const bcrypt = require("bcryptjs");
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(req.body.password, salt);
+      // El hook pre('save') en el modelo User hasheará automáticamente
     }
 
     if (req.body.debitCard) {
@@ -181,4 +181,35 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, updateProfile };
+// @desc    Obtener perfil del usuario actual
+// @route   GET /api/auth/profile
+// @access  Privado
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        shippingAddress: user.shippingAddress,
+        debitCard: user.debitCard,
+        profilePicture: user.profilePicture,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener el perfil.",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, updateProfile, getProfile };

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './Address.css';
-import { MapPin, Phone, User } from 'lucide-react';
+import { MapPin, Phone, User, CheckCircle } from 'lucide-react';
 
-const Address = ({ onAddressSave, initialAddress }) => {
+const Address = ({ onAddressSave, initialAddress, user }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         direccion: '',
+        pais: '',
         ciudad: '',
         provincia: '',
         codigoPostal: '',
@@ -13,11 +14,18 @@ const Address = ({ onAddressSave, initialAddress }) => {
     });
     const [errors, setErrors] = useState({});
     const [savedAddress, setSavedAddress] = useState(null);
+    const [showProfileSuggestion, setShowProfileSuggestion] = useState(false);
 
     useEffect(() => {
         if (initialAddress) {
             setFormData(initialAddress);
             setSavedAddress(initialAddress);
+        }
+    }, [initialAddress]);
+
+    useEffect(() => {
+        if (initialAddress) {
+            setFormData(prev => ({ ...prev, ...initialAddress }));
         }
     }, [initialAddress]);
 
@@ -30,6 +38,10 @@ const Address = ({ onAddressSave, initialAddress }) => {
         
         if (!formData.direccion.trim()) {
             newErrors.direccion = 'La dirección es requerida';
+        }
+        
+        if (!formData.pais.trim()) {
+            newErrors.pais = 'El país es requerido';
         }
         
         if (!formData.ciudad.trim()) {
@@ -80,12 +92,16 @@ const Address = ({ onAddressSave, initialAddress }) => {
         }
     };
 
+
+
     return (
         <div className="direccion-envio">
             <h2 className="titulo-direccion-pasarela">
                 <MapPin size={20} style={{ marginRight: '10px' }} /> 
                 Dirección de Envío
             </h2>
+
+
             
             <form className="formulario-direccion-pasarela" onSubmit={handleSubmit}>
                 <div className="campo-formulario">
@@ -115,13 +131,13 @@ const Address = ({ onAddressSave, initialAddress }) => {
                 <div className="campo-formulario">
                     <input
                         type="text"
-                        name="ciudad"
-                        className={`entrada-direccion-pasarela ${errors.ciudad ? 'error-entrada' : ''}`}
-                        placeholder="Ciudad"
-                        value={formData.ciudad}
+                        name="pais"
+                        className={`entrada-direccion-pasarela ${errors.pais ? 'error-entrada' : ''}`}
+                        placeholder="País"
+                        value={formData.pais}
                         onChange={handleChange}
                     />
-                    {errors.ciudad && <span className="mensaje-error-direccion-pasarela">{errors.ciudad}</span>}
+                    {errors.pais && <span className="mensaje-error-direccion-pasarela">{errors.pais}</span>}
                 </div>
 
                 <div className="campo-formulario">
@@ -134,6 +150,18 @@ const Address = ({ onAddressSave, initialAddress }) => {
                         onChange={handleChange}
                     />
                     {errors.provincia && <span className="mensaje-error-direccion-pasarela">{errors.provincia}</span>}
+                </div>
+
+                <div className="campo-formulario">
+                    <input
+                        type="text"
+                        name="ciudad"
+                        className={`entrada-direccion-pasarela ${errors.ciudad ? 'error-entrada' : ''}`}
+                        placeholder="Ciudad"
+                        value={formData.ciudad}
+                        onChange={handleChange}
+                    />
+                    {errors.ciudad && <span className="mensaje-error-direccion-pasarela">{errors.ciudad}</span>}
                 </div>
 
                 <div className="campo-formulario">
@@ -171,7 +199,8 @@ const Address = ({ onAddressSave, initialAddress }) => {
                     <h3>Dirección guardada:</h3>
                     <p><strong>{savedAddress.nombre}</strong></p>
                     <p>{savedAddress.direccion}</p>
-                    <p>{savedAddress.ciudad}, {savedAddress.provincia} {savedAddress.codigoPostal}</p>
+                    <p>{savedAddress.provincia}, {savedAddress.ciudad} {savedAddress.codigoPostal}</p>
+                    {savedAddress.pais && <p>{savedAddress.pais}</p>}
                     <p><Phone size={14} /> {savedAddress.telefono}</p>
                 </div>
             )}

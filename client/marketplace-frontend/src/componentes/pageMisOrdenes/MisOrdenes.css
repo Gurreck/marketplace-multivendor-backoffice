@@ -80,6 +80,47 @@
     flex: 1;
 }
 
+.orden-visual {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+}
+
+.orden-img-mini {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: white;
+}
+
+.orden-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--info-bg);
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    color: var(--accent);
+}
+
+.orden-extra-count {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    background: var(--accent);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid var(--card-bg);
+}
+
 .orden-fecha {
     font-size: 0.9rem;
     color: var(--text-muted);

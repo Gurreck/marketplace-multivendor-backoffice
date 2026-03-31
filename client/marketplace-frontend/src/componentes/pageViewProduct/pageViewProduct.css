@@ -243,11 +243,11 @@
 
 .notificacion {
     position: fixed;
-    top: 20px;
+    top: 80px;
     right: 20px;
     background: #10b981;
     color: white;
-    padding: 15px 25px;
+    padding: 12px 20px;
     border-radius: 8px;
     z-index: 1000;
     animation: slideIn 0.3s ease;
@@ -309,10 +309,58 @@
     margin-bottom: 10px;
 }
 
-/* Similar Products */
-.seccion-productos-similares {
+/* Similar Products y Reviews Layout */
+.contenedor-inferior-detalles {
+    display: flex;
+    gap: 40px;
     margin-top: 50px;
+    border-top: 1px solid var(--nexora-border);
+    padding-top: 30px;
 }
+
+.seccion-reseñas-producto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Evitar desbordamiento de flex */
+}
+
+.seccion-reseñas-producto h3, 
+.seccion-productos-similares h3 {
+    font-size: 20px;
+    color: var(--nexora-blue);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.lista-reseñas-estilizada {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sin-comentarios {
+    color: var(--nexora-text-secondary);
+    font-style: italic;
+    padding: 20px;
+    background: rgba(0, 148, 255, 0.03);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.cargando-reseñas {
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+    color: var(--nexora-blue);
+}
+
+.seccion-productos-similares {
+    flex: 1;
+    margin-top: 0;
+}
+
 
 .cuadricula-productos-similares {
     display: grid;
@@ -615,3 +663,11 @@
         height: 60px;
     }
 }
+
+@media (max-width: 1100px) {
+    .contenedor-inferior-detalles {
+        flex-direction: column;
+        gap: 40px;
+    }
+}
+

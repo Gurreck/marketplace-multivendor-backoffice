@@ -14,6 +14,7 @@ import PaginaAdmin from "./componentes/pageAdmin/pageAdmin";
 import PaginaSoporte from "./componentes/pageSoporte/pageSoporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
 import PerfilCliente from "./componentes/perfil/PerfilCliente";
+import Tracking from "./componentes/Tracking/tracking";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -108,6 +109,11 @@ function App() {
           element={
               <PageViewProduct />
           }
+        />
+
+        <Route
+          path="/rastreo"
+          element={<Tracking />}
         />
 
 

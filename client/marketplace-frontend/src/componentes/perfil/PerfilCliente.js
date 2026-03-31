@@ -160,17 +160,20 @@ function ResumenPerfil({ user }) {
             setLoading(true);
             const dataToUpdate = {};
             
-            if (section === 'personal') dataToUpdate.nombre = formData.nombre;
-            if (section === 'password') dataToUpdate.password = formData.password;
+            if (section === 'personal') {
+                dataToUpdate.nombre = formData.nombre;
+                if (formData.password && formData.password.trim() !== '') {
+                    dataToUpdate.password = formData.password;
+                }
+            }
             if (section === 'card') dataToUpdate.debitCard = formData.debitCard;
             if (section === 'address') dataToUpdate.shippingAddress = formData.shippingAddress;
 
             await updateProfile(dataToUpdate);
             setMessage("Información actualizada con éxito");
             
-            if (section === 'personal') setEditPersonal(false);
-            if (section === 'password') {
-                setEditPassword(false);
+            if (section === 'personal') {
+                setEditPersonal(false);
                 setFormData(prev => ({ ...prev, password: '' }));
             }
             if (section === 'card') setEditCard(false);
@@ -212,6 +215,14 @@ function ResumenPerfil({ user }) {
                         )}
                     </div>
                     <div className="info-group">
+                        <label>Contraseña</label>
+                        {editPersonal ? (
+                            <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field" placeholder="Nueva contraseña (dejar vacío para no cambiar)" />
+                        ) : (
+                            <p>**************</p>
+                        )}
+                    </div>
+                    <div className="info-group">
                         <label>Correo Electrónico</label>
                         <p>{user?.email}</p>
                     </div>
@@ -219,30 +230,6 @@ function ResumenPerfil({ user }) {
                         <label>Rol de Usuario</label>
                         <p className="tag-rol">{user?.role}</p>
                     </div>
-                </div>
-
-                {/* Contraseña */}
-                <div className="perfil-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--info-bg)', paddingBottom: '10px' }}>
-                        <h3 style={{ margin: 0, border: 'none', padding: 0 }}>Cambiar Contraseña</h3>
-                        {!editPassword ? (
-                            <button className="boton-secundario" onClick={() => setEditPassword(true)} style={{ padding: '5px 10px', fontSize: '0.85rem' }}>Cambiar</button>
-                        ) : (
-                            <div style={{ display: 'flex', gap: '5px' }}>
-                                <button className="boton-secundario" onClick={() => setEditPassword(false)} style={{ padding: '5px 10px', fontSize: '0.85rem' }}>Cancelar</button>
-                                <button className="boton-primario" onClick={() => handleSave('password')} disabled={loading} style={{ padding: '5px 10px', fontSize: '0.85rem' }}>Guardar</button>
-                            </div>
-                        )}
-                    </div>
-                    
-                    {!editPassword ? (
-                        <p className="no-data" style={{ margin: 0 }}>**************</p>
-                    ) : (
-                        <div className="info-group">
-                            <label>Nueva Contraseña</label>
-                            <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field" placeholder="Escribe la nueva contraseña" />
-                        </div>
-                    )}
                 </div>
 
                 {/* Tarjeta de Débito */}

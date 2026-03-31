@@ -10,6 +10,7 @@ const orderItemSchema = new mongoose.Schema(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },
+    image: { type: String },
   },
   { _id: false }
 );
@@ -47,6 +48,10 @@ const orderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     shipping: { type: Number, required: true, min: 0, default: 0 },
     total: { type: Number, required: true, min: 0 },
+    paymentMethod: {
+      brand: { type: String, default: "Tarjeta" },
+      last4: { type: String, default: "****" }
+    },
     status: {
       type: String,
       enum: ["pending", "paid", "cancelled"],

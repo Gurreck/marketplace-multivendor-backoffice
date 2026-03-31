@@ -12,6 +12,25 @@
 
 .modo-claro.contenedor-pago {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: var(--nexora-text);
+}
+
+.modo-claro .migas-pan,
+.modo-claro .seleccion-activa,
+.modo-claro .vendedor-item-pago,
+.modo-claro .precio-actual,
+.modo-claro .fila-etiqueta-total strong {
+  color: var(--nexora-blue) !important;
+}
+
+.modo-claro .barra-seleccion,
+.modo-claro .lista-items-pago,
+.modo-claro .tarjeta-resumen-fija,
+.modo-claro .tarjeta-vacia,
+.modo-claro .tarjeta-exito {
+  background: var(--nexora-card) !important;
+  border-color: var(--nexora-border) !important;
+  color: var(--nexora-text) !important;
 }
 
 .contenedor-pago > .promo-banner {
@@ -269,8 +288,11 @@
   color: #9ca3af;
 }
 
-.selector-cantidad-pago select {
-  padding: 6px 10px;
+.selector-cantidad-pago input {
+  width: 67.05px;
+  height: 24.44px;
+  text-align: center;
+  padding: 0;
   border-radius: 8px;
   background: var(--input-bg);
   border: 1px solid var(--nexora-border);

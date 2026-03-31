@@ -34,10 +34,10 @@
 
 .perfil-layout {
     display: flex;
-    max-width: 1400px;
-    margin: 40px auto;
-    padding: 0 40px;
-    gap: 40px;
+    max-width: 1600px;
+    margin: 30px auto;
+    padding: 0 20px;
+    gap: 30px;
 }
 
 /* Sidebar */
@@ -154,8 +154,20 @@
 
 .perfil-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 1400px) {
+    .perfil-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .perfil-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .perfil-card {
