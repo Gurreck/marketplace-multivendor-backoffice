@@ -245,3 +245,44 @@
     flex-direction: column;
   }
 }
+/* Estados de Carga y Restricción */
+.cargando-estado-reseña,
+.ya-reseñado-contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  gap: 1.5rem;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.ya-reseñado-contenedor h3 {
+  color: var(--nexora-blue);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ya-reseñado-contenedor p {
+  color: var(--nexora-text);
+  opacity: 0.8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 350px;
+}
+
+.animacion-giro {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
