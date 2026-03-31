@@ -8,6 +8,19 @@ const createComment = async (req, res) => {
   try {
     const { productId, rating, text } = req.body;
 
+    // Verificar si el usuario ya dejó una reseña para este producto
+    const existingComment = await Comment.findOne({ 
+      product: productId, 
+      user: req.user.id 
+    });
+
+    if (existingComment) {
+      return res.status(400).json({
+        success: false,
+        message: "Ya has dejado una reseña para este producto",
+      });
+    }
+
     // Verificar que el producto existe
     const product = await Product.findById(productId);
     if (!product) {
@@ -33,6 +46,29 @@ const createComment = async (req, res) => {
     });
   } catch (error) {
     console.error("Error en createComment:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Verificar si el usuario ya dejó una reseña
+// @route   GET /api/comments/status/:productId
+// @access  Private
+const checkReviewStatus = async (req, res) => {
+  try {
+    const comment = await Comment.findOne({
+      product: req.params.productId,
+      user: req.user.id
+    });
+
+    res.status(200).json({
+      success: true,
+      hasReviewed: !!comment
+    });
+  } catch (error) {
+    console.error("Error en checkReviewStatus:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -110,4 +146,5 @@ module.exports = {
   createComment,
   getCommentsByProduct,
   deleteComment,
+  checkReviewStatus,
 };
