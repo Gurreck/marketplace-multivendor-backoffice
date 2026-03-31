@@ -309,6 +309,27 @@
   opacity: 0.6;
 }
 
+.boton-recoger-paquete {
+  margin-top: 12px;
+  background: transparent;
+  border: 1px solid var(--nexora-cyan);
+  color: var(--nexora-cyan);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.boton-recoger-paquete:hover {
+  background: var(--nexora-cyan);
+  color: var(--nexora-dark, #0f172a);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+  transform: translateY(-2px);
+}
+
 /* Mapa Real Leaflet */
 .leaflet-container {
   z-index: 1; /* Mantener por debajo de otros elementos de la UI */

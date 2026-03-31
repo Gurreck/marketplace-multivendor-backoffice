@@ -6,6 +6,7 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         direccion: '',
+        pais: '',
         ciudad: '',
         provincia: '',
         codigoPostal: '',
@@ -22,12 +23,11 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
         }
     }, [initialAddress]);
 
-    // Verificar si el usuario tiene dirección guardada en perfil
     useEffect(() => {
-        if (user?.shippingAddress?.direccion && !initialAddress) {
-            setShowProfileSuggestion(true);
+        if (initialAddress) {
+            setFormData(prev => ({ ...prev, ...initialAddress }));
         }
-    }, [user, initialAddress]);
+    }, [initialAddress]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -38,6 +38,10 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
         
         if (!formData.direccion.trim()) {
             newErrors.direccion = 'La dirección es requerida';
+        }
+        
+        if (!formData.pais.trim()) {
+            newErrors.pais = 'El país es requerido';
         }
         
         if (!formData.ciudad.trim()) {
@@ -88,24 +92,7 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
         }
     };
 
-    const handleUseProfileAddress = () => {
-        if (user?.shippingAddress) {
-            const profileAddress = {
-                nombre: user.nombre || '',
-                direccion: user.shippingAddress.direccion || '',
-                ciudad: user.shippingAddress.ciudad || '',
-                provincia: user.shippingAddress.provincia || '',
-                codigoPostal: user.shippingAddress.codigoPostal || '',
-                telefono: user.telefono || ''
-            };
-            setFormData(profileAddress);
-            setSavedAddress(profileAddress);
-            setShowProfileSuggestion(false);
-            if (onAddressSave) {
-                onAddressSave(profileAddress);
-            }
-        }
-    };
+
 
     return (
         <div className="direccion-envio">
@@ -114,26 +101,7 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
                 Dirección de Envío
             </h2>
 
-            {showProfileSuggestion && user?.shippingAddress?.direccion && (
-                <div className="sugerencia-direccion-perfil">
-                    <div className="sugerencia-direccion-header">
-                        <CheckCircle size={18} color="#10b981" />
-                        <span>Tienes una dirección guardada en tu perfil</span>
-                    </div>
-                    <div className="sugerencia-direccion-info">
-                        <p><strong>{user.nombre}</strong></p>
-                        <p>{user.shippingAddress.direccion}</p>
-                        <p>{user.shippingAddress.ciudad}, {user.shippingAddress.provincia} {user.shippingAddress.codigoPostal}</p>
-                    </div>
-                    <button 
-                        type="button" 
-                        className="boton-usar-direccion-perfil"
-                        onClick={handleUseProfileAddress}
-                    >
-                        Usar esta dirección
-                    </button>
-                </div>
-            )}
+
             
             <form className="formulario-direccion-pasarela" onSubmit={handleSubmit}>
                 <div className="campo-formulario">
@@ -163,13 +131,13 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
                 <div className="campo-formulario">
                     <input
                         type="text"
-                        name="ciudad"
-                        className={`entrada-direccion-pasarela ${errors.ciudad ? 'error-entrada' : ''}`}
-                        placeholder="Ciudad"
-                        value={formData.ciudad}
+                        name="pais"
+                        className={`entrada-direccion-pasarela ${errors.pais ? 'error-entrada' : ''}`}
+                        placeholder="País"
+                        value={formData.pais}
                         onChange={handleChange}
                     />
-                    {errors.ciudad && <span className="mensaje-error-direccion-pasarela">{errors.ciudad}</span>}
+                    {errors.pais && <span className="mensaje-error-direccion-pasarela">{errors.pais}</span>}
                 </div>
 
                 <div className="campo-formulario">
@@ -182,6 +150,18 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
                         onChange={handleChange}
                     />
                     {errors.provincia && <span className="mensaje-error-direccion-pasarela">{errors.provincia}</span>}
+                </div>
+
+                <div className="campo-formulario">
+                    <input
+                        type="text"
+                        name="ciudad"
+                        className={`entrada-direccion-pasarela ${errors.ciudad ? 'error-entrada' : ''}`}
+                        placeholder="Ciudad"
+                        value={formData.ciudad}
+                        onChange={handleChange}
+                    />
+                    {errors.ciudad && <span className="mensaje-error-direccion-pasarela">{errors.ciudad}</span>}
                 </div>
 
                 <div className="campo-formulario">
@@ -219,7 +199,8 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
                     <h3>Dirección guardada:</h3>
                     <p><strong>{savedAddress.nombre}</strong></p>
                     <p>{savedAddress.direccion}</p>
-                    <p>{savedAddress.ciudad}, {savedAddress.provincia} {savedAddress.codigoPostal}</p>
+                    <p>{savedAddress.provincia}, {savedAddress.ciudad} {savedAddress.codigoPostal}</p>
+                    {savedAddress.pais && <p>{savedAddress.pais}</p>}
                     <p><Phone size={14} /> {savedAddress.telefono}</p>
                 </div>
             )}
