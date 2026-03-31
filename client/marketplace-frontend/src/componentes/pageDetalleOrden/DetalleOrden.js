@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingBag, ChevronLeft, Package, MapPin, CreditCard, Calendar, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import Tracking from '../Tracking/tracking';
+import DejarReseña from '../DejarReseña/DejarReseña';
 import './DetalleOrden.css';
+
 
 export default function DetalleOrden() {
     const { id } = useParams();
@@ -151,6 +153,16 @@ export default function DetalleOrden() {
                             <CreditCard size={16} /> Pagado con {order.paymentMethod?.brand || 'Tarjeta'} **** {order.paymentMethod?.last4 || '0000'}
                         </div>
                     </section>
+
+                    {/* Nueva Zona para Dejar Reseña (Zona Roja) */}
+                    <DejarReseña 
+                        isEmbedded={true}
+                        product={orderItems[0]?.product || orderItems[0]}
+                        onSubmit={(data) => {
+                            console.log("Reseña enviada desde DetalleOrden:", data);
+                            // Aquí podrías mostrar un mensaje de éxito o esconder el componente
+                        }}
+                    />
                 </div>
             </div>
 

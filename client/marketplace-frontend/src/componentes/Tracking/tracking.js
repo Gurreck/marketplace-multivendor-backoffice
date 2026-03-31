@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useLocation } from 'react-router-dom';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -18,9 +19,12 @@ import {
   ArrowLeft, 
   Box,
   Shuffle,
-  Flag
+  Flag,
+  Star
 } from 'lucide-react';
 import './tracking.css';
+import './tracking.css';
+
 
 // Configuración necesaria para que los iconos de Leaflet se carguen correctamente en React
 let DefaultIcon = L.icon({
@@ -39,50 +43,53 @@ const Tracking = ({ isEmbedded = false }) => {
   const { isDarkMode } = useTheme();
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
+  const location = useLocation();
   
   // Estado para simular la carga de datos del paquete
   const [datosEnvio, setDatosEnvio] = useState(null);
   const [cargando, setCargando] = useState(true);
 
+
   useEffect(() => {
-    // Simulación de una llamada a API para obtener datos de rastreo
+    // Obtenemos los datos de la orden si viene de un pago reciente
+    const orderFromState = location.state?.order;
+
+    // Simulación de carga (o llamada a API en un escenario real futuro)
     const obtenerDatos = () => {
       setTimeout(() => {
+        let orderId = "MX-98234-7721";
+        if (orderFromState) {
+            const rawId = orderFromState._id || orderFromState.id || orderFromState.order?._id || "NEXORA-ORD";
+            orderId = String(rawId).substring(0, 10).toUpperCase();
+        }
+
         setDatosEnvio({
-          idRastreo: "MX-98234-7721",
-          estadoActual: 3, // Corresponde al índice del paso actual (en camino)
+          idRastreo: orderId,
+          estadoActual: orderFromState ? 1 : 3, // Procesado o En camino
           transportista: "Logística Express",
-          fechaEstimada: "31 de Marzo, 2026",
-          destino: "San José, Costa Rica",
-          origen: "Ciudad de México, México",
+          fechaEstimada: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
+          destino: orderFromState && orderFromState.shippingAddress 
+            ? `${orderFromState.shippingAddress.ciudad}, ${orderFromState.shippingAddress.pais || 'CR'}` 
+            : "San José, Costa Rica",
+          origen: "Centro de Distribución Nexora",
           pasos: [
             { nombre: "Pedido", icono: <Package size={20} />, completado: true },
             { nombre: "Procesado", icono: <Box size={20} />, completado: true },
-            { nombre: "Despachado", icono: <Shuffle size={20} />, completado: true },
-            { nombre: "En Camino", icono: <Truck size={20} />, activo: true },
-            { nombre: "Entregado", icono: <Flag size={20} />, completado: false }
+            { nombre: "Despachado", icono: <Shuffle size={20} />, completado: !orderFromState },
+            { nombre: "En Camino", icono: <Truck size={20} />, activo: !orderFromState },
+            { nombre: "Listo para entregar", icono: <Flag size={20} />, completado: false }
           ],
-          historial: [
+          historial: orderFromState ? [
             { 
-              evento: "Llegada al Centro de Distribución Local", 
-              ubicacion: "San José, CR", 
-              fecha: "30 Mar 2026 - 09:15 AM" 
-            },
-            { 
-              evento: "En Tránsito Internacional", 
-              ubicacion: "Aduana Aeropuerto Juan Santamaría", 
-              fecha: "29 Mar 2026 - 02:30 PM" 
-            },
-            { 
-              evento: "Salida del Centro de Clasificación", 
-              ubicacion: "Ciudad de México, MX", 
-              fecha: "28 Mar 2026 - 11:00 AM" 
-            },
-            { 
-              evento: "Paquete Recibido por Transportista", 
-              ubicacion: "Ciudad de México, MX", 
-              fecha: "27 Mar 2026 - 10:45 AM" 
+              evento: "Orden Recibida", 
+              ubicacion: "Plataforma Nexora", 
+              fecha: new Date().toLocaleString('es-ES') 
             }
+          ] : [
+            { evento: "Llegada al Centro de Distribución Local", ubicacion: "San José, CR", fecha: "30 Mar 2026 - 09:15 AM" },
+            { evento: "En Tránsito Internacional", ubicacion: "Aduana Aeropuerto Juan Santamaría", fecha: "29 Mar 2026 - 02:30 PM" },
+            { evento: "Salida del Centro de Clasificación", ubicacion: "Ciudad de México, MX", fecha: "28 Mar 2026 - 11:00 AM" },
+            { evento: "Paquete Recibido por Transportista", ubicacion: "Ciudad de México, MX", fecha: "27 Mar 2026 - 10:45 AM" }
           ]
         });
         setCargando(false);
@@ -90,7 +97,56 @@ const Tracking = ({ isEmbedded = false }) => {
     };
 
     obtenerDatos();
-  }, []);
+  }, [location.state]);
+
+  // Efecto secundario para avanzar el estado cada 10 segundos
+  useEffect(() => {
+    // Si no hay datos, o si ya llegó al estado final (4 = Entregado), no hacemos nada
+    if (!datosEnvio || datosEnvio.estadoActual >= 4) return;
+
+    // Solo avanzar si viene de una compra (estado inicial 1)
+    // Pero si el usuario quiere que siempre avance para probar, omitimos esta validación:
+    const timerId = setInterval(() => {
+      setDatosEnvio(prev => {
+        if (!prev || prev.estadoActual >= 4) {
+          clearInterval(timerId);
+          return prev;
+        }
+
+        const nextState = prev.estadoActual + 1;
+        
+        // Actualizar UI de los pasos
+        const newPasos = prev.pasos.map((paso, idx) => ({
+          ...paso,
+          completado: idx <= nextState,
+          activo: idx === nextState
+        }));
+
+        // Datos simulados según el paso nuevo
+        const mensajesLog = [
+          null,
+          null, // Pedido y procesado ya ocurren al inicio
+          { evento: "Carga en vehículo de transporte", ubicacion: "Centro de Clasificación Logística", fecha: new Date().toLocaleString('es-ES') },
+          { evento: "En camino al destino final", ubicacion: "Unidad de Reparto Local", fecha: new Date().toLocaleString('es-ES') },
+          { evento: "Paquete listo para entregar", ubicacion: "Dirección del Destinatario", fecha: new Date().toLocaleString('es-ES') }
+        ];
+
+        const nuevoEvento = mensajesLog[nextState];
+        const newHistorial = nuevoEvento 
+          ? [nuevoEvento, ...prev.historial] 
+          : prev.historial;
+
+        return {
+          ...prev,
+          estadoActual: nextState,
+          pasos: newPasos,
+          historial: newHistorial
+        };
+      });
+    }, 10000);
+
+    return () => clearInterval(timerId);
+  }, [datosEnvio?.estadoActual]);
 
   // Pantalla de carga con estética limpia
   if (cargando) {
@@ -203,6 +259,19 @@ const Tracking = ({ isEmbedded = false }) => {
               <div key={index} className="item-actividad">
                 <div className="punto-actividad"></div>
                 <div className="contenido-actividad">
+                  {actividad.evento === "Paquete listo para entregar" && (
+                    <button 
+                      className="boton-recoger-paquete" 
+                      style={{ marginTop: 0, marginBottom: '12px' }}
+                      onClick={() => {
+                        // Ahora la reseña es estática en la página, podemos hacer scroll o nada
+                        console.log("Paquete recogido");
+                      }}
+                    >
+                      Recoger paquete
+                    </button>
+
+                  )}
                   <p className="evento-actividad">{actividad.evento}</p>
                   <p className="ubicacion-actividad">{actividad.ubicacion}</p>
                   <p className="fecha-actividad">{actividad.fecha}</p>

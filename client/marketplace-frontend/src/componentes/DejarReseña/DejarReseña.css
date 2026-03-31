@@ -1,0 +1,247 @@
+/* Estilo Premium Nexora - Modal Dejar Reseña */
+:root {
+  --nexora-blue: #0094FF;
+  --nexora-cyan: #00D4FF;
+  --nexora-dark: #000B18;
+  --nexora-deep: #001A2F;
+  --nexora-text: #e5e7eb;
+  --nexora-border: rgba(0, 148, 255, 0.2);
+  --glass-bg: rgba(0, 26, 47, 0.85);
+}
+
+.modal-reseña-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 8, 20, 0.7);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-reseña-contenedor {
+  background: var(--glass-bg);
+  border: 1px solid var(--nexora-border);
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+              0 0 30px rgba(0, 148, 255, 0.2);
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--nexora-text);
+  overflow: hidden;
+}
+
+/* --- MODO EMBEBIDO (SIDEBAR) --- */
+.reseña-contenido-embebido {
+  background: rgba(0, 26, 47, 0.4);
+  border: 1px solid var(--nexora-border);
+  border-radius: 20px;
+  padding: 1.8rem;
+  color: var(--nexora-text);
+  margin-top: 1.5rem;
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.reseña-contenido-embebido::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--nexora-blue), transparent);
+}
+
+
+/* Efecto de Brillo Angular */
+.modal-reseña-contenedor::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 148, 255, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.header-reseña {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.header-reseña h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #fff, var(--nexora-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.header-reseña p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+/* Selector de Estrellas */
+.estrellas-selector {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.estrellas-selector.embebido {
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+
+.estrella-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.estrella-btn:hover {
+  transform: scale(1.2);
+}
+
+.estrella-btn.activa {
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+}
+
+/* Campo de Texto */
+.comentario-area {
+  width: 100%;
+  background: rgba(0, 11, 24, 0.6);
+  border: 1px solid var(--nexora-border);
+  border-radius: 16px;
+  padding: 1.2rem;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  min-height: 120px;
+  resize: none;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.comentario-area:focus {
+  outline: none;
+  border-color: var(--nexora-blue);
+  background: rgba(0, 11, 24, 0.8);
+  box-shadow: 0 0 15px rgba(0, 148, 255, 0.1);
+}
+
+.comentario-area::placeholder {
+  color: rgba(148, 163, 184, 0.4);
+}
+
+/* Acciones */
+.acciones-reseña {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-reseña {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.btn-cancelar:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: white;
+}
+
+.btn-enviar {
+  background: linear-gradient(135deg, var(--nexora-blue), var(--nexora-cyan));
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 148, 255, 0.3);
+}
+
+.btn-enviar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 148, 255, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-enviar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.btn-enviar.full-width {
+  width: 100%;
+}
+
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal-reseña-contenedor {
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  .header-reseña h2 {
+    font-size: 1.5rem;
+  }
+  
+  .acciones-reseña {
+    flex-direction: column;
+  }
+}

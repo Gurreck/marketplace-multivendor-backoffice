@@ -12,7 +12,7 @@ import {
 import { orderService } from '../../services/orderService';
 import { useAuth } from '../../context/AuthContext';
 
-const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, onPaymentError }) => {
+const CardPay = ({ selectedSubtotal, selectedItems, address, initialCard, onPaymentSuccess, onPaymentError }) => {
     const { user, updateProfile } = useAuth();
     // ===== ESTADO DE TARJETA =====
     const [cardNumber, setCardNumber] = useState('');
@@ -27,6 +27,22 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
     const [cardType, setCardType] = useState(null);
     const [showCvv, setShowCvv] = useState(false);
     const [generalError, setGeneralError] = useState('');
+    const [createdOrder, setCreatedOrder] = useState(null);
+
+    // Precompletar con datos de initialCard cuando esté disponible
+    React.useEffect(() => {
+        if (initialCard) {
+            const formattedNum = formatCardNumber(initialCard.cardNumber);
+            setCardNumber(formattedNum);
+            setCardName(initialCard.cardName || '');
+            setExpiryDate(initialCard.expiryDate || '');
+            setCvv(initialCard.cvv || '');
+            
+            const cleanNum = formattedNum.replace(/\s/g, '');
+            const detectedType = detectCardType(cleanNum);
+            setCardType(detectedType);
+        }
+    }, [initialCard]);
 
     const luhnCheck = (cardNumber) => {
         const cleanNumber = cardNumber.replace(/\s/g, '');
@@ -302,6 +318,7 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
             const maskedFirst = firstDigits.replace(/(.{4})/g, '$1 ').trim();
             setLastFourDigits(lastEight);
             setMaskedCardDisplay(maskedFirst);
+            setCreatedOrder(response.data);
             setShowSuccessModal(true);
         } catch (error) {
             setIsProcessing(false);
@@ -315,7 +332,7 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
     const handleContinue = () => {
         setShowSuccessModal(false);
         if (onPaymentSuccess) {
-            onPaymentSuccess(lastFourDigits, true);
+            onPaymentSuccess(lastFourDigits, true, createdOrder);
         }
     };
 
@@ -438,7 +455,7 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
                 <div className="capa-modal-exito-pasarela">
                     <div className="modal-exito-pasarela">
                         <div className="icono-modal-exito-pasarela">
-                            <CheckCircle2 size={60} color="#10b981" />
+                            <CheckCircle2 size={60} color="white" />
                         </div>
                         <h2>¡Pago Confirmado!</h2>
                         <div className="detalles-modal-exito-pasarela">
@@ -467,7 +484,7 @@ const CardPay = ({ selectedSubtotal, selectedItems, address, onPaymentSuccess, o
                             )}
                         </div>
                         <button className="boton-modal-exito-pasarela" onClick={handleContinue}>
-                            Volver al Inicio
+                            Continuar
                         </button>
                     </div>
                 </div>

@@ -1,0 +1,118 @@
+/* Estilo Premium Nexora - Visualización de Reseña Indivudual */
+:root {
+  --nexora-blue: #0094FF;
+  --nexora-cyan: #00D4FF;
+  --nexora-dark: #000B18;
+  --nexora-deep: #001A2F;
+  --nexora-text: #e5e7eb;
+  --nexora-border: rgba(0, 148, 255, 0.15);
+  --card-glow: rgba(0, 148, 255, 0.1);
+}
+
+.contenedor-reseña {
+  background: rgba(0, 26, 47, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--nexora-border);
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  max-width: 600px; /* Evitar que sea demasiado ancho */
+}
+
+.contenedor-reseña:hover {
+  transform: translateY(-4px);
+  border-color: var(--nexora-blue);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 
+              0 0 15px var(--card-glow);
+}
+
+/* Efecto Sutil de Fondo */
+.contenedor-reseña::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at top right, rgba(0, 212, 255, 0.05), transparent 70%);
+  pointer-events: none;
+}
+
+/* Encabezado del Usuario */
+.usuario-info-reseña {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar-reseña {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--nexora-blue), var(--nexora-cyan));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(0, 148, 255, 0.2);
+}
+
+.detalles-usuario-reseña {
+  display: flex;
+  flex-direction: column;
+}
+
+.nombre-usuario-reseña {
+  font-weight: 700;
+  color: white;
+  font-size: 1rem;
+}
+
+.fecha-reseña {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+/* Cuerpo de la Reseña */
+.cuerpo-reseña {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.estrellas-reseña {
+  display: flex;
+  gap: 4px;
+  color: var(--nexora-cyan);
+  filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.3));
+}
+
+.texto-reseña {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .contenedor-reseña {
+    padding: 1.2rem;
+  }
+  
+  .avatar-reseña {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+}

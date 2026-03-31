@@ -160,3 +160,131 @@
   margin-left: 0 !important;
   margin-bottom: 0 !important;
 }
+
+/* MODAL DE DATOS GUARDADOS */
+.capa-modal-datos-guardados {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-datos-guardados {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 148, 255, 0.2);
+  border: 1px solid rgba(0, 148, 255, 0.3);
+  position: relative;
+  position: relative;
+  animation: slideUpModal 0.4s ease;
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.icono-modal-datos {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 10px 25px rgba(0, 148, 255, 0.4);
+}
+
+.modal-datos-guardados h2 {
+  color: white;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.modal-datos-guardados p {
+  color: #94a3b8;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.acciones-modal-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.boton-usar-datos {
+  background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 148, 255, 0.3);
+}
+
+.boton-usar-datos:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 148, 255, 0.4);
+  filter: brightness(1.1);
+}
+
+.boton-no-usar-datos {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.boton-no-usar-datos:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border-color: #64748b;
+}
+
+.boton-cerrar-modal-datos {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.boton-cerrar-modal-datos:hover {
+  color: white;
+}
