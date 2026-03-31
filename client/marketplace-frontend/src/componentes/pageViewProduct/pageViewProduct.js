@@ -5,15 +5,16 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
-import { commentService } from '../../services/commentService';
+
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
+import Reseña from '../Reseña/Reseña';
+import { commentService } from '../../services/commentService';
+
 import { 
     ChevronLeft, 
     ChevronRight, 
-    MessageCircle, 
-    Star, 
-    Send, 
+    Star,
     Plus, 
     Search, 
     CheckCircle2, 
@@ -46,14 +47,11 @@ const PageViewProduct = () => {
     const [averageRating, setAverageRating] = useState(0);
     const [loadingComments, setLoadingComments] = useState(true);
 
-    const [newComment, setNewComment] = useState(""); // Texto del nuevo comentario a publicar
-    const [newRating, setNewRating] = useState(5); // Calificación del nuevo comentario (1-5)
 
     // ===== ESTADO DE UI =====
     const [showNotification, setShowNotification] = useState(''); // Mensaje de notificación temporal
     const [showLoginModal, setShowLoginModal] = useState(false); // Control del modal de login sugerido
 
-    // Función para cargar comentarios desde el backend
     const fetchComments = useCallback(async () => {
         try {
             setLoadingComments(true);
@@ -68,6 +66,7 @@ const PageViewProduct = () => {
             setLoadingComments(false);
         }
     }, [id]);
+
 
     const fetchSimilarProducts = useCallback(async (category, currentId) => {
         try {
@@ -102,6 +101,7 @@ const PageViewProduct = () => {
         fetchComments();
     }, [fetchProductDetail, fetchComments]);
 
+
     // ===== MANEJADORES DE IMÁGENES =====
     /**
      * Cambia a la imagen anterior en el carrusel
@@ -121,38 +121,7 @@ const PageViewProduct = () => {
         );
     };
 
-    // ===== MANEJADORES DE COMENTARIOS =====
-    /**
-     * Valida y envía una nueva reseña al backend
-     */
-    const handleSubmitComment = async () => {
-        if (newComment.trim() === "") return;
-        
-        if (!isAuthenticated) {
-            setShowLoginModal(true);
-            return;
-        }
-        
-        try {
-            const response = await commentService.createComment({
-                productId: id,
-                rating: newRating,
-                text: newComment,
-            });
-            
-            if (response.data.success) {
-                setNewComment("");
-                setNewRating(5);
-                fetchComments();
-                setShowNotification("Comentario publicado exitosamente");
-                setTimeout(() => setShowNotification(""), 3000);
-            }
-        } catch (error) {
-            console.error("Error creating comment:", error);
-            setShowNotification("Error al publicar comentario");
-            setTimeout(() => setShowNotification(""), 3000);
-        }
-    };
+
 
     // ===== RENDERIZADO CONDICIONAL (CARGA) =====
     if (loading) return (
@@ -236,91 +205,7 @@ const PageViewProduct = () => {
                             </div>
                         )}
 
-                        <div className="seccion-comentarios">
-                            <div className="encabezado-comentarios">
-                                <h3><MessageCircle size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Opiniones de Clientes</h3>
-                                <div className="resumen-calificacion">
-                                    <span className="numero-calificacion">{averageRating || "0"}</span>
-                                    <div className="estrellas-calificacion">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star 
-                                                key={i} 
-                                                size={16} 
-                                                fill={i < Math.round(averageRating || 0) ? "var(--admin-advertencia)" : "none"} 
-                                                color={i < Math.round(averageRating || 0) ? "var(--admin-advertencia)" : "#ccc"} 
-                                            />
-                                        ))}
-                                    </div>
-                                    <span className="conteo-calificacion">({comments.length} comentarios)</span>
-                                </div>
-                            </div>
 
-                            <div className="formulario-comentario">
-                                <div className="seleccion-calificacion">
-                                    <label>Tu calificación:</label>
-                                    <div className="entrada-estrellas">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <Star 
-                                                key={star}
-                                                size={24}
-                                                className={star <= newRating ? "estrella activo" : "estrella"}
-                                                onClick={() => setNewRating(star)}
-                                                fill={star <= newRating ? "var(--admin-advertencia)" : "none"}
-                                                color={star <= newRating ? "var(--admin-advertencia)" : "#ccc"}
-                                                style={{ cursor: 'pointer' }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                <textarea
-                                    className="entrada-comentario"
-                                    placeholder="Escribe tu opinión sobre el producto..."
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                />
-                                <button className="boton-enviar-comentario" onClick={handleSubmitComment}>
-                                    <Send size={16} style={{ marginRight: '8px' }} />
-                                    Publicar Comentario
-                                </button>
-                            </div>
-
-                            <div className="lista-comentarios">
-                                {loadingComments ? (
-                                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                                        <Loader2 className="animacion-giro" size={24} color="var(--nexora-blue)" />
-                                    </div>
-                                ) : comments.length === 0 ? (
-                                    <p style={{textAlign: 'center', color: 'var(--nexora-text-secondary)', padding: '20px'}}>Aún no hay comentarios. ¡Sé el primero en opinar!</p>
-                                ) : (
-                                    comments.map((comment) => (
-                                        <div key={comment._id} className="item-comentario">
-                                            <div className="encabezado-comentario">
-                                                <img 
-                                                    src={`https://i.pravatar.cc/150?img=${comment.user?.nombre ? comment.user.nombre.charCodeAt(0) % 70 : 1}`} 
-                                                    alt={comment.user?.nombre || "Usuario"} 
-                                                    className="avatar-comentario" 
-                                                />
-                                                <div className="informacion-comentario">
-                                                    <span className="usuario-comentario">{comment.user?.nombre || "Usuario"}</span>
-                                                    <span className="fecha-comentario">{new Date(comment.createdAt).toLocaleDateString("es-CR")}</span>
-                                                </div>
-                                                <div className="calificacion-comentario">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star 
-                                                            key={i} 
-                                                            size={14} 
-                                                            fill={i < comment.rating ? "var(--admin-advertencia)" : "none"}
-                                                            color={i < comment.rating ? "var(--admin-advertencia)" : "#ccc"}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <p className="texto-comentario">{comment.text}</p>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
                     </div>
 
                     {/* Columna Derecha: Información y Acciones */}
@@ -372,34 +257,62 @@ const PageViewProduct = () => {
                             </button>
                         </div>
 
-                        {similarProducts.length > 0 && (
-                            <div className="seccion-productos-similares">
-                                <h3><Search size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Productos Similares</h3>
-                                <div className="cuadricula-productos-similares">
-                                    {similarProducts.map((product) => (
-                                        <div
-                                            key={product._id}
-                                            className="tarjeta-producto-similar"
-                                            onClick={() => {
-                                                navigate(`/product/${product._id}`);
-                                                setCurrentImageIndex(0);
-                                                window.scrollTo(0, 0);
-                                            }}
-                                            title={product.name}
-                                        >
-                                            <div className="imagen-similar">
-                                                <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />
-                                            </div>
-                                            <div className="informacion-similar">
-                                                <p className="nombre-similar">{product.name}</p>
-                                                <p className="precio-similar">₡{product.price.toLocaleString()}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
+                </div>
+
+                <div className="contenedor-inferior-detalles">
+                    {/* Sección de Reseñas (Lado Izquierdo) */}
+                    <div className="seccion-reseñas-producto">
+                        <h3><Star size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Opiniones de Clientes</h3>
+                        <div className="lista-reseñas-estilizada">
+                            {loadingComments ? (
+                                <div className="cargando-reseñas">
+                                    <Loader2 className="animacion-giro" size={24} />
+                                </div>
+                            ) : comments.length === 0 ? (
+                                <p className="sin-comentarios">No hay reseñas para este producto aún.</p>
+                            ) : (
+                                comments.slice(0, 5).map((reseña) => (
+                                    <Reseña 
+                                        key={reseña._id}
+                                        user={reseña.user?.nombre}
+                                        rating={reseña.rating}
+                                        comment={reseña.text}
+                                        date={new Date(reseña.createdAt).toLocaleDateString()}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Sección de Productos Similares (Lado Derecho) */}
+                    {similarProducts.length > 0 && (
+                        <div className="seccion-productos-similares">
+                            <h3><Search size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> Similares</h3>
+                            <div className="cuadricula-productos-similares">
+                                {similarProducts.map((product) => (
+                                    <div
+                                        key={product._id}
+                                        className="tarjeta-producto-similar"
+                                        onClick={() => {
+                                            navigate(`/product/${product._id}`);
+                                            setCurrentImageIndex(0);
+                                            window.scrollTo(0, 0);
+                                        }}
+                                        title={product.name}
+                                    >
+                                        <div className="imagen-similar">
+                                            <img src={product.images[0]?.url || "https://via.placeholder.com/120"} alt={product.name} />
+                                        </div>
+                                        <div className="informacion-similar">
+                                            <p className="nombre-similar">{product.name}</p>
+                                            <p className="precio-similar">₡{product.price.toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

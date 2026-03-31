@@ -5,7 +5,6 @@
 /* Payment Form Container */
 .pasarela-de-pago {
     background: var(--nexora-card);
-    color: var(--nexora-text);
     backdrop-filter: blur(15px);
     border-radius: 20px;
     padding: 35px;
@@ -20,68 +19,24 @@
     margin-right: 25px;
 }
 
-.pasarela-de-pago.modo-claro {
-    background: var(--nexora-card);
-    color: var(--nexora-text);
-    border: 1px solid var(--nexora-border);
-    box-shadow: 0 8px 26px rgba(16, 24, 40, 0.18);
-}
-
-.modo-claro .pasarela-de-pago .titulo-pago-pasarela,
-.pasarela-de-pago.modo-claro .titulo-pago-pasarela {
-    color: var(--nexora-blue);
-}
-
-.modo-claro .pasarela-de-pago .subtitulo-pago-pasarela,
-.pasarela-de-pago.modo-claro .subtitulo-pago-pasarela {
-    color: var(--nexora-blue);
-}
-
-.modo-claro .pasarela-de-pago .mensaje-exito-pasarela,
-.pasarela-de-pago.modo-claro .mensaje-exito-pasarela {
-    color: var(--nexora-text);
-}
-
-.modo-claro .pasarela-de-pago .etiqueta-modal-pasarela,
-.pasarela-de-pago.modo-claro .etiqueta-modal-pasarela {
-    color: var(--nexora-blue);
-}
-
-.modo-claro .pasarela-de-pago .valor-modal-pasarela,
-.modo-claro .pasarela-de-pago .monto-modal-pasarela,
-.pasarela-de-pago.modo-claro .valor-modal-pasarela,
-.pasarela-de-pago.modo-claro .monto-modal-pasarela {
-    color: var(--nexora-cyan);
-}
-
 .titulo-pago-pasarela {
     font-size: 1.4rem;
-    color: var(--nexora-text);
+    color: white;
     margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.modo-claro .pasarela-de-pago .titulo-pago-pasarela,
-.pasarela-de-pago.modo-claro .titulo-pago-pasarela {
-    color: var(--nexora-blue) !important;
-}
-
 .subtitulo-pago-pasarela {
-    color: var(--nexora-text-alt, #9ca3af);
+    color: #9ca3af;
     font-size: 0.9rem;
     margin-bottom: 25px;
 }
 
-.modo-claro .pasarela-de-pago .subtitulo-pago-pasarela,
-.pasarela-de-pago.modo-claro .subtitulo-pago-pasarela {
-    color: var(--nexora-blue) !important;
-}
-
 /* Card Preview Visual */
 .vista-previa-tarjeta-pasarela {
-    background: linear-gradient(135deg, var(--nexora-dark, #1e3a5f) 0%, var(--nexora-deep, #0f172a) 50%, #1e1b4b 100%);
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1e1b4b 100%);
     border-radius: 16px;
     padding: 25px;
     min-height: 180px;
@@ -98,14 +53,6 @@
     box-sizing: border-box;
 }
 
-.modo-claro .vista-previa-tarjeta-pasarela,
-.pasarela-de-pago.modo-claro .vista-previa-tarjeta-pasarela {
-    background: linear-gradient(135deg, var(--nexora-card, #fff) 0%, var(--nexora-deep, #e0f2fe) 100%);
-    border: 1px solid var(--nexora-border);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-
 .vista-previa-tarjeta-pasarela::after {
     content: '';
     position: absolute;
@@ -113,7 +60,7 @@
     left: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
     pointer-events: none;
 }
 
@@ -155,7 +102,7 @@
     right: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -181,7 +128,7 @@
     transform: translate(-50%, -50%);
     width: 30px;
     height: 20px;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
@@ -191,7 +138,7 @@
     color: white;
     letter-spacing: 2px;
     margin-bottom: 20px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -210,14 +157,14 @@
 
 .vista-previa-nombre-tarjeta {
     font-size: 0.85rem;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .vista-previa-vencimiento-tarjeta {
     font-size: 0.9rem;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .vista-previa-logo-tarjeta {
@@ -235,7 +182,7 @@
 .vista-previa-logo-tarjeta svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* Iconos de tarjetas con colores específicos */
@@ -314,10 +261,10 @@
 .entrada-pago-pasarela {
     width: 100%;
     padding: 14px 16px;
-    background: var(--input-bg, rgba(255, 255, 255, 0.1));
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--nexora-border);
     border-radius: 10px;
-    color: var(--nexora-text);
+    color: white;
     font-size: 1rem;
     transition: all 0.3s ease;
     margin-bottom: 12px;
@@ -442,14 +389,16 @@
     width: 20px;
     height: 20px;
     margin: -10px 0 0 -10px;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-top-color: white;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Address Warning Message */
@@ -520,41 +469,35 @@
     animation: gatewayFadeIn 0.3s ease;
 }
 
-.modo-claro .capa-modal-exito-pasarela,
-.capa-modal-exito-pasarela.modo-claro {
-    background: rgba(255, 255, 255, 0.65);
-}
-
 @keyframes gatewayFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-exito-pasarela {
-    background: linear-gradient(145deg, var(--nexora-card, #1a1a2e) 0%, var(--nexora-deep, #16213e) 100%);
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 28px;
     padding: 30px 40px;
     max-width: 600px;
     width: 92%;
     text-align: center;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(16, 185, 129, 0.15);
-    border: 2px solid var(--nexora-border, rgba(16, 185, 129, 0.4));
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 148, 255, 0.15);
+    border: 2px solid rgba(0, 148, 255, 0.4);
     animation: gatewaySlideUp 0.5s ease;
 }
 
-.modo-claro .modal-exito-pasarela,
-.modal-exito-pasarela.modo-claro {
-    background: linear-gradient(145deg, var(--nexora-card, #ffffff) 0%, var(--nexora-deep, #e0f2fe) 100%);
-    border: 2px solid var(--nexora-border, rgba(14, 165, 233, 0.3));
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2), 0 0 20px rgba(14, 165, 233, 0.18);
-}
-
 @keyframes gatewaySlideUp {
-    from { 
+    from {
         opacity: 0;
         transform: translateY(30px);
     }
-    to { 
+
+    to {
         opacity: 1;
         transform: translateY(0);
     }
@@ -563,19 +506,26 @@
 .icono-modal-exito-pasarela {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
-    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 148, 255, 0.5);
     animation: pulseSuccess 2s ease-in-out infinite;
 }
 
 @keyframes pulseSuccess {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 .icono-modal-exito-pasarela svg {
@@ -585,17 +535,12 @@
 }
 
 .modal-exito-pasarela h2 {
-    color: var(--nexora-blue);
+    color: var(--nexora-cyan, #00d4ff);
     font-size: 1.8rem;
     margin-bottom: 15px;
     font-weight: 800;
     letter-spacing: 0.5px;
-    text-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
-}
-
-.modo-claro .modal-exito-pasarela h2,
-.modal-exito-pasarela.modo-claro h2 {
-    color: var(--nexora-blue) !important;
+    text-shadow: 0 2px 10px rgba(0, 148, 255, 0.3);
 }
 
 .detalles-modal-exito-pasarela {
@@ -609,15 +554,10 @@
 }
 
 .mensaje-exito-pasarela {
-    color: var(--nexora-text);
+    color: #d1d5db;
     font-size: 1.05rem;
     line-height: 1.6;
     margin-bottom: 25px;
-}
-
-.modo-claro .mensaje-exito-pasarela,
-.mensaje-exito-pasarela.modo-claro {
-    color: var(--nexora-text) !important;
 }
 
 .info-tarjeta-modal-pasarela {
@@ -645,26 +585,16 @@
 }
 
 .etiqueta-modal-pasarela {
-    color: var(--nexora-text-alt, #9ca3af);
+    color: #9ca3af;
     font-size: 0.95rem;
     font-weight: 500;
 }
 
-.modo-claro .etiqueta-modal-pasarela,
-.etiqueta-modal-pasarela.modo-claro {
-    color: var(--nexora-blue) !important;
-}
-
 .valor-modal-pasarela {
-    color: var(--nexora-blue);
+    color: var(--nexora-cyan, #00d4ff);
     font-weight: 600;
     font-family: 'Courier New', monospace;
     font-size: 1.05rem;
-}
-
-.modo-claro .valor-modal-pasarela,
-.valor-modal-pasarela.modo-claro {
-    color: var(--nexora-cyan) !important;
 }
 
 .monto-modal-pasarela {
@@ -672,15 +602,10 @@
     font-weight: 700;
 }
 
-.modo-claro .monto-modal-pasarela,
-.monto-modal-pasarela.modo-claro {
-    color: var(--nexora-cyan) !important;
-}
-
 
 
 .boton-modal-exito-pasarela {
-    background: linear-gradient(135deg, var(--nexora-blue, #10b981), var(--nexora-cyan, #059669));
+    background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
     color: white;
     border: none;
     padding: 14px 40px;
@@ -689,13 +614,13 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 6px 20px rgba(0, 148, 255, 0.3);
     letter-spacing: 0.5px;
 }
 
 .boton-modal-exito-pasarela:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 148, 255, 0.5);
     filter: brightness(1.1);
 }
 
@@ -737,7 +662,7 @@
 }
 
 .valor-modal-pasarela {
-    color: #10b981;
+    color: var(--nexora-cyan, #00d4ff);
     font-weight: 600;
     font-family: 'Courier New', monospace;
     font-size: 1.05rem;
@@ -768,38 +693,33 @@
     font-size: 0.95rem;
 }
 
-.modo-claro .direccion-detalle-modal p,
-.direccion-detalle-modal.modo-claro p {
-    color: #1e293b !important;
-}
-
 /* Responsive */
 @media (max-width: 500px) {
     .pasarela-de-pago {
         padding: 20px;
         border-radius: 16px;
     }
-    
+
     .vista-previa-tarjeta-pasarela {
         padding: 18px;
         min-height: 150px;
     }
-    
+
     .vista-previa-numero-tarjeta {
         font-size: 1.1rem;
         letter-spacing: 1px;
     }
-    
+
     .chip-tarjeta-pasarela {
         width: 38px;
         height: 30px;
     }
-    
+
     .vista-previa-detalles-tarjeta {
         flex-direction: row;
         align-items: flex-end;
     }
-    
+
     .vista-previa-logo-tarjeta {
         top: 15px;
         right: 15px;
@@ -812,15 +732,15 @@
     .fila-detalles-tarjeta-pasarela {
         grid-template-columns: 1fr;
     }
-    
+
     .gateway-payment-title {
         font-size: 1.2rem;
     }
-    
+
     .gateway-payment-input {
         padding: 12px 14px;
     }
-    
+
     .gateway-card-details-row {
         grid-template-columns: 1fr;
     }
