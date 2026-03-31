@@ -267,7 +267,7 @@ const CardPay = ({
       setCvv(cvv.substring(0, expectedCvvLength));
     if (errors.cardNumber) setErrors((prev) => ({ ...prev, cardNumber: null }));
   };
-
+  
   const handleExpiryDateChange = (e) => {
     const formatted = formatExpiryDateInput(e.target.value);
     setExpiryDate(formatted);
