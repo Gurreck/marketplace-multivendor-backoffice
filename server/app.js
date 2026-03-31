@@ -19,6 +19,7 @@ const protectedRoutes = require("./routes/protectedRoutes");
 const productRoutes = require("./routes/productRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use("/api/products", productRoutes); // <-- PÚBLICA ANTES
 const addressRoutes = require("./routes/addressRoutes");
 app.use("/api/address", addressRoutes);
 app.use("/api/orders", orderRoutes); // Nueva ruta de órdenes
+app.use("/api/cart", cartRoutes); // Nueva ruta del carrito
 app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
 
 // Rutas de comentarios

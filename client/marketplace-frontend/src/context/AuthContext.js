@@ -1,13 +1,15 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
-import { useCart } from "./CartContext";
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error("useAuth debe ser usado dentro de un AuthProvider");
   }
+
   return context;
 };
 
@@ -15,7 +17,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-  const {clearCart} = useCart();
 
   // Cargar datos de localStorage al iniciar
   useEffect(() => {
@@ -28,9 +29,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        // Obtener datos frescos del perfil desde el servidor (esto también valida el token)
+        // Obtener perfil actualizado y validar token
         const response = await api.get("/auth/profile", {
-          headers: { Authorization: `Bearer ${storedToken}` }
+          headers: {
+            Authorization: `Bearer ${storedToken}`,
+          },
         });
 
         const userData = response.data.data;
@@ -40,45 +43,60 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
       } catch (error) {
         console.error("Error al inicializar sesión:", error);
-        // token inválido o error de red → borrar storage si es error de auth
+
+        // Si el token es inválido, limpiar sesión
         if (error.response && error.response.status === 401) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
+          localStorage.removeItem("marketplace_cart");
           setToken(null);
           setUser(null);
         }
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     initAuth();
   }, []);
 
   const login = async (email, password) => {
-    const response = await api.post("/auth/login", { email, password });
+    const response = await api.post("/auth/login", {
+      email,
+      password,
+    });
+
     const { token: newToken, ...userData } = response.data.data;
 
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(userData));
+
     setToken(newToken);
     setUser(userData);
 
     return userData;
   };
 
-  const register = async (nombre, email, password, role = 'cliente') => {
+  const register = async (
+    nombre,
+    email,
+    password,
+    role = "cliente"
+  ) => {
     const response = await api.post("/auth/register", {
       nombre,
       email,
       password,
       role,
     });
+
     console.log("Respuesta del registro:", nombre, email, response.data);
+
     const { token: newToken, ...userData } = response.data.data;
 
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(userData));
+
     setToken(newToken);
     setUser(userData);
 
@@ -88,12 +106,19 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (data) => {
     try {
       const response = await api.put("/auth/profile", data, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      // Update the whole user object or just specific properties
-      const updatedUser = { ...user, ...response.data.data };
+
+      const updatedUser = {
+        ...user,
+        ...response.data.data,
+      };
+
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
+
       return updatedUser;
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
@@ -105,10 +130,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("marketplace_cart");
-    clearCart();
+
     setToken(null);
     setUser(null);
-    
   };
 
   const value = {
@@ -122,7 +146,11 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!token,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthContext;
