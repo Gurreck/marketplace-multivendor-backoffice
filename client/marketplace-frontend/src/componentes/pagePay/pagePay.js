@@ -16,7 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-const getItemId = (item) => item._id || item.id;
+const getItemId = (item) => item.product?._id || item.product?.id || item._id || item.id;
 
 const PagePay = () => {
   const navigate = useNavigate();
@@ -204,9 +204,9 @@ const PagePay = () => {
         <div className="contenido-principal-pago">
           <div className="columna-productos">
             <div className="barra-seleccion">
-              <div className="grupo-seleccionar-todo" onClick={toggleSelectAll}>
-                <input type="checkbox" checked={isAllSelected} readOnly />
-                <span>Seleccionar todo ({cartItems.length})</span>
+              <div className="grupo-seleccionar-todo">
+                <input type="checkbox" checked={isAllSelected} onChange={toggleSelectAll} />
+                <span onClick={toggleSelectAll}>Seleccionar todo ({cartItems.length})</span>
               </div>
               <div className="estadisticas-seleccion">
                 <span>Sugeridos ({cartItems.length})</span>
@@ -331,21 +331,18 @@ const PagePay = () => {
                     </button>
                     <div className="selector-cantidad-pago">
                       <span>Cant. </span>
-                      <select
+                      <input
+                        type="number"
+                        min="1"
+                        max={item.product?.stock || item.stock || 999}
                         value={item.quantity}
-                        onChange={(e) =>
-                          updateQuantity(
-                            getItemId(item),
-                            parseInt(e.target.value),
-                          )
-                        }
-                      >
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                          <option key={n} value={n}>
-                            {n}
-                          </option>
-                        ))}
-                      </select>
+                        className="input-cantidad"
+                        onChange={(e) => {
+                          const stock = item.product?.stock || item.stock || 999;
+                          const newValue = Math.min(Math.max(1, parseInt(e.target.value) || 1), stock);
+                          updateQuantity(getItemId(item), newValue);
+                        }}
+                      />
                     </div>
                   </div>
                 </div>

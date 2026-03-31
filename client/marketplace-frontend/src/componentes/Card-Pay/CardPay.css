@@ -60,7 +60,7 @@
     left: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
     pointer-events: none;
 }
 
@@ -102,7 +102,7 @@
     right: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -128,7 +128,7 @@
     transform: translate(-50%, -50%);
     width: 30px;
     height: 20px;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
@@ -138,7 +138,7 @@
     color: white;
     letter-spacing: 2px;
     margin-bottom: 20px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -157,14 +157,14 @@
 
 .vista-previa-nombre-tarjeta {
     font-size: 0.85rem;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .vista-previa-vencimiento-tarjeta {
     font-size: 0.9rem;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .vista-previa-logo-tarjeta {
@@ -182,7 +182,7 @@
 .vista-previa-logo-tarjeta svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* Iconos de tarjetas con colores específicos */
@@ -389,14 +389,16 @@
     width: 20px;
     height: 20px;
     margin: -10px 0 0 -10px;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-top-color: white;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Address Warning Message */
@@ -468,8 +470,13 @@
 }
 
 @keyframes gatewayFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-exito-pasarela {
@@ -485,11 +492,12 @@
 }
 
 @keyframes gatewaySlideUp {
-    from { 
+    from {
         opacity: 0;
         transform: translateY(30px);
     }
-    to { 
+
+    to {
         opacity: 1;
         transform: translateY(0);
     }
@@ -509,8 +517,15 @@
 }
 
 @keyframes pulseSuccess {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 .icono-modal-exito-pasarela svg {
@@ -684,27 +699,27 @@
         padding: 20px;
         border-radius: 16px;
     }
-    
+
     .vista-previa-tarjeta-pasarela {
         padding: 18px;
         min-height: 150px;
     }
-    
+
     .vista-previa-numero-tarjeta {
         font-size: 1.1rem;
         letter-spacing: 1px;
     }
-    
+
     .chip-tarjeta-pasarela {
         width: 38px;
         height: 30px;
     }
-    
+
     .vista-previa-detalles-tarjeta {
         flex-direction: row;
         align-items: flex-end;
     }
-    
+
     .vista-previa-logo-tarjeta {
         top: 15px;
         right: 15px;
@@ -717,17 +732,16 @@
     .fila-detalles-tarjeta-pasarela {
         grid-template-columns: 1fr;
     }
-    
+
     .gateway-payment-title {
         font-size: 1.2rem;
     }
-    
+
     .gateway-payment-input {
         padding: 12px 14px;
     }
-    
+
     .gateway-card-details-row {
         grid-template-columns: 1fr;
     }
 }
-

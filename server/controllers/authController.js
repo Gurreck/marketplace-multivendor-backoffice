@@ -146,11 +146,7 @@ const updateProfile = async (req, res) => {
 
     if (req.body.password) {
       user.password = req.body.password;
-      // Note: If you have a pre-save hook in User model it will hash automatically. 
-      // Based on typical implementations, if not handled, should be hashed here.
-      const bcrypt = require("bcryptjs");
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(req.body.password, salt);
+      // El hook pre('save') en el modelo User hasheará automáticamente
     }
 
     if (req.body.debitCard) {
