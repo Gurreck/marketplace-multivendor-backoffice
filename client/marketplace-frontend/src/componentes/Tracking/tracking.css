@@ -323,11 +323,20 @@
   display: inline-block;
 }
 
-.boton-recoger-paquete:hover {
+.boton-recoger-paquete:hover:not(:disabled) {
   background: var(--nexora-cyan);
   color: var(--nexora-dark, #0f172a);
   box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
   transform: translateY(-2px);
+}
+
+.boton-recoger-paquete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: rgba(148, 163, 184, 0.5);
+  transform: none;
+  box-shadow: none;
 }
 
 /* Mapa Real Leaflet */

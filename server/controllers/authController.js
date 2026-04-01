@@ -45,6 +45,8 @@ const register = async (req, res) => {
         debitCard: user.debitCard,
         shippingAddress: user.shippingAddress,
         profilePicture: user.profilePicture,
+        firstPurchaseCompleted: user.firstPurchaseCompleted,
+        wheelSpun: user.wheelSpun,
       },
     });
   } catch (error) {
@@ -122,6 +124,8 @@ const login = async (req, res) => {
         debitCard: user.debitCard,
         shippingAddress: user.shippingAddress,
         profilePicture: user.profilePicture,
+        firstPurchaseCompleted: user.firstPurchaseCompleted,
+        wheelSpun: user.wheelSpun,
       },
     });
   } catch (error) {
@@ -208,6 +212,8 @@ const getProfile = async (req, res) => {
         shippingAddress: user.shippingAddress,
         debitCard: user.debitCard,
         profilePicture: user.profilePicture,
+        firstPurchaseCompleted: user.firstPurchaseCompleted,
+        wheelSpun: user.wheelSpun,
       },
     });
   } catch (error) {

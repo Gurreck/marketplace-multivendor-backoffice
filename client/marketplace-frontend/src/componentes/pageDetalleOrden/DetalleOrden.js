@@ -7,6 +7,18 @@ import Tracking from '../Tracking/tracking';
 import DejarReseña from '../DejarReseña/DejarReseña';
 import './DetalleOrden.css';
 
+// Mapeo de estados a etiquetas en español para el historial
+const ETIQUETAS_ESTADO_DETALLE = {
+  created: "Creada",
+  pending: "Pendiente",
+  paid: "Pagada",
+  packed: "Empacada",
+  shipped: "Enviada",
+  delivered: "Entregada",
+  cancelled: "Cancelada",
+  receipt_confirmed: "Recepción Confirmada",
+};
+
 
 export default function DetalleOrden() {
     const { id } = useParams();
@@ -143,12 +155,29 @@ export default function DetalleOrden() {
                         </div>
                     </section>
 
-                    {/* Nueva Zona para Dejar Reseña (Zona Roja) */}
-                    <DejarReseña 
-                        isEmbedded={true}
-                        product={orderItems[0]?.product || orderItems[0]}
-                        onSubmit={handleSubmitReview}
-                    />
+                    {/* Zona para Dejar Reseña — POR CADA PRODUCTO */}
+                    {orderItems.length > 0 && (
+                        <section className="detalle-card" style={{ marginTop: '20px' }}>
+                            <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '15px', marginBottom: '20px' }}>
+                                ⭐ Reseñas por Producto
+                            </h3>
+                            {orderItems.map((item, index) => {
+                                const prodId = item.product?._id || item.product || item._id;
+                                return (
+                                    <div key={prodId || index} style={{ marginBottom: index < orderItems.length - 1 ? '24px' : 0, paddingBottom: index < orderItems.length - 1 ? '24px' : 0, borderBottom: index < orderItems.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+                                        <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--nexora-cyan, #00D4FF)', marginBottom: '12px' }}>
+                                            {item.name || 'Producto'}
+                                        </p>
+                                        <DejarReseña 
+                                            isEmbedded={true}
+                                            product={item.product || item}
+                                            onSubmit={handleSubmitReview}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </section>
+                    )}
                 </div>
 
                 <div className="columna-derecha">
@@ -201,7 +230,7 @@ export default function DetalleOrden() {
                             <div key={idx} style={{ position: 'relative', paddingLeft: '16px' }}>
                                 <div style={{ position: 'absolute', left: '-27px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', background: '#0094FF', border: '2px solid #1e1e2e' }} />
                                 <div style={{ fontSize: '14px', fontWeight: '600', color: 'white', textTransform: 'capitalize' }}>
-                                    {entry.estado}
+                                    {ETIQUETAS_ESTADO_DETALLE[entry.estado] || entry.estado}
                                 </div>
                                 <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
                                     {new Date(entry.fecha).toLocaleString()}

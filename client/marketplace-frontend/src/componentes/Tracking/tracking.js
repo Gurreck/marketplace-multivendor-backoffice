@@ -54,6 +54,7 @@ const ETIQUETAS_ESTADO = {
   shipped: "Enviada",
   delivered: "Entregada",
   cancelled: "Cancelada",
+  receipt_confirmed: "Recepción Confirmada",
 };
 
 // Orden de flujo de estados
@@ -75,6 +76,8 @@ const Tracking = ({ isEmbedded = false, orden = null }) => {
   const [cargando, setCargando] = useState(true);
   const [mostrarRuleta, setMostrarRuleta] = useState(false);
   const [entregaConfirmada, setEntregaConfirmada] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
+  const [errorEntrega, setErrorEntrega] = useState('');
 
   useEffect(() => {
     cargarDatosTracking();
@@ -124,7 +127,11 @@ const Tracking = ({ isEmbedded = false, orden = null }) => {
       .reverse()
       .map((entrada) => ({
         evento: ETIQUETAS_ESTADO[entrada.estado] || entrada.estado,
-        ubicacion: entrada.comentario || "Plataforma Nexora",
+        ubicacion: entrada.comentario
+          ? (entrada.comentario === 'Orden creada' ? 'Orden creada'
+            : entrada.comentario === 'Cliente confirmó la recepción del paquete' ? 'Cliente confirmó la recepción del paquete'
+            : `Avanzado a ${ETIQUETAS_ESTADO[entrada.estado] || entrada.estado}`)
+          : `Avanzado a ${ETIQUETAS_ESTADO[entrada.estado] || entrada.estado}`,
         fecha: new Date(entrada.fecha).toLocaleString('es-ES'),
         usuario: entrada.usuarioQueCambio?.nombre || "",
       }));
@@ -160,33 +167,44 @@ const Tracking = ({ isEmbedded = false, orden = null }) => {
 
   // Manejar "Confirmar Entrega" / "Recoger Paquete"
   const manejarConfirmarEntrega = async () => {
+    if (confirmando) return;
+    setConfirmando(true);
+    setErrorEntrega('');
     try {
       // 1. Llamar al backend para confirmar recepción (agregar al statusHistory)
       if (datosEnvio?.ordenOriginal?._id) {
         await api.put(`/orders/${datosEnvio.ordenOriginal._id}/confirm-receipt`);
       }
+      // Solo marcar como confirmada si el backend respondió exitosamente
       setEntregaConfirmada(true);
 
-      // 2. Tocar perfil de usuario para ver si amerita ruleta
-      const respuesta = await api.get('/auth/profile');
-      const datosUsuario = respuesta.data.data;
+      // 2. Consultar perfil de usuario para ver si amerita ruleta
+      try {
+        const respuesta = await api.get('/auth/profile');
+        const datosUsuario = respuesta.data.data;
 
-      if (datosUsuario.firstPurchaseCompleted && !datosUsuario.wheelSpun) {
-        // ¡Es primera compra! Mostrar la ruleta
-        setMostrarRuleta(true);
-      } else {
-        // No es primera compra, redirigir al inicio después de un momento
-        setTimeout(() => {
-          navegar('/');
-        }, 2000);
+        if (datosUsuario.firstPurchaseCompleted && !datosUsuario.wheelSpun) {
+          // ¡Es primera compra! Mostrar la ruleta
+          setMostrarRuleta(true);
+        }
+      } catch (profileErr) {
+        // Error al obtener perfil no es crítico, la entrega ya se confirmó
+        console.warn("No se pudo verificar elegibilidad de ruleta:", profileErr);
       }
     } catch (err) {
       console.error("Error al confirmar entrega:", err);
-      // En caso de error (o si ya estaba confirmada), marcar como tal para esconder el botón
-      setEntregaConfirmada(true);
-      setTimeout(() => {
-        navegar('/');
-      }, 2000);
+      const status = err.response?.status;
+      const mensaje = err.response?.data?.message || '';
+
+      if (status === 400 && mensaje.includes('ya fue confirmada')) {
+        // El backend dice que ya estaba confirmada, sincronizar estado local
+        setEntregaConfirmada(true);
+      } else {
+        // Error real (red, servidor, permisos) → NO marcar como confirmada
+        setErrorEntrega(mensaje || 'Error al confirmar la entrega. Intenta de nuevo.');
+      }
+    } finally {
+      setConfirmando(false);
     }
   };
 
@@ -336,10 +354,17 @@ const Tracking = ({ isEmbedded = false, orden = null }) => {
               <button 
                 className="boton-recoger-paquete" 
                 onClick={manejarConfirmarEntrega}
+                disabled={confirmando}
+                style={confirmando ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
               >
                 <Gift size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                Confirmar Entrega del Paquete
+                {confirmando ? 'Confirmando...' : 'Confirmar Entrega del Paquete'}
               </button>
+              {errorEntrega && (
+                <p style={{ color: '#f87171', fontSize: '0.85rem', marginTop: '10px', fontWeight: 600 }}>
+                  {errorEntrega}
+                </p>
+              )}
             </div>
           )}
 
