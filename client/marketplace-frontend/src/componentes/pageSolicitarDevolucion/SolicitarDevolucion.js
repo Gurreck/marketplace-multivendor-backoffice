@@ -18,6 +18,7 @@ export default function SolicitarDevolucion() {
 
     // Imágenes de evidencia
     const [evidenceUrls, setEvidenceUrls] = useState([]);
+    const [evidenceFiles, setEvidenceFiles] = useState([]);
 
     const motivos = [
         'Producto defectuoso / no funciona',
@@ -63,6 +64,7 @@ export default function SolicitarDevolucion() {
         const files = Array.from(e.target.files);
         const urls = files.map(f => URL.createObjectURL(f));
         setEvidenceUrls(prev => [...prev, ...urls]);
+        setEvidenceFiles(prev => [...prev, ...files]);
     };
 
     const handleSubmit = async () => {
@@ -70,15 +72,19 @@ export default function SolicitarDevolucion() {
 
         setSubmitting(true);
         try {
-            const payload = {
-                order: selectedOrder._id,
-                items: selectedItems.map(i => ({ product: i.product, quantity: i.quantity })),
-                motivo,
-                detalle,
-                evidencia: evidenceUrls,
-            };
+            const formData = new FormData();
+            formData.append('order', selectedOrder._id);
+            formData.append('items', JSON.stringify(selectedItems.map(i => ({ product: i.product, quantity: i.quantity }))));
+            formData.append('motivo', motivo);
+            formData.append('detalle', detalle);
+            
+            evidenceFiles.forEach(file => {
+                formData.append('evidencia', file);
+            });
 
-            const response = await api.post('/support/rma', payload);
+            const response = await api.post('/support/rma', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             if (response.data.success) {
                 setRmaResult(response.data.data);
                 setStep(3);
@@ -238,7 +244,10 @@ export default function SolicitarDevolucion() {
                             {evidenceUrls.map((url, i) => (
                                 <div key={i} className="evidence-thumb">
                                     <img src={url} alt={`Evidencia ${i + 1}`} />
-                                    <button className="remove-evidence" onClick={() => setEvidenceUrls(prev => prev.filter((_, idx) => idx !== i))}>
+                                    <button className="remove-evidence" onClick={() => {
+                                        setEvidenceUrls(prev => prev.filter((_, idx) => idx !== i));
+                                        setEvidenceFiles(prev => prev.filter((_, idx) => idx !== i));
+                                    }}>
                                         <X size={14} />
                                     </button>
                                 </div>

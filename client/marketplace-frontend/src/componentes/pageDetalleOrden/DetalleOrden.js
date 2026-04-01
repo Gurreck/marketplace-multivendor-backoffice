@@ -219,7 +219,7 @@ export default function DetalleOrden() {
             )}
 
             <div style={{ marginTop: '20px' }}>
-                <Tracking isEmbedded={true} />
+                <Tracking isEmbedded={true} orden={order} />
             </div>
         </div>
     );

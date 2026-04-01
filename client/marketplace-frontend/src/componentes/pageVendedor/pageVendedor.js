@@ -95,8 +95,9 @@ export default function PageVendedor() {
     "Accesorios",
   ];
 
-  const estadosOrden = ["paid", "packed", "shipped", "delivered"];
+  const estadosOrden = ["created", "paid", "packed", "shipped", "delivered"];
   const etiquetasEstado = {
+    created: "Creada",
     paid: "Pagada",
     packed: "Empacada",
     shipped: "Enviada",
@@ -186,11 +187,24 @@ export default function PageVendedor() {
       setCargando(true);
       const response = await api.get("/vendor/orders");
       if (response.data.success) {
-        setOrdenes(response.data.data || []);
+        // Mapear campos del backend (inglés) a nombres que usa la UI (español)
+        const ordenesMapeadas = (response.data.data || []).map((o) => ({
+          ...o,
+          estado: o.status || o.estado,
+          cliente: o.user || o.cliente,
+          historial: (o.statusHistory || []).map((h) => ({
+            de: h.estado,
+            a: h.estado,
+            comentario: h.comentario,
+            fecha: h.fecha,
+            usuario: h.usuarioQueCambio?.nombre || "",
+          })),
+          itemsPropios: o.items?.length || 0,
+        }));
+        setOrdenes(ordenesMapeadas);
       }
     } catch (err) {
       console.error("Error al cargar órdenes:", err);
-      // Si el endpoint no existe aún, usar datos vacíos
       setOrdenes([]);
     } finally {
       setCargando(false);
@@ -420,21 +434,46 @@ export default function PageVendedor() {
 
   const actualizarEstadoOrden = async (idOrden, nuevoEstado) => {
     try {
+      // Usar la orden actual de la lista o la seleccionada para saber el estado anterior
+      const ordenObjetivo = ordenSeleccionada || ordenes.find((o) => o._id === idOrden);
+      const estadoAnterior = ordenObjetivo ? ordenObjetivo.estado : "";
+
       const response = await api.put(`/vendor/orders/${idOrden}/status`, {
         estado: nuevoEstado,
-        comentario: comentarioEstado,
+        comentario: comentarioEstado || `Avanzado a ${etiquetasEstado[nuevoEstado]}`,
       });
+      
       if (response.data.success) {
         mostrarNotificacion(`Estado actualizado a "${etiquetasEstado[nuevoEstado]}"`);
-        setOrdenSeleccionada({
-          ...ordenSeleccionada,
-          estado: nuevoEstado,
-        });
+        
+        // Actualizar la orden seleccionada en detalle SOLO si estamos en esa vista
+        if (ordenSeleccionada && ordenSeleccionada._id === idOrden) {
+          const ordenActualizada = {
+            ...ordenSeleccionada,
+            estado: nuevoEstado,
+            historial: [
+              {
+                de: estadoAnterior,
+                a: nuevoEstado,
+                comentario: comentarioEstado || `Avanzado a ${etiquetasEstado[nuevoEstado]}`,
+                fecha: new Date().toISOString(),
+                usuario: "Vendedor",
+              },
+              ...(ordenSeleccionada.historial || []),
+            ],
+          };
+          setOrdenSeleccionada(ordenActualizada);
+          setHistorialOrden(ordenActualizada.historial);
+        }
+
         setComentarioEstado("");
         cargarOrdenes();
       }
     } catch (err) {
-      mostrarNotificacion("Error al actualizar estado", "error");
+      console.error("Error al actualizar estado:", err);
+      // Extraer mensaje del servidor o usar uno genérico
+      const mensaje = err.response?.data?.message || err.message || "Error al actualizar estado";
+      mostrarNotificacion(mensaje, "error");
     }
   };
 
@@ -483,6 +522,7 @@ export default function PageVendedor() {
 
   const getStatusColor = (estado) => {
     const colores = {
+      created: "",
       paid: "blue",
       packed: "orange",
       shipped: "purple",
@@ -990,6 +1030,7 @@ export default function PageVendedor() {
               onChange={(e) => setFiltroEstadoOrden(e.target.value)}
             >
               <option value="todas">Todas</option>
+              <option value="created">Creadas</option>
               <option value="paid">Pagadas</option>
               <option value="packed">Empacadas</option>
               <option value="shipped">Enviadas</option>
@@ -1209,18 +1250,23 @@ export default function PageVendedor() {
                   value={comentarioEstado}
                   onChange={(e) => setComentarioEstado(e.target.value)}
                   rows="2"
+                  disabled={cargando}
                 />
                 <button
                   className="boton-primario-vend"
-                  onClick={() =>
-                    actualizarEstadoOrden(orden._id, siguienteEstado)
-                  }
+                  disabled={cargando}
+                  onClick={async () => {
+                    setCargando(true);
+                    await actualizarEstadoOrden(orden._id, siguienteEstado);
+                    setCargando(false);
+                  }}
+                  style={{ opacity: cargando ? 0.6 : 1, cursor: cargando ? 'not-allowed' : 'pointer' }}
                 >
                   <ChevronRight
                     size={18}
                     style={{ marginRight: "8px" }}
                   />
-                  Avanzar a "{etiquetasEstado[siguienteEstado]}"
+                  {cargando ? "Actualizando..." : `Avanzar a "${etiquetasEstado[siguienteEstado]}"`}
                 </button>
               </div>
             )}

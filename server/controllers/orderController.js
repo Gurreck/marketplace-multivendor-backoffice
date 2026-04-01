@@ -167,3 +167,49 @@ exports.getOrderById = async (req, res, next) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// @desc    El cliente confirma la recepción del paquete
+// @route   PUT /api/orders/:id/confirm-receipt
+exports.confirmReceipt = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Orden no encontrada" });
+    }
+
+    if (order.user.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: "No autorizado para esta orden" });
+    }
+
+    if (order.status !== 'delivered') {
+      return res.status(400).json({ success: false, message: "La orden aún no ha sido entregada" });
+    }
+
+    // Ya fue confirmado antes
+    const yaConfirmado = order.statusHistory.some((h) => h.estado === 'receipt_confirmed');
+    if (yaConfirmado) {
+      return res.status(400).json({ success: false, message: "La recepción ya fue confirmada" });
+    }
+
+    // Añadimos receipt_confirmed al historial
+    order.statusHistory.push({
+      estado: 'receipt_confirmed',
+      usuarioQueCambio: req.user.id,
+      fecha: new Date(),
+      comentario: "Cliente confirmó la recepción del paquete",
+    });
+
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Recepción confirmada exitosamente",
+      data: order
+    });
+  } catch (error) {
+    console.error('Error al confirmar recepción:', error);
+    res.status(500).json({ success: false, message: "Error interno" });
+  }
+};

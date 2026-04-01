@@ -301,7 +301,16 @@ const createRMA = async (req, res) => {
   try {
     const { order, items, motivo, detalle, evidencia } = req.body;
 
-    if (!order || !items || items.length === 0 || !motivo) {
+    let itemsParsed = items;
+    if (typeof items === 'string') {
+      try {
+        itemsParsed = JSON.parse(items);
+      } catch (e) {
+        itemsParsed = [];
+      }
+    }
+
+    if (!order || !itemsParsed || itemsParsed.length === 0 || !motivo) {
       return res.status(400).json({
         success: false,
         message: "Orden, al menos un producto y motivo son obligatorios.",
@@ -317,13 +326,20 @@ const createRMA = async (req, res) => {
       return res.status(403).json({ success: false, message: "No autorizado." });
     }
 
+    let uploadedEvidencia = [];
+    if (req.files && req.files.length > 0) {
+      uploadedEvidencia = req.files.map((f) => f.path);
+    } else if (evidencia) {
+      uploadedEvidencia = Array.isArray(evidencia) ? evidencia : [evidencia];
+    }
+
     const rma = await RMA.create({
       user: req.user.id,
       order,
-      items,
+      items: itemsParsed,
       motivo,
       detalle: detalle || "",
-      evidencia: evidencia || [],
+      evidencia: uploadedEvidencia,
       estado: "requested",
     });
 

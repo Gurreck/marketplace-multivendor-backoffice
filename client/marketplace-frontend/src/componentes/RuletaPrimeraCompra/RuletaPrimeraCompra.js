@@ -4,103 +4,103 @@ import servicioGamificacion from '../../services/gamificationService';
 import { Gift, RotateCcw, PartyPopper, AlertCircle, Copy, CheckCircle2 } from 'lucide-react';
 import './RuletaPrimeraCompra.css';
 
-const SEGMENTS = [
-  { label: '5%', value: 5, color: '#6366f1' },
-  { label: '10%', value: 10, color: '#8b5cf6' },
-  { label: '15%', value: 15, color: '#a855f7' },
-  { label: '20%', value: 20, color: '#d946ef' },
-  { label: '25%', value: 25, color: '#ec4899' },
-  { label: '10%', value: 10, color: '#f43f5e' },
-  { label: '5%', value: 5, color: '#f97316' },
-  { label: '15%', value: 15, color: '#eab308' },
+const SEGMENTOS = [
+  { etiqueta: '5%', valor: 5, color: '#6366f1' },
+  { etiqueta: '10%', valor: 10, color: '#8b5cf6' },
+  { etiqueta: '15%', valor: 15, color: '#a855f7' },
+  { etiqueta: '20%', valor: 20, color: '#d946ef' },
+  { etiqueta: '25%', valor: 25, color: '#ec4899' },
+  { etiqueta: '10%', valor: 10, color: '#f43f5e' },
+  { etiqueta: '5%', valor: 5, color: '#f97316' },
+  { etiqueta: '15%', valor: 15, color: '#eab308' },
 ];
 
 export default function RuletaPrimeraCompra() {
   const { user } = useAuth();
-  const [spinning, setSpinning] = useState(false);
-  const [result, setResult] = useState(null);
+  const [girando, setGirando] = useState(false);
+  const [resultado, setResultado] = useState(null);
   const [error, setError] = useState('');
-  const [rotation, setRotation] = useState(0);
-  const [copied, setCopied] = useState(false);
+  const [rotacion, setRotacion] = useState(0);
+  const [copiado, setCopiado] = useState(false);
 
-  const canSpin = user?.firstPurchaseCompleted && !user?.wheelSpun && !result;
+  const puedeGirar = user?.firstPurchaseCompleted && !user?.wheelSpun && !resultado;
 
-  const handleSpin = async () => {
-    if (spinning || !canSpin) return;
+  const manejarGiro = async () => {
+    if (girando || !puedeGirar) return;
 
-    setSpinning(true);
+    setGirando(true);
     setError('');
 
     try {
-      const response = await servicioGamificacion.spinWheel();
+      const respuesta = await servicioGamificacion.girarRuleta();
 
       // Calcular rotación basada en el descuento obtenido
-      const segIndex = SEGMENTS.findIndex(s => s.value === response.data.descuentoPorcentaje);
-      const segAngle = 360 / SEGMENTS.length;
-      const targetAngle = 360 - (segIndex * segAngle + segAngle / 2);
-      const spins = 5 + Math.random() * 3;
-      const totalRotation = rotation + spins * 360 + targetAngle;
+      const indiceSegmento = SEGMENTOS.findIndex(s => s.valor === respuesta.data.descuentoPorcentaje);
+      const anguloSegmento = 360 / SEGMENTOS.length;
+      const anguloObjetivo = 360 - (indiceSegmento * anguloSegmento + anguloSegmento / 2);
+      const vueltas = 5 + Math.random() * 3;
+      const rotacionTotal = rotacion + vueltas * 360 + anguloObjetivo;
 
-      setRotation(totalRotation);
+      setRotacion(rotacionTotal);
 
       // Esperar a que la animación termine
       setTimeout(() => {
-        setResult(response.data);
-        setSpinning(false);
+        setResultado(respuesta.data);
+        setGirando(false);
       }, 4000);
     } catch (err) {
       setError(err.response?.data?.message || 'Error al girar la ruleta');
-      setSpinning(false);
+      setGirando(false);
     }
   };
 
-  const handleCopy = () => {
-    if (result?.codigo) {
-      navigator.clipboard.writeText(result.codigo);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const manejarCopiar = () => {
+    if (resultado?.codigo) {
+      navigator.clipboard.writeText(resultado.codigo);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
     }
   };
 
   // Generar paths SVG para los segmentos
-  const renderWheel = () => {
+  const renderizarRuleta = () => {
     const cx = 200, cy = 200, r = 190;
-    const total = SEGMENTS.length;
-    const anglePerSeg = 360 / total;
+    const total = SEGMENTOS.length;
+    const anguloPorSegmento = 360 / total;
 
-    return SEGMENTS.map((seg, i) => {
-      const startAngle = (i * anglePerSeg - 90) * (Math.PI / 180);
-      const endAngle = ((i + 1) * anglePerSeg - 90) * (Math.PI / 180);
-      const x1 = cx + r * Math.cos(startAngle);
-      const y1 = cy + r * Math.sin(startAngle);
-      const x2 = cx + r * Math.cos(endAngle);
-      const y2 = cy + r * Math.sin(endAngle);
-      const largeArc = anglePerSeg > 180 ? 1 : 0;
+    return SEGMENTOS.map((seg, i) => {
+      const anguloInicio = (i * anguloPorSegmento - 90) * (Math.PI / 180);
+      const anguloFin = ((i + 1) * anguloPorSegmento - 90) * (Math.PI / 180);
+      const x1 = cx + r * Math.cos(anguloInicio);
+      const y1 = cy + r * Math.sin(anguloInicio);
+      const x2 = cx + r * Math.cos(anguloFin);
+      const y2 = cy + r * Math.sin(anguloFin);
+      const arcoGrande = anguloPorSegmento > 180 ? 1 : 0;
 
-      const midAngle = ((i * anglePerSeg + anglePerSeg / 2) - 90) * (Math.PI / 180);
-      const textX = cx + (r * 0.65) * Math.cos(midAngle);
-      const textY = cy + (r * 0.65) * Math.sin(midAngle);
-      const textRotate = i * anglePerSeg + anglePerSeg / 2;
+      const anguloMedio = ((i * anguloPorSegmento + anguloPorSegmento / 2) - 90) * (Math.PI / 180);
+      const textoX = cx + (r * 0.65) * Math.cos(anguloMedio);
+      const textoY = cy + (r * 0.65) * Math.sin(anguloMedio);
+      const rotarTexto = i * anguloPorSegmento + anguloPorSegmento / 2;
 
       return (
         <g key={i}>
           <path
-            d={`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`}
+            d={`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${arcoGrande} 1 ${x2} ${y2} Z`}
             fill={seg.color}
             stroke="rgba(255,255,255,0.3)"
             strokeWidth="2"
           />
           <text
-            x={textX}
-            y={textY}
+            x={textoX}
+            y={textoY}
             fill="white"
             fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             dominantBaseline="middle"
-            transform={`rotate(${textRotate}, ${textX}, ${textY})`}
+            transform={`rotate(${rotarTexto}, ${textoX}, ${textoY})`}
           >
-            {seg.label}
+            {seg.etiqueta}
           </text>
         </g>
       );
@@ -132,7 +132,7 @@ export default function RuletaPrimeraCompra() {
         </div>
       )}
 
-      {user?.wheelSpun && !result && (
+      {user?.wheelSpun && !resultado && (
         <div className="ruleta-info already-spun">
           <CheckCircle2 size={24} />
           <div>
@@ -150,11 +150,11 @@ export default function RuletaPrimeraCompra() {
           viewBox="0 0 400 400"
           className="ruleta-wheel"
           style={{
-            transform: `rotate(${rotation}deg)`,
-            transition: spinning ? 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none',
+            transform: `rotate(${rotacion}deg)`,
+            transition: girando ? 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none',
           }}
         >
-          {renderWheel()}
+          {renderizarRuleta()}
           <circle cx="200" cy="200" r="30" fill="#1a1a2e" stroke="white" strokeWidth="3" />
           <text x="200" y="200" fill="white" fontSize="12" fontWeight="bold" textAnchor="middle" dominantBaseline="middle">
             GIRA
@@ -162,31 +162,31 @@ export default function RuletaPrimeraCompra() {
         </svg>
       </div>
 
-      {!result && (
+      {!resultado && (
         <button
-          className={`ruleta-spin-btn ${(!canSpin || spinning) ? 'disabled' : ''}`}
-          onClick={handleSpin}
-          disabled={!canSpin || spinning}
+          className={`ruleta-spin-btn ${(!puedeGirar || girando) ? 'disabled' : ''}`}
+          onClick={manejarGiro}
+          disabled={!puedeGirar || girando}
         >
-          <RotateCcw size={20} className={spinning ? 'spinning-icon' : ''} />
-          {spinning ? 'Girando...' : 'Girar Ruleta'}
+          <RotateCcw size={20} className={girando ? 'spinning-icon' : ''} />
+          {girando ? 'Girando...' : 'Girar Ruleta'}
         </button>
       )}
 
-      {result && (
+      {resultado && (
         <div className="ruleta-result">
           <PartyPopper size={48} />
           <h2>¡Felicidades! 🎉</h2>
-          <p className="result-discount">Has ganado un <strong>{result.descuentoPorcentaje}%</strong> de descuento</p>
+          <p className="result-discount">Has ganado un <strong>{resultado.descuentoPorcentaje}%</strong> de descuento</p>
           <div className="result-coupon">
-            <span className="coupon-code">{result.codigo}</span>
-            <button className="copy-btn" onClick={handleCopy}>
-              {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />}
-              {copied ? 'Copiado' : 'Copiar'}
+            <span className="coupon-code">{resultado.codigo}</span>
+            <button className="copy-btn" onClick={manejarCopiar}>
+              {copiado ? <CheckCircle2 size={18} /> : <Copy size={18} />}
+              {copiado ? 'Copiado' : 'Copiar'}
             </button>
           </div>
           <p className="result-expiry">
-            Válido hasta: {new Date(result.validoHasta).toLocaleDateString()}
+            Válido hasta: {new Date(resultado.validoHasta).toLocaleDateString()}
           </p>
         </div>
       )}

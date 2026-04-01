@@ -44,6 +44,7 @@ const register = async (req, res) => {
         token,
         debitCard: user.debitCard,
         shippingAddress: user.shippingAddress,
+        profilePicture: user.profilePicture,
       },
     });
   } catch (error) {
@@ -120,6 +121,7 @@ const login = async (req, res) => {
         token,
         debitCard: user.debitCard,
         shippingAddress: user.shippingAddress,
+        profilePicture: user.profilePicture,
       },
     });
   } catch (error) {
@@ -157,6 +159,10 @@ const updateProfile = async (req, res) => {
       user.shippingAddress = req.body.shippingAddress;
     }
 
+    if (req.body.profilePicture !== undefined) {
+      user.profilePicture = req.body.profilePicture;
+    }
+
     const updatedUser = await user.save();
 
     res.status(200).json({
@@ -169,6 +175,7 @@ const updateProfile = async (req, res) => {
         role: updatedUser.role,
         debitCard: updatedUser.debitCard,
         shippingAddress: updatedUser.shippingAddress,
+        profilePicture: updatedUser.profilePicture,
       },
     });
   } catch (error) {
@@ -212,4 +219,44 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, updateProfile, getProfile };
+// @desc    Subir foto de perfil
+// @route   PUT /api/auth/profile/picture
+// @access  Privado
+const uploadProfilePicture = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No se subió ninguna imagen." });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    user.profilePicture = req.file.path; // Cloudinary returns the URL in path
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Foto de perfil actualizada exitosamente.",
+      data: {
+        id: updatedUser._id,
+        nombre: updatedUser.nombre,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        debitCard: updatedUser.debitCard,
+        shippingAddress: updatedUser.shippingAddress,
+        profilePicture: updatedUser.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error al subir foto de perfil:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al subir la foto de perfil.",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, updateProfile, getProfile, uploadProfilePicture };

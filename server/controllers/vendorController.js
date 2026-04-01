@@ -183,7 +183,6 @@ const updateVendorItemStatus = async (req, res) => {
       comentario: comentario || `Vendedor cambió estado del producto "${item.name}" a "${estado}"`,
     });
 
-    // Si todos los items del vendedor están en shipped, se puede considerar actualizar el estado global
     await order.save();
 
     await registrarAuditoria({
@@ -207,8 +206,102 @@ const updateVendorItemStatus = async (req, res) => {
   }
 };
 
+// @desc    Actualizar estado global de la orden (vendedor avanza el tracking)
+// @route   PUT /api/vendor/orders/:orderId/status
+const actualizarEstadoOrden = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { estado, comentario } = req.body;
+    const vendorId = req.user.id;
+
+    console.log("=== actualizarEstadoOrden ===");
+    console.log("orderId:", orderId);
+    console.log("estado solicitado:", estado);
+    console.log("body completo:", req.body);
+    console.log("params:", req.params);
+
+    if (!estado) {
+      return res.status(400).json({
+        success: false,
+        message: "El campo 'estado' es obligatorio en el body.",
+      });
+    }
+
+    const estadosValidos = ["paid", "packed", "shipped", "delivered"];
+    if (!estadosValidos.includes(estado)) {
+      return res.status(400).json({
+        success: false,
+        message: `Estado "${estado}" no válido. Los válidos son: ${estadosValidos.join(", ")}`,
+      });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Orden no encontrada." });
+    }
+
+    console.log("Estado actual de la orden:", order.status);
+
+    // Verificar que la orden contiene productos de este vendedor
+    const tieneItemsDelVendedor = order.items.some(
+      (item) => item.vendor && item.vendor.toString() === vendorId.toString()
+    );
+    if (!tieneItemsDelVendedor) {
+      return res.status(403).json({ success: false, message: "No autorizado para esta orden." });
+    }
+
+    // Validar transición válida de estado
+    const flujoEstados = ["created", "pending", "paid", "packed", "shipped", "delivered"];
+    const indiceActual = flujoEstados.indexOf(order.status);
+    const indiceNuevo = flujoEstados.indexOf(estado);
+
+    if (indiceNuevo <= indiceActual) {
+      return res.status(400).json({
+        success: false,
+        message: `No se puede cambiar de "${order.status}" a "${estado}". El estado solo puede avanzar.`,
+      });
+    }
+
+    const estadoAnterior = order.status;
+    order.status = estado;
+
+    // Registrar en historial
+    order.statusHistory.push({
+      estado,
+      usuarioQueCambio: req.user.id,
+      fecha: new Date(),
+      comentario: comentario || `Estado cambiado de "${estadoAnterior}" a "${estado}" por vendedor`,
+    });
+
+    await order.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "cambio_estado_orden",
+      entidad: "orden",
+      entidadId: order._id,
+      detalles: `Vendedor cambió estado de orden de "${estadoAnterior}" a "${estado}"`,
+      datosAnteriores: { estado: estadoAnterior },
+      datosNuevos: { estado },
+    });
+
+    console.log(`Estado actualizado: ${estadoAnterior} → ${estado}`);
+
+    res.status(200).json({
+      success: true,
+      message: `Estado de la orden actualizado a "${estado}"`,
+      data: order,
+    });
+  } catch (error) {
+    console.error("Error en actualizarEstadoOrden:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getVendorDashboard,
   getVendorOrders,
   updateVendorItemStatus,
+  actualizarEstadoOrden,
 };
