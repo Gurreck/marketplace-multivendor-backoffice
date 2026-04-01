@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -44,6 +44,7 @@ const Tracking = ({ isEmbedded = false }) => {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Estado para simular la carga de datos del paquete
   const [datosEnvio, setDatosEnvio] = useState(null);
@@ -77,7 +78,8 @@ const Tracking = ({ isEmbedded = false }) => {
             { nombre: "Procesado", icono: <Box size={20} />, completado: true },
             { nombre: "Despachado", icono: <Shuffle size={20} />, completado: !orderFromState },
             { nombre: "En Camino", icono: <Truck size={20} />, activo: !orderFromState },
-            { nombre: "Listo para entregar", icono: <Flag size={20} />, completado: false }
+            { nombre: "Listo para entregar", icono: <Flag size={20} />, completado: false },
+            { nombre: "Entregado", icono: <CheckCircle2 size={20} />, completado: false }
           ],
           historial: orderFromState ? [
             { 
@@ -101,14 +103,14 @@ const Tracking = ({ isEmbedded = false }) => {
 
   // Efecto secundario para avanzar el estado cada 10 segundos
   useEffect(() => {
-    // Si no hay datos, o si ya llegó al estado final (4 = Entregado), no hacemos nada
-    if (!datosEnvio || datosEnvio.estadoActual >= 4) return;
+    // Si no hay datos, o si ya llegó al estado final (5 = Entregado), no hacemos nada
+    if (!datosEnvio || datosEnvio.estadoActual >= 5) return;
 
     // Solo avanzar si viene de una compra (estado inicial 1)
     // Pero si el usuario quiere que siempre avance para probar, omitimos esta validación:
     const timerId = setInterval(() => {
       setDatosEnvio(prev => {
-        if (!prev || prev.estadoActual >= 4) {
+        if (!prev || prev.estadoActual >= 5) {
           clearInterval(timerId);
           return prev;
         }
@@ -128,7 +130,8 @@ const Tracking = ({ isEmbedded = false }) => {
           null, // Pedido y procesado ya ocurren al inicio
           { evento: "Carga en vehículo de transporte", ubicacion: "Centro de Clasificación Logística", fecha: new Date().toLocaleString('es-ES') },
           { evento: "En camino al destino final", ubicacion: "Unidad de Reparto Local", fecha: new Date().toLocaleString('es-ES') },
-          { evento: "Paquete listo para entregar", ubicacion: "Dirección del Destinatario", fecha: new Date().toLocaleString('es-ES') }
+          { evento: "Paquete listo para entregar", ubicacion: "Dirección del Destinatario", fecha: new Date().toLocaleString('es-ES') },
+          { evento: "Paquete entregado", ubicacion: "Dirección del Destinatario", fecha: new Date().toLocaleString('es-ES') }
         ];
 
         const nuevoEvento = mensajesLog[nextState];
@@ -185,7 +188,7 @@ const Tracking = ({ isEmbedded = false }) => {
           <p className="subtitulo-rastreo">ID: <span className="texto-id-rastreo">{datosEnvio.idRastreo}</span></p>
         </div>
         <div className="etiqueta-estado">
-          {datosEnvio.pasos[datosEnvio.estadoActual].nombre}
+          {datosEnvio.pasos[Math.min(datosEnvio.estadoActual, datosEnvio.pasos.length - 1)].nombre}
         </div>
       </header>
 
@@ -229,7 +232,7 @@ const Tracking = ({ isEmbedded = false }) => {
           <div className="linea-progreso">
             <div 
               className="barra-progreso-llenado" 
-              style={{ width: `${(datosEnvio.estadoActual / (datosEnvio.pasos.length - 1)) * 100}%` }}
+              style={{ width: `${Math.min((datosEnvio.estadoActual / (datosEnvio.pasos.length - 1)) * 100, 100)}%` }}
             ></div>
           </div>
 
@@ -259,13 +262,19 @@ const Tracking = ({ isEmbedded = false }) => {
               <div key={index} className="item-actividad">
                 <div className="punto-actividad"></div>
                 <div className="contenido-actividad">
-                  {actividad.evento === "Paquete listo para entregar" && (
+                  {actividad.evento === "Paquete entregado" && (
                     <button 
                       className="boton-recoger-paquete" 
                       style={{ marginTop: 0, marginBottom: '12px' }}
                       onClick={() => {
-                        // Ahora la reseña es estática en la página, podemos hacer scroll o nada
-                        console.log("Paquete recogido");
+                        setDatosEnvio(prev => ({
+                          ...prev,
+                          estadoActual: 6
+                        }));
+                        console.log("Paquete recogido, redirigiendo en 2s");
+                        setTimeout(() => {
+                           navigate('/');
+                        }, 2000);
                       }}
                     >
                       Recoger paquete
