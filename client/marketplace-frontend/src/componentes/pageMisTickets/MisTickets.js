@@ -44,10 +44,7 @@ export default function MisTickets() {
 
         try {
             setCreando(true);
-            await servicioSoporte.obtenerTickets(); // Verify connection
-            // Use the API directly since supportService doesn't have a create method
-            const api = (await import('../../services/api')).default;
-            await api.post('/support/tickets', {
+            await servicioSoporte.crearTicket({
                 asunto: newAsunto,
                 prioridad: newPrioridad,
                 descripcion: newDescripcion,
