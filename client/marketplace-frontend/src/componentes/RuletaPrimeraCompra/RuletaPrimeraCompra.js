@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import servicioGamificacion from '../../services/gamificationService';
+import api from '../../services/api';
 import { Gift, RotateCcw, PartyPopper, AlertCircle, Copy, CheckCircle2 } from 'lucide-react';
 import './RuletaPrimeraCompra.css';
 
@@ -22,8 +23,27 @@ export default function RuletaPrimeraCompra() {
   const [error, setError] = useState('');
   const [rotacion, setRotacion] = useState(0);
   const [copiado, setCopiado] = useState(false);
+  const [perfilFresco, setPerfilFresco] = useState(null);
+  const [cargandoPerfil, setCargandoPerfil] = useState(true);
 
-  const puedeGirar = user?.firstPurchaseCompleted && !user?.wheelSpun && !resultado;
+  // Obtener datos frescos del perfil al montar (evitar datos stale del contexto)
+  useEffect(() => {
+    const cargarPerfil = async () => {
+      try {
+        const resp = await api.get('/auth/profile');
+        setPerfilFresco(resp.data.data);
+      } catch (err) {
+        console.error('Error al cargar perfil para ruleta:', err);
+      } finally {
+        setCargandoPerfil(false);
+      }
+    };
+    cargarPerfil();
+  }, []);
+
+  // Usar datos frescos del perfil si están disponibles, sino caer al contexto
+  const datosUsuario = perfilFresco || user;
+  const puedeGirar = datosUsuario?.firstPurchaseCompleted && !datosUsuario?.wheelSpun && !resultado;
 
   const manejarGiro = async () => {
     if (girando || !puedeGirar) return;
@@ -122,7 +142,7 @@ export default function RuletaPrimeraCompra() {
         </div>
       )}
 
-      {!user?.firstPurchaseCompleted && (
+      {!datosUsuario?.firstPurchaseCompleted && !cargandoPerfil && (
         <div className="ruleta-info">
           <AlertCircle size={24} />
           <div>
@@ -132,7 +152,7 @@ export default function RuletaPrimeraCompra() {
         </div>
       )}
 
-      {user?.wheelSpun && !resultado && (
+      {datosUsuario?.wheelSpun && !resultado && !cargandoPerfil && (
         <div className="ruleta-info already-spun">
           <CheckCircle2 size={24} />
           <div>

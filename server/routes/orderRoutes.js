@@ -7,7 +7,7 @@ const { createOrder, getMyOrders, getOrderById, confirmReceipt } = require("../c
 // Rutas de órdenes
 router.post("/", authMiddleware, authorize("cliente"), createOrder);
 router.get("/my-orders", authMiddleware, authorize("cliente"), getMyOrders);
-router.put("/:id/confirm-receipt", authMiddleware, authorize("cliente"), confirmReceipt);
+router.put("/:id/confirm-receipt", authMiddleware, confirmReceipt);
 router.get("/:id", authMiddleware, getOrderById);
 
 module.exports = router;

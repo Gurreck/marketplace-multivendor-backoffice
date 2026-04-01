@@ -179,8 +179,14 @@ exports.confirmReceipt = async (req, res) => {
       return res.status(404).json({ success: false, message: "Orden no encontrada" });
     }
 
-    if (order.user.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "No autorizado para esta orden" });
+    const orderUserId = order.user._id || order.user;
+    const isOwner = orderUserId.toString().toLowerCase() === req.user.id.toString().toLowerCase();
+    const isAdmin = req.user.role === 'administrador';
+    const isSoporte = req.user.role === 'soporte';
+    const isVendor = req.user.role === 'vendedor';
+
+    if (!isOwner && !isAdmin && !isSoporte && !isVendor) {
+      return res.status(403).json({ success: false, message: "No autorizado para confirmar esta orden" });
     }
 
     if (order.status !== 'delivered') {
