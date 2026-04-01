@@ -43,7 +43,7 @@ import {
 
 export default function PageVendedor() {
   const navegar = useNavigate();
-  const { logout: cerrarSesion, user: usuario } = useAuth();
+  const { logout: cerrarSesion } = useAuth();
   const { isDarkMode: esModoOscuro, toggleTheme: alternarTema } = useTheme();
 
   // ===== ESTADO GENERAL =====
@@ -113,28 +113,18 @@ export default function PageVendedor() {
   const cargarKPIs = useCallback(async () => {
     try {
       setCargando(true);
-      // Simulamos KPIs basados en los productos del vendedor
-      const response = await api.get("/products/vendor/me");
+      const response = await api.get("/vendor/dashboard");
       if (response.data.success) {
-        const prods = response.data.data;
-        const activos = prods.filter((p) => p.active !== false);
-        const stockBajo = prods.filter(
-          (p) => p.stock <= stockThreshold && p.active !== false,
-        );
+        const data = response.data.data;
         setKpis({
-          ventasTotales: activos.reduce(
-            (acc, p) => acc + p.price * (p.sold || 0),
-            0,
-          ),
-          ordenesTotales: prods.reduce((acc, p) => acc + (p.sold || 0), 0),
-          ordenesPendientes: 0,
-          productosActivos: activos.length,
-          productosStockBajo: stockBajo.length,
-          topProductos: [...prods]
-            .sort((a, b) => (b.sold || 0) - (a.sold || 0))
-            .slice(0, 5),
-          productosStockBajoLista: stockBajo.slice(0, 10),
-          ventasPorMes: [],
+          ventasTotales: data.ventasTotales || 0,
+          ordenesTotales: data.totalOrdenes || 0,
+          ordenesPendientes: data.ordenesPendientes || 0,
+          productosActivos: data.productosActivos || 0,
+          productosStockBajo: data.lowStockProducts?.length || 0,
+          topProductos: [],
+          productosStockBajoLista: data.lowStockProducts || [],
+          ventasPorMes: data.ventasPorMes || [],
           ordenesPorEstado: {
             paid: 0,
             packed: 0,
@@ -145,6 +135,30 @@ export default function PageVendedor() {
       }
     } catch (err) {
       console.error("Error al cargar KPIs:", err);
+      // Fallback: simular KPIs desde productos
+      try {
+        const response = await api.get("/products/vendor/me");
+        if (response.data.success) {
+          const prods = response.data.data;
+          const activos = prods.filter((p) => p.isActive !== false);
+          const stockBajo = prods.filter(
+            (p) => p.stock <= (p.lowStockThreshold || stockThreshold) && p.isActive !== false,
+          );
+          setKpis({
+            ventasTotales: 0,
+            ordenesTotales: 0,
+            ordenesPendientes: 0,
+            productosActivos: activos.length,
+            productosStockBajo: stockBajo.length,
+            topProductos: [],
+            productosStockBajoLista: stockBajo.slice(0, 10),
+            ventasPorMes: [],
+            ordenesPorEstado: { paid: 0, packed: 0, shipped: 0, delivered: 0 },
+          });
+        }
+      } catch (fallbackErr) {
+        console.error("Fallback KPI also failed:", fallbackErr);
+      }
     } finally {
       setCargando(false);
     }

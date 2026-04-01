@@ -44,7 +44,6 @@ const PageViewProduct = () => {
     const [similarProducts, setSimilarProducts] = useState([]);
 
     const [comments, setComments] = useState([]);
-    const [averageRating, setAverageRating] = useState(0);
     const [loadingComments, setLoadingComments] = useState(true);
 
 
@@ -58,7 +57,6 @@ const PageViewProduct = () => {
             const response = await commentService.getCommentsByProduct(id);
             if (response.data.success) {
                 setComments(response.data.data);
-                setAverageRating(response.data.averageRating);
             }
         } catch (error) {
             console.error("Error fetching comments:", error);
@@ -238,6 +236,28 @@ const PageViewProduct = () => {
                         <div className="etiqueta-precio">
                             <span className="precio-producto"> ₡ {selectedProduct.price.toLocaleString()}</span>
                         </div>
+
+                        {/* Stock Indicator */}
+                        {selectedProduct.stock !== undefined && (
+                            <div style={{
+                                padding: '8px 16px',
+                                borderRadius: '10px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                marginBottom: '12px',
+                                ...(selectedProduct.stock <= 5
+                                    ? { background: 'rgba(239, 68, 68, 0.12)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.3)' }
+                                    : selectedProduct.stock <= 20
+                                    ? { background: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.3)' }
+                                    : { background: 'rgba(16, 185, 129, 0.12)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' })
+                            }}>
+                                {selectedProduct.stock <= 5
+                                    ? `¡Solo quedan ${selectedProduct.stock} unidades! 🔥`
+                                    : selectedProduct.stock <= 20
+                                    ? `${selectedProduct.stock} unidades disponibles`
+                                    : `En stock (${selectedProduct.stock} disponibles)`}
+                            </div>
+                        )}
 
                         <div className="botones-accion">
                             <button
