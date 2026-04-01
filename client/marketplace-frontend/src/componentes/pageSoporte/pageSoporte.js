@@ -298,7 +298,7 @@ export default function PaginaSoporte() {
       filtroEstadoTicket === "todos" || t.estado === filtroEstadoTicket;
     const matchesBusqueda =
       (t.asunto || "").toLowerCase().includes(buscarTicket.toLowerCase()) ||
-      (t.cliente?.nombre || "").toLowerCase().includes(buscarTicket.toLowerCase());
+      (t.user?.nombre || "").toLowerCase().includes(buscarTicket.toLowerCase());
     return matchesEstado && matchesBusqueda;
   });
 
@@ -307,7 +307,7 @@ export default function PaginaSoporte() {
       filtroEstadoRMA === "todos" || d.estado === filtroEstadoRMA;
     const matchesBusqueda =
       (d.motivo || "").toLowerCase().includes(buscarRMA.toLowerCase()) ||
-      (d.cliente?.nombre || "").toLowerCase().includes(buscarRMA.toLowerCase());
+      (d.user?.nombre || "").toLowerCase().includes(buscarRMA.toLowerCase());
     return matchesEstado && matchesBusqueda;
   });
 
@@ -443,13 +443,13 @@ export default function PaginaSoporte() {
                   <td>
                     <div className="info-usuario-sop">
                       <div className="avatar-sop">
-                        {obtenerIniciales(ticket.cliente?.nombre)}
+                        {obtenerIniciales(ticket.user?.nombre)}
                       </div>
                       <div className="detalles-usuario-sop">
                         <strong>
-                          {ticket.cliente?.nombre || "Cliente"}
+                          {ticket.user?.nombre || "Cliente"}
                         </strong>
-                        <span>{ticket.cliente?.email || ""}</span>
+                        <span>{ticket.user?.email || ""}</span>
                       </div>
                     </div>
                   </td>
@@ -469,9 +469,9 @@ export default function PaginaSoporte() {
                     </span>
                   </td>
                   <td>
-                    {ticket.asignado ? (
+                    {ticket.asignadoA ? (
                       <span className="texto-asignado-sop">
-                        {ticket.asignado.nombre || "Asignado"}
+                        {ticket.asignadoA.nombre || "Asignado"}
                       </span>
                     ) : (
                       <span className="texto-sin-asignar-sop">
@@ -494,7 +494,7 @@ export default function PaginaSoporte() {
                       >
                         <Eye size={16} />
                       </button>
-                      {!ticket.asignado && (
+                      {!ticket.asignadoA && (
                         <button
                           className="boton-accion-sop success"
                           onClick={() => asignarseTicket(ticket._id)}
@@ -555,13 +555,13 @@ export default function PaginaSoporte() {
               <div className="detalle-info-item-sop">
                 <span className="detalle-label-sop">Cliente</span>
                 <span className="detalle-valor-sop">
-                  {ticket.cliente?.nombre || "—"}
+                  {ticket.user?.nombre || "—"}
                 </span>
               </div>
               <div className="detalle-info-item-sop">
                 <span className="detalle-label-sop">Email</span>
                 <span className="detalle-valor-sop">
-                  {ticket.cliente?.email || "—"}
+                  {ticket.user?.email || "—"}
                 </span>
               </div>
               <div className="detalle-info-item-sop">
@@ -583,7 +583,7 @@ export default function PaginaSoporte() {
               <div className="detalle-info-item-sop">
                 <span className="detalle-label-sop">Asignado a</span>
                 <span className="detalle-valor-sop">
-                  {ticket.asignado?.nombre || "Sin asignar"}
+                  {ticket.asignadoA?.nombre || "Sin asignar"}
                 </span>
               </div>
               <div className="detalle-info-item-sop">
@@ -615,7 +615,7 @@ export default function PaginaSoporte() {
 
             {/* Acciones rápidas */}
             <div className="acciones-rapidas-sop">
-              {!ticket.asignado && (
+              {!ticket.asignadoA && (
                 <button
                   className="boton-primario-sop"
                   onClick={() => asignarseTicket(ticket._id)}
@@ -691,11 +691,11 @@ export default function PaginaSoporte() {
               <div className="mensaje-sop cliente">
                 <div className="cabecera-mensaje-sop">
                   <div className="avatar-mensaje-sop">
-                    {obtenerIniciales(ticket.cliente?.nombre)}
+                    {obtenerIniciales(ticket.user?.nombre)}
                   </div>
                   <div>
                     <strong>
-                      {ticket.cliente?.nombre || "Cliente"}
+                      {ticket.user?.nombre || "Cliente"}
                     </strong>
                     <span className="fecha-mensaje-sop">
                       {formatearFecha(ticket.createdAt)}
@@ -711,22 +711,22 @@ export default function PaginaSoporte() {
               {(ticket.mensajes || []).map((msg, i) => (
                 <div
                   key={i}
-                  className={`mensaje-sop ${msg.rol === "soporte" ? "soporte" : "cliente"}`}
+                  className={`mensaje-sop ${(msg.remitente?.role === "soporte" || msg.remitente?.role === "administrador") ? "soporte" : "cliente"}`}
                 >
                   <div className="cabecera-mensaje-sop">
                     <div
-                      className={`avatar-mensaje-sop ${msg.rol === "soporte" ? "soporte" : ""}`}
+                      className={`avatar-mensaje-sop ${(msg.remitente?.role === "soporte" || msg.remitente?.role === "administrador") ? "soporte" : ""}`}
                     >
-                      {obtenerIniciales(msg.autor)}
+                      {obtenerIniciales(msg.remitente?.nombre)}
                     </div>
                     <div>
-                      <strong>{msg.autor}</strong>
+                      <strong>{msg.remitente?.nombre || "Usuario"}</strong>
                       <span className="fecha-mensaje-sop">
                         {formatearFecha(msg.fecha)}
                       </span>
                     </div>
                   </div>
-                  <p className="texto-mensaje-sop">{msg.mensaje}</p>
+                  <p className="texto-mensaje-sop">{msg.texto}</p>
                 </div>
               ))}
             </div>

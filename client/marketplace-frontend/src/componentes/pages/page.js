@@ -35,6 +35,14 @@ export default function Principal() {
   const [selectedCategory, setSelectedCategory] = useState('Todos'); // Categoría activa para el filtro
   const [showNotification, setShowNotification] = useState(''); // Mensaje de éxito al agregar al carrito
   const [showLoginModal, setShowLoginModal] = useState(false); // Visibilidad del modal de login sugerido
+  const [categories, setCategories] = useState(['Todos']);
+  
+  // Filtros avanzados
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
+  const [selectedVendor, setSelectedVendor] = useState('');
+  const [onlyInStock, setOnlyInStock] = useState(false);
+  const [vendors, setVendors] = useState([]);
 
   // ===== EFECTOS =====
   /**
@@ -42,7 +50,44 @@ export default function Principal() {
    */
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
+    fetchVendors();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get('/categories');
+      if (response.data.success) {
+        const catNames = response.data.data
+          .filter(c => c.activa)
+          .map(c => c.nombre);
+        setCategories(['Todos', ...catNames]);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // Fallback a categorías por defecto
+      setCategories(['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios']);
+    }
+  };
+
+  const fetchVendors = async () => {
+    try {
+      const response = await api.get('/products');
+      if (response.data.success) {
+        const uniqueVendors = [];
+        const seen = new Set();
+        response.data.data.forEach(p => {
+          if (p.vendor && p.vendor._id && !seen.has(p.vendor._id)) {
+            seen.add(p.vendor._id);
+            uniqueVendors.push({ _id: p.vendor._id, nombre: p.vendor.nombre });
+          }
+        });
+        setVendors(uniqueVendors);
+      }
+    } catch (error) {
+      console.error('Error fetching vendors:', error);
+    }
+  };
 
   // ===== CARGA DE DATOS =====
   /**
@@ -62,12 +107,17 @@ export default function Principal() {
     }
   };
 
-  const categories = ['Todos', 'Computadoras', 'Audio', 'Pantallas', 'Periféricos', 'Tablets', 'Wearables', 'Cámaras', 'Accesorios'];
+
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'Todos' || product.category === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPriceMin = !priceMin || product.price >= parseFloat(priceMin);
+    const matchesPriceMax = !priceMax || product.price <= parseFloat(priceMax);
+    const matchesVendor = !selectedVendor || product.vendor?._id === selectedVendor;
+    const matchesStock = !onlyInStock || product.stock > 0;
+    return matchesCategory && matchesSearch && matchesPriceMin && matchesPriceMax && matchesVendor && matchesStock;
   });
 
   // ===== MANEJADORES DE EVENTOS =====
@@ -147,6 +197,27 @@ export default function Principal() {
           <div className="encabezado-seccion">
             <h2>{selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}</h2>
             <p>{filteredProducts.length} productos encontrados</p>
+          </div>
+
+          {/* Filtros Avanzados */}
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Precio:</label>
+              <input type="number" placeholder="Min" value={priceMin} onChange={e => setPriceMin(e.target.value)} style={{ width: '80px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }} />
+              <span style={{ color: 'rgba(255,255,255,0.4)' }}>-</span>
+              <input type="number" placeholder="Max" value={priceMax} onChange={e => setPriceMax(e.target.value)} style={{ width: '80px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Vendedor:</label>
+              <select value={selectedVendor} onChange={e => setSelectedVendor(e.target.value)} style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }}>
+                <option value="">Todos</option>
+                {vendors.map(v => <option key={v._id} value={v._id}>{v.nombre}</option>)}
+              </select>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+              <input type="checkbox" checked={onlyInStock} onChange={e => setOnlyInStock(e.target.checked)} />
+              Solo disponibles
+            </label>
           </div>
 
           {/* Listado de Productos (Grid) */}

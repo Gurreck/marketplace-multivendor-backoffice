@@ -17,15 +17,20 @@ import {
     CreditCard, 
     MapPin, 
     ChevronRight,
-    LogOut
+    LogOut,
+    Edit2,
+    Loader
 } from 'lucide-react';
+import { useRef } from 'react';
 
 export default function PerfilCliente() {
-    const { user, logout } = useAuth();
+    const { user, logout, uploadProfilePicture } = useAuth();
     const { isDarkMode } = useTheme();
     const { cartCount } = useCart();
     const navigate = useNavigate();
     const location = useLocation();
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const handleLogout = () => {
         logout();
@@ -33,6 +38,25 @@ export default function PerfilCliente() {
     };
 
     const isActive = (path) => location.pathname.includes(path);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                setUploading(true);
+                await uploadProfilePicture(file);
+            } catch (error) {
+                console.error("Error subiendo foto:", error);
+                alert("Hubo un error al subir la foto de perfil");
+            } finally {
+                setUploading(false);
+            }
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
 
     return (
         <div className={`perfil-cliente-container ${!isDarkMode ? 'modo-claro' : ''}`}>
@@ -46,11 +70,24 @@ export default function PerfilCliente() {
                 {/* Sidebar */}
                 <aside className="perfil-sidebar">
                     <div className="perfil-info-resumen">
-                        <img 
-                            src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || 'U')}&background=0094FF&color=fff`} 
-                            alt="avatar" 
-                            className="perfil-avatar-grande"
-                        />
+                        <div className="perfil-avatar-container">
+                            <img 
+                                src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || 'U')}&background=0094FF&color=fff`} 
+                                alt="avatar" 
+                                className="perfil-avatar-grande"
+                                style={{ opacity: uploading ? 0.5 : 1 }}
+                            />
+                            <div className="perfil-avatar-edit" onClick={triggerFileInput} title="Cambiar foto de perfil">
+                                {uploading ? <Loader size={16} className="lucide-spin" /> : <Edit2 size={16} />}
+                            </div>
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                ref={fileInputRef} 
+                                style={{ display: 'none' }} 
+                                onChange={handleFileChange}
+                            />
+                        </div>
                         <div className="perfil-nombres">
                             <h3>{user?.nombre || "Usuario"}</h3>
                             <p>{user?.email}</p>

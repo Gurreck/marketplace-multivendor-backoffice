@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingBag, ChevronLeft, Package, MapPin, CreditCard, Calendar, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Package, MapPin, CreditCard, Calendar, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import { commentService } from '../../services/commentService';
 import Tracking from '../Tracking/tracking';
 import DejarReseña from '../DejarReseña/DejarReseña';
 import './DetalleOrden.css';
+
+// Mapeo de estados a etiquetas en español para el historial
+const ETIQUETAS_ESTADO_DETALLE = {
+  created: "Creada",
+  pending: "Pendiente",
+  paid: "Pagada",
+  packed: "Empacada",
+  shipped: "Enviada",
+  delivered: "Entregada",
+  cancelled: "Cancelada",
+  receipt_confirmed: "Recepción Confirmada",
+};
 
 
 export default function DetalleOrden() {
@@ -48,9 +60,17 @@ export default function DetalleOrden() {
 
     const getEstadoInfo = (status) => {
         switch (status) {
+            case 'created':
+                return { label: 'Creada', icon: <Package size={20} color="#6366f1" />, class: 'en-proceso' };
             case 'paid': 
             case 'pagado':
                 return { label: 'Pagado', icon: <CheckCircle size={20} color="#10b981" />, class: 'entregado' };
+            case 'packed':
+                return { label: 'Empacado', icon: <Package size={20} color="#f59e0b" />, class: 'pendiente' };
+            case 'shipped':
+                return { label: 'Enviado', icon: <Truck size={20} color="#0094FF" />, class: 'en-proceso' };
+            case 'delivered':
+                return { label: 'Entregado', icon: <CheckCircle size={20} color="#10b981" />, class: 'entregado' };
             case 'pending': 
                 return { label: 'Pendiente', icon: <Clock size={20} color="#f59e0b" />, class: 'pendiente' };
             case 'cancelled': 
@@ -120,6 +140,11 @@ export default function DetalleOrden() {
                                         <div className="prod-info">
                                             <h4>{item.name}</h4>
                                             <p className="prod-cantidad">Cantidad: {item.quantity}</p>
+                                            {item.vendor && (
+                                                <p className="prod-vendedor" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
+                                                    Vendedor: {item.vendor?.nombre || 'N/A'}
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="prod-precio">
                                             ₡{(item.price * item.quantity).toLocaleString()}
@@ -130,12 +155,29 @@ export default function DetalleOrden() {
                         </div>
                     </section>
 
-                    {/* Nueva Zona para Dejar Reseña (Zona Roja) */}
-                    <DejarReseña 
-                        isEmbedded={true}
-                        product={orderItems[0]?.product || orderItems[0]}
-                        onSubmit={handleSubmitReview}
-                    />
+                    {/* Zona para Dejar Reseña — POR CADA PRODUCTO */}
+                    {orderItems.length > 0 && (
+                        <section className="detalle-card" style={{ marginTop: '20px' }}>
+                            <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '15px', marginBottom: '20px' }}>
+                                ⭐ Reseñas por Producto
+                            </h3>
+                            {orderItems.map((item, index) => {
+                                const prodId = item.product?._id || item.product || item._id;
+                                return (
+                                    <div key={prodId || index} style={{ marginBottom: index < orderItems.length - 1 ? '24px' : 0, paddingBottom: index < orderItems.length - 1 ? '24px' : 0, borderBottom: index < orderItems.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+                                        <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--nexora-cyan, #00D4FF)', marginBottom: '12px' }}>
+                                            {item.name || 'Producto'}
+                                        </p>
+                                        <DejarReseña 
+                                            isEmbedded={true}
+                                            product={item.product || item}
+                                            onSubmit={handleSubmitReview}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </section>
+                    )}
                 </div>
 
                 <div className="columna-derecha">
@@ -179,8 +221,34 @@ export default function DetalleOrden() {
                 </div>
             </div>
 
+            {/* Status History Timeline */}
+            {order.statusHistory && order.statusHistory.length > 0 && (
+                <section className="detalle-card" style={{ marginTop: '20px' }}>
+                    <h3><Clock size={20} /> Historial de Estados</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingLeft: '20px', borderLeft: '2px solid rgba(0,148,255,0.3)' }}>
+                        {order.statusHistory.map((entry, idx) => (
+                            <div key={idx} style={{ position: 'relative', paddingLeft: '16px' }}>
+                                <div style={{ position: 'absolute', left: '-27px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', background: '#0094FF', border: '2px solid #1e1e2e' }} />
+                                <div style={{ fontSize: '14px', fontWeight: '600', color: 'white', textTransform: 'capitalize' }}>
+                                    {ETIQUETAS_ESTADO_DETALLE[entry.estado] || entry.estado}
+                                </div>
+                                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
+                                    {new Date(entry.fecha).toLocaleString()}
+                                    {entry.usuarioQueCambio?.nombre && ` — ${entry.usuarioQueCambio.nombre}`}
+                                </div>
+                                {entry.comentario && (
+                                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginTop: '2px' }}>
+                                        {entry.comentario}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             <div style={{ marginTop: '20px' }}>
-                <Tracking isEmbedded={true} />
+                <Tracking isEmbedded={true} orden={order} />
             </div>
         </div>
     );

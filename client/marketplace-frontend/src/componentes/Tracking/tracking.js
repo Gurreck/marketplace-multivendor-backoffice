@@ -4,11 +4,13 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
+import RuletaPrimeraCompra from '../RuletaPrimeraCompra/RuletaPrimeraCompra';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import api from '../../services/api';
 import { 
   Package, 
   Truck, 
@@ -19,10 +21,9 @@ import {
   ArrowLeft, 
   Box,
   Shuffle,
-  Flag,
-  Star
+  Star,
+  Gift
 } from 'lucide-react';
-import './tracking.css';
 import './tracking.css';
 
 
@@ -35,121 +36,183 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// Definición de los pasos del tracking y sus íconos
+const PASOS_TRACKING = [
+  { nombre: "Pedido", icono: <Package size={20} />, estadoRequerido: "created" },
+  { nombre: "Pagado", icono: <Star size={20} />, estadoRequerido: "paid" },
+  { nombre: "Empacado", icono: <Box size={20} />, estadoRequerido: "packed" },
+  { nombre: "Despachado", icono: <Shuffle size={20} />, estadoRequerido: "shipped" },
+  { nombre: "Entregado", icono: <CheckCircle2 size={20} />, estadoRequerido: "delivered" },
+];
+
+// Mapeo de estados a etiquetas en español
+const ETIQUETAS_ESTADO = {
+  created: "Creada",
+  pending: "Pendiente",
+  paid: "Pagada",
+  packed: "Empacada",
+  shipped: "Enviada",
+  delivered: "Entregada",
+  cancelled: "Cancelada",
+  receipt_confirmed: "Recepción Confirmada",
+};
+
+// Orden de flujo de estados
+const FLUJO_ESTADOS = ["created", "pending", "paid", "packed", "shipped", "delivered"];
+
 /**
- * Componente Tracking
+ * Componente Seguimiento
  * Vista premium sincronizada con el estilo Nexora para el seguimiento de paquetes.
+ * El progreso lo controla el vendedor desde su panel, no es automático.
  */
-const Tracking = ({ isEmbedded = false }) => {
-  const { isDarkMode } = useTheme();
-  const { user, logout } = useAuth();
-  const { cartCount } = useCart();
+const Tracking = ({ isEmbedded = false, orden = null }) => {
+  const { isDarkMode: esModoOscuro } = useTheme();
+  const { user, logout: cerrarSesion } = useAuth();
+  const { cartCount: cantidadCarrito } = useCart();
   const location = useLocation();
-  const navigate = useNavigate();
+  const navegar = useNavigate();
   
-  // Estado para simular la carga de datos del paquete
   const [datosEnvio, setDatosEnvio] = useState(null);
   const [cargando, setCargando] = useState(true);
-
+  const [mostrarRuleta, setMostrarRuleta] = useState(false);
+  const [entregaConfirmada, setEntregaConfirmada] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
+  const [errorEntrega, setErrorEntrega] = useState('');
 
   useEffect(() => {
-    // Obtenemos los datos de la orden si viene de un pago reciente
-    const orderFromState = location.state?.order;
+    cargarDatosTracking();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orden]);
 
-    // Simulación de carga (o llamada a API en un escenario real futuro)
-    const obtenerDatos = () => {
-      setTimeout(() => {
-        let orderId = "MX-98234-7721";
-        if (orderFromState) {
-            const rawId = orderFromState._id || orderFromState.id || orderFromState.order?._id || "NEXORA-ORD";
-            orderId = String(rawId).substring(0, 10).toUpperCase();
-        }
+  const cargarDatosTracking = () => {
+    // Obtener la orden: puede venir como prop, del estado de navegación, o ser nula
+    const ordenDatos = orden || location.state?.order;
 
-        setDatosEnvio({
-          idRastreo: orderId,
-          estadoActual: orderFromState ? 1 : 3, // Procesado o En camino
-          transportista: "Logística Express",
-          fechaEstimada: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
-          destino: orderFromState && orderFromState.shippingAddress 
-            ? `${orderFromState.shippingAddress.ciudad}, ${orderFromState.shippingAddress.pais || 'CR'}` 
-            : "San José, Costa Rica",
-          origen: "Centro de Distribución Nexora",
-          pasos: [
-            { nombre: "Pedido", icono: <Package size={20} />, completado: true },
-            { nombre: "Procesado", icono: <Box size={20} />, completado: true },
-            { nombre: "Despachado", icono: <Shuffle size={20} />, completado: !orderFromState },
-            { nombre: "En Camino", icono: <Truck size={20} />, activo: !orderFromState },
-            { nombre: "Listo para entregar", icono: <Flag size={20} />, completado: false },
-            { nombre: "Entregado", icono: <CheckCircle2 size={20} />, completado: false }
-          ],
-          historial: orderFromState ? [
-            { 
-              evento: "Orden Recibida", 
-              ubicacion: "Plataforma Nexora", 
-              fecha: new Date().toLocaleString('es-ES') 
-            }
-          ] : [
-            { evento: "Llegada al Centro de Distribución Local", ubicacion: "San José, CR", fecha: "30 Mar 2026 - 09:15 AM" },
-            { evento: "En Tránsito Internacional", ubicacion: "Aduana Aeropuerto Juan Santamaría", fecha: "29 Mar 2026 - 02:30 PM" },
-            { evento: "Salida del Centro de Clasificación", ubicacion: "Ciudad de México, MX", fecha: "28 Mar 2026 - 11:00 AM" },
-            { evento: "Paquete Recibido por Transportista", ubicacion: "Ciudad de México, MX", fecha: "27 Mar 2026 - 10:45 AM" }
-          ]
-        });
-        setCargando(false);
-      }, 1000);
-    };
+    if (!ordenDatos) {
+      // Sin orden, mostrar estado vacío
+      setCargando(false);
+      return;
+    }
 
-    obtenerDatos();
-  }, [location.state]);
+    // Calcular el índice actual del estado en el flujo
+    const estadoActual = ordenDatos.status || "created";
+    const indiceEstadoActual = FLUJO_ESTADOS.indexOf(estadoActual);
 
-  // Efecto secundario para avanzar el estado cada 10 segundos
-  useEffect(() => {
-    // Si no hay datos, o si ya llegó al estado final (5 = Entregado), no hacemos nada
-    if (!datosEnvio || datosEnvio.estadoActual >= 5) return;
+    // Generar ID de tracking legible
+    const idRastreo = (ordenDatos._id || "NEXORA-ORD").toString().slice(-10).toUpperCase();
 
-    // Solo avanzar si viene de una compra (estado inicial 1)
-    // Pero si el usuario quiere que siempre avance para probar, omitimos esta validación:
-    const timerId = setInterval(() => {
-      setDatosEnvio(prev => {
-        if (!prev || prev.estadoActual >= 5) {
-          clearInterval(timerId);
-          return prev;
-        }
+    // Calcular fecha estimada basada en statusHistory o fecha de creación
+    const fechaCreacion = new Date(ordenDatos.createdAt || Date.now());
+    const fechaEstimada = new Date(fechaCreacion.getTime() + 5 * 24 * 60 * 60 * 1000);
 
-        const nextState = prev.estadoActual + 1;
-        
-        // Actualizar UI de los pasos
-        const newPasos = prev.pasos.map((paso, idx) => ({
-          ...paso,
-          completado: idx <= nextState,
-          activo: idx === nextState
-        }));
+    // Construir pasos con estado real de la orden
+    const pasos = PASOS_TRACKING.map((paso, indice) => {
+      const indicePaso = FLUJO_ESTADOS.indexOf(paso.estadoRequerido);
+      return {
+        ...paso,
+        completado: indicePaso <= indiceEstadoActual,
+        activo: indicePaso === indiceEstadoActual,
+      };
+    });
 
-        // Datos simulados según el paso nuevo
-        const mensajesLog = [
-          null,
-          null, // Pedido y procesado ya ocurren al inicio
-          { evento: "Carga en vehículo de transporte", ubicacion: "Centro de Clasificación Logística", fecha: new Date().toLocaleString('es-ES') },
-          { evento: "En camino al destino final", ubicacion: "Unidad de Reparto Local", fecha: new Date().toLocaleString('es-ES') },
-          { evento: "Paquete listo para entregar", ubicacion: "Dirección del Destinatario", fecha: new Date().toLocaleString('es-ES') },
-          { evento: "Paquete entregado", ubicacion: "Dirección del Destinatario", fecha: new Date().toLocaleString('es-ES') }
-        ];
+    // Revisar si ya fue confirmada la entrega en el historial
+    const yaConfirmado = (ordenDatos.statusHistory || []).some(
+      (h) => h.estado === 'receipt_confirmed'
+    );
+    setEntregaConfirmada(yaConfirmado);
 
-        const nuevoEvento = mensajesLog[nextState];
-        const newHistorial = nuevoEvento 
-          ? [nuevoEvento, ...prev.historial] 
-          : prev.historial;
+    // Construir historial desde statusHistory real de la orden
+    const historial = (ordenDatos.statusHistory || [])
+      .slice()
+      .reverse()
+      .map((entrada) => ({
+        evento: ETIQUETAS_ESTADO[entrada.estado] || entrada.estado,
+        ubicacion: entrada.comentario
+          ? (entrada.comentario === 'Orden creada' ? 'Orden creada'
+            : entrada.comentario === 'Cliente confirmó la recepción del paquete' ? 'Cliente confirmó la recepción del paquete'
+            : `Avanzado a ${ETIQUETAS_ESTADO[entrada.estado] || entrada.estado}`)
+          : `Avanzado a ${ETIQUETAS_ESTADO[entrada.estado] || entrada.estado}`,
+        fecha: new Date(entrada.fecha).toLocaleString('es-ES'),
+        usuario: entrada.usuarioQueCambio?.nombre || "",
+      }));
 
-        return {
-          ...prev,
-          estadoActual: nextState,
-          pasos: newPasos,
-          historial: newHistorial
-        };
+    // Si no hay historial, crear uno mínimo
+    if (historial.length === 0) {
+      historial.push({
+        evento: "Orden Creada",
+        ubicacion: "Plataforma Nexora",
+        fecha: fechaCreacion.toLocaleString('es-ES'),
       });
-    }, 10000);
+    }
 
-    return () => clearInterval(timerId);
-  }, [datosEnvio?.estadoActual]);
+    const destino = ordenDatos.shippingAddress
+      ? `${ordenDatos.shippingAddress.ciudad}, ${ordenDatos.shippingAddress.pais || 'CR'}`
+      : "San José, Costa Rica";
+
+    setDatosEnvio({
+      idRastreo,
+      estadoActual: indiceEstadoActual,
+      estado: estadoActual,
+      transportista: "Logística Express",
+      fechaEstimada: fechaEstimada.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
+      destino,
+      origen: "Centro de Distribución Nexora",
+      pasos,
+      historial,
+      ordenOriginal: ordenDatos,
+    });
+
+    setCargando(false);
+  };
+
+  // Manejar "Confirmar Entrega" / "Recoger Paquete"
+  const manejarConfirmarEntrega = async () => {
+    if (confirmando) return;
+    setConfirmando(true);
+    setErrorEntrega('');
+    try {
+      // 1. Llamar al backend para confirmar recepción (agregar al statusHistory)
+      if (datosEnvio?.ordenOriginal?._id) {
+        await api.put(`/orders/${datosEnvio.ordenOriginal._id}/confirm-receipt`);
+      }
+      // Solo marcar como confirmada si el backend respondió exitosamente
+      setEntregaConfirmada(true);
+
+      // 2. Consultar perfil de usuario para ver si amerita ruleta
+      try {
+        const respuesta = await api.get('/auth/profile');
+        const datosUsuario = respuesta.data.data;
+
+        if (datosUsuario.firstPurchaseCompleted && !datosUsuario.wheelSpun) {
+          // ¡Es primera compra! Mostrar la ruleta
+          setMostrarRuleta(true);
+        }
+      } catch (profileErr) {
+        // Error al obtener perfil no es crítico, la entrega ya se confirmó
+        console.warn("No se pudo verificar elegibilidad de ruleta:", profileErr);
+      }
+    } catch (err) {
+      console.error("Error al confirmar entrega:", err);
+      const status = err.response?.status;
+      const mensaje = err.response?.data?.message || '';
+
+      if (status === 400 && mensaje.includes('ya fue confirmada')) {
+        // El backend dice que ya estaba confirmada, sincronizar estado local
+        setEntregaConfirmada(true);
+      } else {
+        // Error real (red, servidor, permisos) → NO marcar como confirmada
+        setErrorEntrega(mensaje || 'Error al confirmar la entrega. Intenta de nuevo.');
+      }
+    } finally {
+      setConfirmando(false);
+    }
+  };
+
+  // Cerrar modal de ruleta
+  const cerrarRuleta = () => {
+    setMostrarRuleta(false);
+    navegar('/');
+  };
 
   // Pantalla de carga con estética limpia
   if (cargando) {
@@ -163,13 +226,25 @@ const Tracking = ({ isEmbedded = false }) => {
     );
   }
 
+  // Sin datos de orden
+  if (!datosEnvio) {
+    return (
+      <div className="contenedor-seguimiento">
+        <div style={{ textAlign: 'center', marginTop: '100px' }}>
+          <Package size={48} color="#64748b" style={{ opacity: 0.5 }} />
+          <p style={{ marginTop: '20px', color: '#64748b' }}>No hay información de seguimiento disponible.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={isEmbedded ? '' : `contenedor-seguimiento-externo ${!isDarkMode ? 'modo-claro' : ''}`}>
+    <div className={isEmbedded ? '' : `contenedor-seguimiento-externo ${!esModoOscuro ? 'modo-claro' : ''}`}>
       {!isEmbedded && (
         <NavbarSecundario 
           user={user} 
-          logout={logout} 
-          cartCount={cartCount} 
+          logout={cerrarSesion} 
+          cartCount={cantidadCarrito} 
         />
       )}
       <div className="contenedor-seguimiento">
@@ -188,7 +263,7 @@ const Tracking = ({ isEmbedded = false }) => {
           <p className="subtitulo-rastreo">ID: <span className="texto-id-rastreo">{datosEnvio.idRastreo}</span></p>
         </div>
         <div className="etiqueta-estado">
-          {datosEnvio.pasos[Math.min(datosEnvio.estadoActual, datosEnvio.pasos.length - 1)].nombre}
+          {ETIQUETAS_ESTADO[datosEnvio.estado] || datosEnvio.estado}
         </div>
       </header>
 
@@ -240,10 +315,10 @@ const Tracking = ({ isEmbedded = false }) => {
           {datosEnvio.pasos.map((paso, indice) => (
             <div 
               key={indice} 
-              className={`paso-stepper ${indice <= datosEnvio.estadoActual ? 'completado' : ''} ${indice === datosEnvio.estadoActual ? 'activo' : ''}`}
+              className={`paso-stepper ${paso.completado ? 'completado' : ''} ${paso.activo ? 'activo' : ''}`}
             >
               <div className="circulo-paso">
-                {indice < datosEnvio.estadoActual ? <CheckCircle2 size={24} /> : paso.icono}
+                {paso.completado && !paso.activo ? <CheckCircle2 size={24} /> : paso.icono}
               </div>
               <span className="nombre-paso">{paso.nombre}</span>
             </div>
@@ -254,7 +329,7 @@ const Tracking = ({ isEmbedded = false }) => {
       {/* Grid Inferior: Historial y Mapa */}
       <div className="grid-detalles">
         
-        {/* Registro Local de Actividad */}
+        {/* Registro de Actividad */}
         <section className="tarjeta-detalle">
           <h2><Clock size={22} /> Historial de Actividad</h2>
           <div className="linea-actividad">
@@ -262,32 +337,43 @@ const Tracking = ({ isEmbedded = false }) => {
               <div key={index} className="item-actividad">
                 <div className="punto-actividad"></div>
                 <div className="contenido-actividad">
-                  {actividad.evento === "Paquete entregado" && (
-                    <button 
-                      className="boton-recoger-paquete" 
-                      style={{ marginTop: 0, marginBottom: '12px' }}
-                      onClick={() => {
-                        setDatosEnvio(prev => ({
-                          ...prev,
-                          estadoActual: 6
-                        }));
-                        console.log("Paquete recogido, redirigiendo en 2s");
-                        setTimeout(() => {
-                           navigate('/');
-                        }, 2000);
-                      }}
-                    >
-                      Recoger paquete
-                    </button>
-
-                  )}
                   <p className="evento-actividad">{actividad.evento}</p>
                   <p className="ubicacion-actividad">{actividad.ubicacion}</p>
                   <p className="fecha-actividad">{actividad.fecha}</p>
+                  {actividad.usuario && (
+                    <p className="fecha-actividad">Por: {actividad.usuario}</p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Botón de Confirmar Entrega — Solo visible cuando estado es "delivered" */}
+          {datosEnvio.estado === 'delivered' && !entregaConfirmada && (
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <button 
+                className="boton-recoger-paquete" 
+                onClick={manejarConfirmarEntrega}
+                disabled={confirmando}
+                style={confirmando ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+              >
+                <Gift size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                {confirmando ? 'Confirmando...' : 'Confirmar Entrega del Paquete'}
+              </button>
+              {errorEntrega && (
+                <p style={{ color: '#f87171', fontSize: '0.85rem', marginTop: '10px', fontWeight: 600 }}>
+                  {errorEntrega}
+                </p>
+              )}
+            </div>
+          )}
+
+          {entregaConfirmada && !mostrarRuleta && (
+            <div style={{ marginTop: '20px', textAlign: 'center', color: '#10b981' }}>
+              <CheckCircle2 size={32} />
+              <p style={{ fontWeight: '700', marginTop: '8px' }}>¡Has confirmado la entrega de este paquete!</p>
+            </div>
+          )}
         </section>
 
         {/* Visualización de Ubicación Actual (Mapa Real) */}
@@ -295,7 +381,7 @@ const Tracking = ({ isEmbedded = false }) => {
           <h2><MapPin size={22} /> Ubicación en Tiempo Real</h2>
           <div className="visualizacion-mapa">
             <MapContainer 
-              center={[9.9333, -84.0833]} // Coordenadas aproximadas de San José, Costa Rica
+              center={[9.9333, -84.0833]}
               zoom={13} 
               scrollWheelZoom={false} 
               style={{ height: "100%", width: "100%", borderRadius: "15px" }}
@@ -312,12 +398,22 @@ const Tracking = ({ isEmbedded = false }) => {
             </MapContainer>
           </div>
           <p className="ubicacion-actividad" style={{ marginTop: '1rem', textAlign: 'center' }}>
-            Última actualización: hace 15 minutos en el nodo central.
+            Estado actual: {ETIQUETAS_ESTADO[datosEnvio.estado] || datosEnvio.estado} — actualizado por el vendedor.
           </p>
         </section>
 
       </div>
       </div>
+
+      {/* Modal de Ruleta de Primera Compra */}
+      {mostrarRuleta && (
+        <div className="modal-overlay-ruleta" onClick={cerrarRuleta}>
+          <div className="modal-contenido-ruleta" onClick={(e) => e.stopPropagation()}>
+            <button className="boton-cerrar-ruleta" onClick={cerrarRuleta}>✕</button>
+            <RuletaPrimeraCompra />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

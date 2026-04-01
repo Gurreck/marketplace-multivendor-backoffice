@@ -377,19 +377,42 @@ const suspendVendor = async (req, res) => {
 // @access  Solo Administrador
 const getKPIs = async (req, res) => {
   try {
+    const Order = require("../models/Order");
+    const Ticket = require("../models/Ticket");
+    const RMA = require("../models/RMA");
+
     const totalUsers = await User.countDocuments();
     const totalVendors = await User.countDocuments({ role: "vendedor" });
     const totalClients = await User.countDocuments({ role: "cliente" });
-    const totalProducts = await Product.countDocuments();
+    const totalProducts = await Product.countDocuments({ isActive: { $ne: false } });
+
+    // ⭐ Ventas totales reales (órdenes pagadas o entregadas)
+    const ventasAgg = await Order.aggregate([
+      { $match: { status: { $in: ["paid", "packed", "shipped", "delivered"] } } },
+      { $group: { _id: null, total: { $sum: "$total" }, count: { $sum: 1 } } },
+    ]);
+    const ventasTotales = ventasAgg.length > 0 ? ventasAgg[0].total : 0;
+    const totalOrdenes = ventasAgg.length > 0 ? ventasAgg[0].count : 0;
+
+    // ⭐ Tickets abiertos
+    const ticketsAbiertos = await Ticket.countDocuments({
+      estado: { $in: ["open", "in_progress", "waiting_customer"] },
+    });
+
+    // ⭐ RMAs en proceso
+    const rmasEnProceso = await RMA.countDocuments({
+      estado: { $in: ["requested", "approved", "received"] },
+    });
 
     // Productos por categoría
     const productsByCategory = await Product.aggregate([
+      { $match: { isActive: { $ne: false } } },
       { $group: { _id: "$category", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
     ]);
 
     // Top productos por stock
-    const topProducts = await Product.find()
+    const topProducts = await Product.find({ isActive: { $ne: false } })
       .sort({ stock: -1 })
       .limit(10)
       .populate("vendor", "nombre")
@@ -397,6 +420,7 @@ const getKPIs = async (req, res) => {
 
     // Top vendedores por cantidad de productos
     const topVendors = await Product.aggregate([
+      { $match: { isActive: { $ne: false } } },
       { $group: { _id: "$vendor", totalProductos: { $sum: 1 }, totalStock: { $sum: "$stock" } } },
       { $sort: { totalProductos: -1 } },
       { $limit: 10 },
@@ -438,6 +462,27 @@ const getKPIs = async (req, res) => {
       { $sort: { "_id.year": 1, "_id.month": 1 } },
     ]);
 
+    // Ventas por mes (últimos 6 meses)
+    const ventasPorMes = await Order.aggregate([
+      {
+        $match: {
+          status: { $in: ["paid", "packed", "shipped", "delivered"] },
+          createdAt: { $gte: sixMonthsAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          total: { $sum: "$total" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
     res.status(200).json({
       success: true,
       data: {
@@ -446,11 +491,16 @@ const getKPIs = async (req, res) => {
           totalVendedores: totalVendors,
           totalClientes: totalClients,
           totalProductos: totalProducts,
+          ventasTotales,
+          totalOrdenes,
+          ticketsAbiertos,
+          rmasEnProceso,
         },
         productosPorCategoria: productsByCategory,
         topProductos: topProducts,
         topVendedores: topVendors,
         productosPorMes: productsByMonth,
+        ventasPorMes,
       },
     });
   } catch (error) {

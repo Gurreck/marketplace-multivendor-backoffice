@@ -51,6 +51,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  firstPurchaseCompleted: {
+    type: Boolean,
+    default: false,
+  },
+  wheelSpun: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 });

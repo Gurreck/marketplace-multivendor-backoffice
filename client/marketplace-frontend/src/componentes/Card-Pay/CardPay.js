@@ -10,6 +10,7 @@ import {
     MapPin,
 } from "lucide-react";
 import { orderService } from "../../services/orderService";
+import servicioGamificacion from "../../services/gamificationService";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -84,6 +85,15 @@ const CardPay = ({
     const [showCvv, setShowCvv] = useState(false);
     const [generalError, setGeneralError] = useState("");
     const [createdOrder, setCreatedOrder] = useState(null);
+
+    // Coupon state
+    const [couponCode, setCouponCode] = useState("");
+    const [couponValidated, setCouponValidated] = useState(null);
+    const [couponError, setCouponError] = useState("");
+    const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+    const discountAmount = couponValidated ? Math.round(selectedSubtotal * (couponValidated.descuentoPorcentaje / 100)) : 0;
+    const finalTotal = selectedSubtotal - discountAmount;
 
     // Pre-poblar datos si el usuario ya tiene una tarjeta guardada o se pasa una inicial
     useEffect(() => {
@@ -224,11 +234,12 @@ const CardPay = ({
                 },
                 subtotal: parseFloat(selectedSubtotal),
                 shipping: 0,
-                total: parseFloat(selectedSubtotal),
+                total: parseFloat(finalTotal),
                 paymentMethod: {
                     brand: cardType || "Tarjeta",
                     last4: cardNumber.replace(/\s/g, "").slice(-4)
-                }
+                },
+                couponCode: couponValidated ? couponValidated.codigo : undefined,
             };
 
             const response = await orderService.createOrder(orderData);
@@ -350,6 +361,55 @@ const CardPay = ({
                         </div>
                     </div>
 
+                    {/* Coupon Section */}
+                    <div style={{ margin: '16px 0', padding: '14px', background: 'rgba(168,85,247,0.08)', borderRadius: '12px', border: '1px solid rgba(168,85,247,0.2)' }}>
+                        <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '8px', fontWeight: '600' }}>¿Tienes un cupón de descuento?</label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                                type="text"
+                                placeholder="Ej: NEXO-ABC123"
+                                value={couponCode}
+                                onChange={e => { setCouponCode(e.target.value.toUpperCase()); setCouponError(''); setCouponValidated(null); }}
+                                disabled={!!couponValidated}
+                                style={{ flex: 1, padding: '10px 14px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: 'white', fontSize: '14px', fontFamily: 'monospace', letterSpacing: '1px' }}
+                            />
+                            {!couponValidated ? (
+                                <button
+                                    type="button"
+                                    onClick={async () => {
+                                        if (!couponCode.trim()) return;
+                                        setValidatingCoupon(true); setCouponError('');
+                                        try {
+                                            const resp = await servicioGamificacion.validateCoupon(couponCode);
+                                            setCouponValidated(resp.data);
+                                        } catch (err) {
+                                            setCouponError(err.response?.data?.message || 'Cupón inválido');
+                                        } finally { setValidatingCoupon(false); }
+                                    }}
+                                    disabled={validatingCoupon || !couponCode.trim()}
+                                    style={{ padding: '10px 18px', background: 'linear-gradient(135deg, #a855f7, #7c3aed)', border: 'none', borderRadius: '10px', color: 'white', cursor: 'pointer', fontWeight: '600', fontSize: '13px', whiteSpace: 'nowrap' }}
+                                >
+                                    {validatingCoupon ? '...' : 'Validar'}
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => { setCouponValidated(null); setCouponCode(''); }}
+                                    style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '10px', color: '#f87171', cursor: 'pointer', fontSize: '13px' }}
+                                >
+                                    Quitar
+                                </button>
+                            )}
+                        </div>
+                        {couponError && <p style={{ color: '#f87171', fontSize: '12px', marginTop: '6px' }}>{couponError}</p>}
+                        {couponValidated && (
+                            <div style={{ marginTop: '10px', padding: '10px 14px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ color: '#34d399', fontWeight: '600', fontSize: '14px' }}>✅ {couponValidated.descuentoPorcentaje}% de descuento aplicado</span>
+                                <span style={{ color: '#34d399', fontWeight: '700', fontSize: '16px' }}>-₡{discountAmount.toLocaleString()}</span>
+                            </div>
+                        )}
+                    </div>
+
                     <button
                         type="submit"
                         className={`boton-enviar-pasarela ${isProcessing ? "procesando" : ""}`}
@@ -358,7 +418,7 @@ const CardPay = ({
                         {isProcessing ? (
                             <Loader2 className="animacion-giro" size={20} />
                         ) : (
-                            `Pagar ₡${selectedSubtotal.toLocaleString()}`
+                            `Pagar ₡${finalTotal.toLocaleString()}`
                         )}
                     </button>
                     {!address && (
