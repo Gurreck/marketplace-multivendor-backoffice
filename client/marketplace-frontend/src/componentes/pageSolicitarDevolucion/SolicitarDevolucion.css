@@ -170,3 +170,55 @@
     cursor: not-allowed;
     background: #4b5563;
 }
+
+/* Order selection for RMA */
+.lista-ordenes-rma {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.orden-rma-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--info-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.orden-rma-card:hover { background: var(--menu-hover); }
+.orden-rma-card.seleccionado { border-color: var(--accent); background: var(--menu-hover); }
+.orden-rma-id { font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+.orden-rma-fecha { font-size: 0.8rem; color: var(--text-muted); }
+.orden-rma-total { font-weight: 700; color: var(--title-color); }
+
+.items-seleccionar { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+.items-seleccionar h4 { color: var(--text-main); margin-bottom: 8px; }
+.item-checkbox {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; background: var(--info-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; cursor: pointer; transition: 0.2s;
+}
+.item-checkbox.checked { border-color: var(--accent); background: var(--menu-hover); }
+.item-checkbox input { width: 18px; height: 18px; }
+.item-info-rma { flex: 1; }
+.item-nombre { display: block; font-weight: 600; color: var(--title-color); }
+.item-qty { font-size: 0.8rem; color: var(--text-muted); }
+.item-precio { font-weight: 700; color: var(--title-color); }
+.texto-ayuda { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; }
+
+/* Evidence thumbnails */
+.evidence-previews { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+.evidence-thumb {
+    position: relative; width: 80px; height: 80px; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--card-border);
+}
+.evidence-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.remove-evidence {
+    position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.7);
+    border: none; color: white; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+}

@@ -15,6 +15,7 @@ import PaginaSoporte from "./componentes/pageSoporte/pageSoporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
 import PerfilCliente from "./componentes/perfil/PerfilCliente";
 import Tracking from "./componentes/Tracking/tracking";
+import RuletaPrimeraCompra from "./componentes/RuletaPrimeraCompra/RuletaPrimeraCompra";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -114,6 +115,15 @@ function App() {
         <Route
           path="/rastreo"
           element={<Tracking />}
+        />
+
+        <Route
+          path="/ruleta"
+          element={
+            <RutaProtegida rolesPermitidos={["cliente"]}>
+              <RuletaPrimeraCompra />
+            </RutaProtegida>
+          }
         />
 
 

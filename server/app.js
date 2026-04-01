@@ -20,6 +20,10 @@ const productRoutes = require("./routes/productRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const cartRoutes = require("./routes/cartRoutes");
+const supportRoutes = require("./routes/supportRoutes");
+const vendorRoutes = require("./routes/vendorRoutes");
+const gamificationRoutes = require("./routes/gamificationRoutes");
+const { getCategories } = require("./controllers/categoryController");
 
 const app = express();
 
@@ -60,6 +64,10 @@ const addressRoutes = require("./routes/addressRoutes");
 app.use("/api/address", addressRoutes);
 app.use("/api/orders", orderRoutes); // Nueva ruta de órdenes
 app.use("/api/cart", cartRoutes); // Nueva ruta del carrito
+app.use("/api/support", supportRoutes); // Rutas de soporte (tickets + RMA)
+app.use("/api/vendor", vendorRoutes); // Rutas de vendedor (dashboard + órdenes)
+app.use("/api/gamification", gamificationRoutes); // Rutas de gamificación (ruleta + cupones)
+app.get("/api/categories", getCategories); // Ruta pública de categorías
 app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
 
 // Rutas de comentarios
