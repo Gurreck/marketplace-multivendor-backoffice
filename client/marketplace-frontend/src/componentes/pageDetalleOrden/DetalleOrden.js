@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Package, MapPin, CreditCard, Calendar, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
+import { commentService } from '../../services/commentService';
 import Tracking from '../Tracking/tracking';
 import DejarReseña from '../DejarReseña/DejarReseña';
 import './DetalleOrden.css';
@@ -13,6 +14,16 @@ export default function DetalleOrden() {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const handleSubmitReview = async (reviewData) => {
+        try {
+            await commentService.createComment(reviewData);
+            // La actualización visual la maneja DejarReseña internamente con su estado isSent
+        } catch (err) {
+            console.error("Error al guardar reseña:", err);
+            throw err; // Re-lanzar para que DejarReseña muestre el error local
+        }
+    };
 
     useEffect(() => {
         const fetchOrderDetail = async () => {
@@ -132,14 +143,12 @@ export default function DetalleOrden() {
                         </div>
                     </section>
 
-                    {/* Dirección */}
-                    <section className="detalle-card">
-                        <h3><MapPin size={20} /> Dirección de Envío</h3>
-                        <p className="nombre-receptor">{order.user?.nombre || 'Usuario'}</p>
-                        <p className="texto-direccion">{address.direccion}</p>
-                        <p className="texto-direccion">{address.ciudad}, {address.provincia}</p>
-                        <p className="texto-direccion">{address.pais} ({address.codigoPostal})</p>
-                    </section>
+                    {/* Nueva Zona para Dejar Reseña (Zona Roja) */}
+                    <DejarReseña 
+                        isEmbedded={true}
+                        product={orderItems[0]?.product || orderItems[0]}
+                        onSubmit={handleSubmitReview}
+                    />
                 </div>
 
                 <div className="columna-derecha">
@@ -167,15 +176,19 @@ export default function DetalleOrden() {
                         </div>
                     </section>
 
-                    {/* Nueva Zona para Dejar Reseña (Zona Roja) */}
-                    <DejarReseña 
-                        isEmbedded={true}
-                        product={orderItems[0]?.product || orderItems[0]}
-                        onSubmit={(data) => {
-                            console.log("Reseña enviada desde DetalleOrden:", data);
-                            // Aquí podrías mostrar un mensaje de éxito o esconder el componente
-                        }}
-                    />
+                    {/* Dirección */}
+                    <section className="detalle-card">
+                        <h3><MapPin size={20} /> Dirección de Envío</h3>
+                        <div className="info-direccion-grid">
+                            <p><span className="label-dir">Nombre:</span> {order.user?.nombre || address.nombre || 'Usuario'}</p>
+                            <p><span className="label-dir">Dirección:</span> {address.direccion}</p>
+                            <p><span className="label-dir">País:</span> {address.pais}</p>
+                            <p><span className="label-dir">Provincia:</span> {address.provincia}</p>
+                            <p><span className="label-dir">Ciudad:</span> {address.ciudad}</p>
+                            <p><span className="label-dir">Código Postal:</span> {address.codigoPostal}</p>
+                            <p><span className="label-dir">Teléfono:</span> {address.telefono || order.user?.telefono || 'N/A'}</p>
+                        </div>
+                    </section>
                 </div>
             </div>
 

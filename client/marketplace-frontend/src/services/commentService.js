@@ -12,4 +12,8 @@ export const commentService = {
   // Eliminar un comentario
   deleteComment: (commentId) => 
     api.delete(`/comments/${commentId}`),
+
+  // Verificar si el usuario ya dejó una reseña
+  checkUserReviewStatus: (productId) =>
+    api.get(`/comments/status/${productId}`),
 };
