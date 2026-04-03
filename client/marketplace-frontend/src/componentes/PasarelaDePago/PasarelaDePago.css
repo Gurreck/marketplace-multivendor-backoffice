@@ -161,103 +161,147 @@
   margin-bottom: 0 !important;
 }
 
-/* MODAL DE DATOS GUARDADOS */
+/* MODAL DE DATOS GUARDADOS - PREMIUM VERSION */
 .capa-modal-datos-guardados {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-  animation: fadeInModal 0.3s ease;
+  z-index: 10000;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  animation: fadeInModal 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeInModal {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(12px); }
 }
 
 .modal-datos-guardados {
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 500px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 48px;
+  max-width: 520px;
   width: 90%;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 148, 255, 0.2);
-  border: 1px solid rgba(0, 148, 255, 0.3);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(0, 148, 255, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 148, 255, 0.4);
   position: relative;
-  position: relative;
-  animation: slideUpModal 0.4s ease;
+  overflow: hidden;
+  animation: slideUpPremium 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes slideUpModal {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+.modal-datos-guardados::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent, 
+    rgba(0, 148, 255, 0.1), 
+    transparent 30%
+  );
+  animation: rotateGlow 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotateGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideUpPremium {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .icono-modal-datos {
-  width: 90px;
-  height: 90px;
-  background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
-  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #0094ff 0%, #00d4ff 100%);
+  border-radius: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 20px;
-  box-shadow: 0 10px 25px rgba(0, 148, 255, 0.4);
+  margin: 0 auto 28px;
+  transform: rotate(-5deg);
+  box-shadow: 0 15px 35px rgba(0, 148, 255, 0.4);
+  animation: bounceIcon 2s ease-in-out infinite;
+}
+
+@keyframes bounceIcon {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
 }
 
 .modal-datos-guardados h2 {
   color: white;
-  font-size: 1.8rem;
-  margin-bottom: 15px;
-  font-weight: 700;
+  font-size: 2.2rem;
+  margin-bottom: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to bottom, #ffffff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .modal-datos-guardados p {
-  color: #94a3b8;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  margin-bottom: 30px;
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 36px;
+  font-weight: 400;
 }
 
 .acciones-modal-datos {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .boton-usar-datos {
-  background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
+  background: linear-gradient(135deg, #0094ff 0%, #0070c0 100%);
   color: white;
   border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 1.1rem;
+  padding: 18px;
+  border-radius: 16px;
+  font-size: 1.15rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 148, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 148, 255, 0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .boton-usar-datos:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 148, 255, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 148, 255, 0.5);
   filter: brightness(1.1);
 }
 
+.boton-usar-datos:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
 .boton-no-usar-datos {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
   color: #94a3b8;
-  border: 1px solid #475569;
-  padding: 14px;
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 16px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -265,26 +309,59 @@
 }
 
 .boton-no-usar-datos:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
-  border-color: #64748b;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .boton-cerrar-modal-datos {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: transparent;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
   color: #64748b;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  z-index: 10;
 }
 
 .boton-cerrar-modal-datos:hover {
-  color: white;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  transform: rotate(90deg);
+}
+
+/* Modo Claro Adaptations */
+.modo-claro .modal-datos-guardados {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 148, 255, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
+.modo-claro .modal-datos-guardados h2 {
+  background: linear-gradient(to bottom, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.modo-claro .modal-datos-guardados p {
+  color: #475569;
+}
+
+.modo-claro .boton-no-usar-datos {
+  background: white;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+.modo-claro .boton-no-usar-datos:hover {
+  background: #f8fafc;
+  color: #1e293b;
 }

@@ -1,16 +1,15 @@
-
 import React, { useState, useEffect } from "react";
-import "./paymentGateway.css";
+import "./PasarelaDePago.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import NavbarSecundario from "../NavbarSecundario/NavbarSecundario";
-import Address from "../Address/Address";
-import CardPay from "../Card-Pay/CardPay";
+import DireccionEnvio from "./DireccionEnvio";
+import TarjetaPago from "./TarjetaPago";
 import { CheckCircle2, X } from 'lucide-react';
 
-const PaymentGateway = () => {
+const PasarelaDePago = () => {
   // ===== NAVEGACIÓN Y CONTEXTO =====
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,6 +25,7 @@ const PaymentGateway = () => {
   
   // Estado para autocompletar desde el Modal
   const [showSavedDataModal, setShowSavedDataModal] = useState(false);
+  const [decidedSavedData, setDecidedSavedData] = useState(false); // Flag para evitar bucles
   const [initialAddressData, setInitialAddressData] = useState(null);
   const [initialCardData, setInitialCardData] = useState(null);
 
@@ -33,14 +33,15 @@ const PaymentGateway = () => {
     if (!user) {
       navigate('/login');
     } else {
-      // Mostrar modal si el usuario tiene info guardada y aún no ha tomado una decisión
-      if ((user.shippingAddress?.direccion || user.debitCard?.cardNumber) && !initialAddressData && !initialCardData) {
+      // Mostrar modal si el usuario tiene info guardada y aún NO ha tomado una decisión en esta carga
+      if ((user.shippingAddress?.direccion || user.debitCard?.cardNumber) && !decidedSavedData) {
         setShowSavedDataModal(true);
       }
     }
-  }, [user, navigate]);
+  }, [user, navigate, decidedSavedData]);
 
   const handleUseSavedData = () => {
+    setDecidedSavedData(true);
     if (user?.shippingAddress) {
       setInitialAddressData({
         nombre: user.nombre || '',
@@ -59,6 +60,7 @@ const PaymentGateway = () => {
   };
 
   const handleRejectSavedData = () => {
+    setDecidedSavedData(true);
     setShowSavedDataModal(false);
   };
 
@@ -132,7 +134,7 @@ const PaymentGateway = () => {
         <div className="contenido-principal-pasarela">
           <div className="diseno-dos-columnas-pasarela">
             <div className="columna-derecha-pasarela">
-              <CardPay
+              <TarjetaPago
                 selectedSubtotal={selectedSubtotal}
                 selectedItems={selectedItems}
                 address={shippingAddress}
@@ -141,7 +143,7 @@ const PaymentGateway = () => {
               />
             </div>
             <div className="columna-izquierda-pasarela">
-              <Address 
+              <DireccionEnvio 
                 onAddressSave={handleAddressSave} 
                 initialAddress={initialAddressData}
                 user={user} 
@@ -154,5 +156,5 @@ const PaymentGateway = () => {
   );
 };
 
-export default PaymentGateway;
+export default PasarelaDePago;
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import "./pageAdmin.css";
+import "./Admin.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -43,7 +43,7 @@ import {
   ShoppingCart
 } from 'lucide-react';
 
-export default function PaginaAdmin() {
+export default function Admin() {
   const navegar = useNavigate();
   const { logout: cerrarSesion } = useAuth();
   const { isDarkMode: esModoOscuro, toggleTheme: alternarTema } = useTheme();

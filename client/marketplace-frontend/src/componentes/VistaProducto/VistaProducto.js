@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './pageViewProduct.css';
+import './VistaProducto.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -21,8 +21,7 @@ import {
     CheckCircle2, 
     Loader2,
     Tag,
-    User,
-    ArrowLeft
+    User
 } from 'lucide-react';
 
 /**
@@ -30,7 +29,7 @@ import {
  * Componente que muestra el detalle completo de un producto, incluyendo carrusel de imágenes,
  * descripción, precio, vendedor, productos similares y sistema de reseñas.
  */
-const PageViewProduct = () => {
+const VistaProducto = () => {
     const { id } = useParams();
     const navigate = useNavigate();
  
@@ -217,11 +216,7 @@ const PageViewProduct = () => {
 
                     {/* Columna Derecha: Información y Acciones */}
                     <div className="seccion-informacion">
-                        <div className="navegacion-atras">
-                            <button onClick={() => navigate(-1)} className="boton-atras">
-                                <ArrowLeft size={18} style={{ marginRight: '8px' }} /> Volver
-                            </button>
-                        </div>
+
                         
                         <h1 className="nombre-producto">{selectedProduct.name}</h1>
 
@@ -354,4 +349,4 @@ const PageViewProduct = () => {
     );
 };
 
-export default PageViewProduct;
+export default VistaProducto;

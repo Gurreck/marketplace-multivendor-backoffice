@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './divPromo.css';
+import './SeccionPromocion.css';
 
 /**
  * Componente DivPromo
@@ -8,7 +8,7 @@ import './divPromo.css';
  * @param {Array} products - Lista de todos los productos disponibles
  * @param {function} handlePromoAddToCart - Función para manejar el clic en un producto en oferta
  */
-export default function DivPromo({ products, handlePromoAddToCart }) {
+export default function SeccionPromocion({ products, handlePromoAddToCart }) {
     // ===== ESTADO =====
     const [promoProducts, setPromoProducts] = useState([]); // Productos seleccionados para mostrar en la promo
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './register.css';
+import './Registro.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -16,7 +16,7 @@ import {
     ShieldCheck
 } from 'lucide-react';
 
-export default function Register() {
+export default function Registro() {
     const navigate = useNavigate();
     const { register } = useAuth();
 

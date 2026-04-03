@@ -4,11 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useCart } from '../../context/CartContext';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
-import MisOrdenes from '../pageMisOrdenes/MisOrdenes';
-import DetalleOrden from '../pageDetalleOrden/DetalleOrden';
-import MisTickets from '../pageMisTickets/MisTickets';
-import SolicitarDevolucion from '../pageSolicitarDevolucion/SolicitarDevolucion';
-import MisResenas from '../pageMisResenas/MisResenas';
+import MisOrdenes from '../MisOrdenes/MisOrdenes';
+import DetalleOrden from '../DetalleOrden/DetalleOrden';
+import MisTickets from '../MisTickets/MisTickets';
+import SolicitarDevolucion from '../SolicitarDevolucion/SolicitarDevolucion';
+import MisReseñas from '../MisReseñas/MisReseñas';
 import './PerfilCliente.css';
 import { 
     User, 
@@ -122,11 +122,12 @@ export default function PerfilCliente() {
                             <span>Mis Reseñas</span>
                             <ChevronRight size={16} className="arrow" />
                         </Link>
-                        <Link to="/checkout" className="perfil-menu-item">
+                        <Link to="/carrito" className="perfil-menu-item">
                             <CreditCard size={20} />
-                            <span>Checkout / Pago</span>
+                            <span>Carrito / Compra</span>
                             <ChevronRight size={16} className="arrow" />
                         </Link>
+
                         <div className="divisor" />
                         <button onClick={handleLogout} className="perfil-menu-item logout">
                             <LogOut size={20} />
@@ -143,7 +144,7 @@ export default function PerfilCliente() {
                         <Route path="ordenes/:id" element={<DetalleOrden />} />
                         <Route path="tickets" element={<MisTickets />} />
                         <Route path="devoluciones" element={<SolicitarDevolucion />} />
-                        <Route path="resenas" element={<MisResenas />} />
+                        <Route path="resenas" element={<MisReseñas />} />
                     </Routes>
                 </main>
             </div>
@@ -171,6 +172,7 @@ function ResumenPerfil({ user }) {
             expiryDate: user?.debitCard?.expiryDate || '',
             cvv: user?.debitCard?.cvv || ''
         },
+        telefono: user?.telefono || '',
         shippingAddress: {
             pais: user?.shippingAddress?.pais || '',
             provincia: user?.shippingAddress?.provincia || '',
@@ -179,6 +181,28 @@ function ResumenPerfil({ user }) {
             direccion: user?.shippingAddress?.direccion || ''
         }
     });
+
+    // Sincronizar formData cuando el usuario cambie (ej: tras guardar)
+    React.useEffect(() => {
+        setFormData({
+            nombre: user?.nombre || '',
+            password: '',
+            debitCard: {
+                cardNumber: user?.debitCard?.cardNumber || '',
+                cardName: user?.debitCard?.cardName || '',
+                expiryDate: user?.debitCard?.expiryDate || '',
+                cvv: user?.debitCard?.cvv || ''
+            },
+            telefono: user?.telefono || '',
+            shippingAddress: {
+                pais: user?.shippingAddress?.pais || '',
+                provincia: user?.shippingAddress?.provincia || '',
+                ciudad: user?.shippingAddress?.ciudad || '',
+                codigoPostal: user?.shippingAddress?.codigoPostal || '',
+                direccion: user?.shippingAddress?.direccion || ''
+            }
+        });
+    }, [user]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -209,9 +233,13 @@ function ResumenPerfil({ user }) {
                 if (formData.password && formData.password.trim() !== '') {
                     dataToUpdate.password = formData.password;
                 }
+                dataToUpdate.telefono = formData.telefono;
             }
             if (section === 'card') dataToUpdate.debitCard = formData.debitCard;
-            if (section === 'address') dataToUpdate.shippingAddress = formData.shippingAddress;
+            if (section === 'address') {
+                dataToUpdate.shippingAddress = formData.shippingAddress;
+                dataToUpdate.telefono = formData.telefono;
+            }
 
             await updateProfile(dataToUpdate);
             setMessage("Información actualizada con éxito");
@@ -264,6 +292,14 @@ function ResumenPerfil({ user }) {
                             <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field" placeholder="Nueva contraseña (dejar vacío para no cambiar)" />
                         ) : (
                             <p>**************</p>
+                        )}
+                    </div>
+                    <div className="info-group">
+                        <label>Teléfono de Contacto</label>
+                        {editPersonal ? (
+                            <input type="text" name="telefono" value={formData.telefono} onChange={handleInputChange} className="input-field" placeholder="Ej. 88888888" />
+                        ) : (
+                            <p>{user?.telefono || "No especificado"}</p>
                         )}
                     </div>
                     <div className="info-group">
@@ -349,6 +385,7 @@ function ResumenPerfil({ user }) {
                                     <p>{user.shippingAddress.direccion}</p>
                                     <p>{user.shippingAddress.ciudad}, {user.shippingAddress.provincia}</p>
                                     <p>{user.shippingAddress.pais} - {user.shippingAddress.codigoPostal}</p>
+                                    {user.telefono && <p style={{ marginTop: '5px', color: 'var(--nexora-blue)' }}><strong>Tel:</strong> {user.telefono}</p>}
                                 </div>
                             </div>
                         ) : (
@@ -379,6 +416,10 @@ function ResumenPerfil({ user }) {
                                     <label>Código Postal</label>
                                     <input type="text" name="addr_codigoPostal" value={formData.shippingAddress.codigoPostal} onChange={handleInputChange} className="input-field" />
                                 </div>
+                            </div>
+                            <div className="info-group">
+                                <label>Teléfono de Contacto</label>
+                                <input type="text" name="telefono" value={formData.telefono} onChange={handleInputChange} className="input-field" placeholder="Ej. 88888888" />
                             </div>
                         </div>
                     )}

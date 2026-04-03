@@ -87,12 +87,21 @@ export default function Mascota() {
     ];
   }
 
-  //carrito
-  else if (location.pathname.includes("/checkout")) {
+  // carrito
+  else if (location.pathname.includes("/carrito")) {
     mensajes = [
-      "Completa tus datos de envío y pago para finalizar la compra",
-      "Verifica el resumen de tu pedido antes de proceder",
+      "Revisa tus productos antes de comprar",
+      "Puedes cambiar cantidades o eliminar productos de la lista",
       "Tu compra es segura con nosotros"
+    ];
+  }
+
+  // pasarela de pago
+  else if (location.pathname.includes("/pasarela-pago")) {
+    mensajes = [
+      "Completa tus datos de envío y pago para realizar el pedido",
+      "Verifica que el resumen del total sea correcto",
+      "Procesamos tus datos de forma 100% segura"
     ];
   }
 

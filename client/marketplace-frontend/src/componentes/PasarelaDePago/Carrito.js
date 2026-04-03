@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./pagePay.css";
+import "./Carrito.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
@@ -12,13 +12,12 @@ import {
   Trash2,
   Star,
   ShieldCheck,
-  ChevronRight,
   Loader2,
 } from "lucide-react";
 
 const getItemId = (item) => item.product?._id || item.product?.id || item._id || item.id;
 
-const PagePay = () => {
+const Carrito = () => {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, cartCount } = useCart();
   const { user, logout } = useAuth();
@@ -63,7 +62,7 @@ const PagePay = () => {
       const commentsData = {};
 
       for (const item of cartItems) {
-        const productId = item._id || item.id;
+        const productId = getItemId(item);
         commentsData[productId] = await fetchProductComments(productId);
       }
 
@@ -128,7 +127,7 @@ const PagePay = () => {
       (item) => selectedItems[getItemId(item)],
     );
 
-    navigate("/paymentGateway", {
+    navigate("/pasarela-pago", {
       state: {
         selectedItems: selectedCartItems,
         selectedSubtotal: selectedSubtotal,
@@ -190,16 +189,7 @@ const PagePay = () => {
       </div>
 
       <div className={`contenedor-pago ${!isDarkMode ? "modo-claro" : ""}`}>
-        <div className="encabezado-pago-simple">
-          <div className="migas-pan">
-            <span onClick={() => navigate("/")}>Inicio</span>{" "}
-            <ChevronRight
-              size={14}
-              style={{ display: "inline", margin: "0 4px" }}
-            />{" "}
-            <span>Carrito</span>
-          </div>
-        </div>
+
 
         <div className="contenido-principal-pago">
           <div className="columna-productos">
@@ -234,22 +224,24 @@ const PagePay = () => {
                     <div className="caja-imagen-item">
                       <img
                         src={
+                          item.product?.images?.[0]?.url ||
                           item.images?.[0]?.url ||
+                          item.product?.images?.[0] ||
                           item.images?.[0] ||
                           "https://via.placeholder.com/150"
                         }
-                        alt={item.name}
+                        alt={item.product?.name || item.name}
                       />
                     </div>
                     <div className="caja-detalles-item">
-                      <h4 className="nombre-item-pago">{item.name}</h4>
+                      <h4 className="nombre-item-pago">{item.product?.name || item.name}</h4>
 
                       {loadingComments ? (
                         <div className="cargando-calificacion-item">
                           <Loader2 className="animacion-giro" size={14} />{" "}
                           Cargando...
                         </div>
-                      ) : productComments[item._id || item.id]?.count > 0 ? (
+                      ) : productComments[getItemId(item)]?.count > 0 ? (
                         <div className="seccion-calificacion-item">
                           <div className="estrellas-calificacion-item">
                             {[...Array(5)].map((_, i) => (
@@ -259,7 +251,7 @@ const PagePay = () => {
                                 fill={
                                   i <
                                   Math.round(
-                                    productComments[item._id || item.id]
+                                    productComments[getItemId(item)]
                                       ?.averageRating || 0,
                                   )
                                     ? "var(--admin-advertencia)"
@@ -268,7 +260,7 @@ const PagePay = () => {
                                 color={
                                   i <
                                   Math.round(
-                                    productComments[item._id || item.id]
+                                    productComments[getItemId(item)]
                                       ?.averageRating || 0,
                                   )
                                     ? "var(--admin-advertencia)"
@@ -278,11 +270,11 @@ const PagePay = () => {
                             ))}
                           </div>
                           <span className="numero-calificacion-item">
-                            {productComments[item._id || item.id]
+                            {productComments[getItemId(item)]
                               ?.averageRating || "0"}
                           </span>
                           <span className="conteo-calificacion-item">
-                            ({productComments[item._id || item.id]?.count || 0}{" "}
+                            ({productComments[getItemId(item)]?.count || 0}{" "}
                             opiniones)
                           </span>
                         </div>
@@ -293,7 +285,25 @@ const PagePay = () => {
                         </div>
                       )}
 
-                      <p className="vendedor-item-pago">Nexora Premium</p>
+                      {/* Descripción del producto */}
+                      {(item.product?.description || item.description) && (
+                        <p className="descripcion-item-pago">
+                          {item.product?.description || item.description}
+                        </p>
+                      )}
+
+                      {/* Vendedor */}
+                      <div className="vendedor-item-pago">
+                        <span className="etiqueta-vendedor">Vendedor:</span>{" "}
+                        <strong>{
+                          item.product?.vendor?.nombre ||
+                          item.product?.vendor ||
+                          item.vendor?.nombre ||
+                          item.vendor ||
+                          "—"
+                        }</strong>
+                      </div>
+
                       <div className="fila-precio-item">
                         {item.originalPrice ? (
                           <div className="pila-precio-pago">
@@ -407,4 +417,4 @@ const PagePay = () => {
   );
 };
 
-export default PagePay;
+export default Carrito;
