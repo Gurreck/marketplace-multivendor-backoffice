@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Loader, Trash2, Calendar } from 'lucide-react';
 import api from '../../services/api';
-import './MisResenas.css';
+import './MisReseñas.css';
 import { Link } from 'react-router-dom';
 
-export default function MisResenas() {
+export default function MisReseñas() {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
 

@@ -207,11 +207,37 @@
   color: var(--nexora-text);
 }
 
+
+/* ===== DESCRIPCIÓN E INFO EXTRA DEL ITEM ===== */
+.descripcion-item-pago {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  margin: 6px 0 10px 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 480px;
+}
+
 .vendedor-item-pago {
-  font-size: 0.85rem;
-  color: var(--nexora-blue);
-  margin-bottom: 15px;
-  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
+.vendedor-item-pago .etiqueta-vendedor {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.vendedor-item-pago strong {
+  color: var(--nexora-blue, #0094ff);
+  font-weight: 600;
 }
 
 .fila-precio-item {

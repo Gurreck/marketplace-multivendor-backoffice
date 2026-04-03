@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './login.css';
+import './IniciarSesion.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -15,7 +15,7 @@ import {
   Loader2 
 } from 'lucide-react';
 
-export default function Login({ onRegisterClick, onForgotClick }) {
+export default function IniciarSesion({ onRegisterClick, onForgotClick }) {
   // ===== ESTADO =====
   const [email, setEmail] = useState(''); // Correo ingresado
   const [password, setPassword] = useState(''); // Contraseña ingresada

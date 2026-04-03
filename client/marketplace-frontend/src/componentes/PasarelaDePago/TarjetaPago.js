@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./CardPay.css";
+import "./TarjetaPago.css";
 import {
     CreditCard,
     Eye,
@@ -15,7 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useTheme } from "../../context/ThemeContext";
 
-const CardPay = ({
+const TarjetaPago = ({
     selectedSubtotal = 0,
     selectedItems = [],
     address = null,
@@ -97,15 +97,14 @@ const CardPay = ({
 
     // Pre-poblar datos si el usuario ya tiene una tarjeta guardada o se pasa una inicial
     useEffect(() => {
-        const cardToUse = initialCard || user?.debitCard;
-        if (cardToUse) {
-            setCardNumber(formatCardNumber(cardToUse.cardNumber || ""));
-            setCardName(cardToUse.cardName || "");
-            setExpiryDate(cardToUse.expiryDate || "");
-            const detected = detectCardType(cardToUse.cardNumber || "");
+        if (initialCard) {
+            setCardNumber(formatCardNumber(initialCard.cardNumber || ""));
+            setCardName(initialCard.cardName || "");
+            setExpiryDate(initialCard.expiryDate || "");
+            const detected = detectCardType(initialCard.cardNumber || "");
             setCardType(detected);
         }
-    }, [initialCard, user]);
+    }, [initialCard]);
 
     const getExpectedLength = (type) => {
         if (type === "AMEX") return 15;
@@ -253,11 +252,19 @@ const CardPay = ({
                             cardName,
                             expiryDate,
                             cvv
-                        }
+                        },
+                        shippingAddress: {
+                            pais: address.pais || "Costa Rica",
+                            provincia: address.provincia,
+                            ciudad: address.ciudad,
+                            codigoPostal: address.codigoPostal,
+                            direccion: address.direccion
+                        },
+                        telefono: address.telefono
                     });
                 }
             } catch (err) {
-                console.error("No se pudo guardar la tarjeta en el perfil:", err);
+                console.error("No se pudo guardar la información en el perfil:", err);
             }
 
             setCreatedOrder(response.data.data || response.data);
@@ -477,4 +484,4 @@ const CardPay = ({
     );
 };
 
-export default CardPay;
+export default TarjetaPago;

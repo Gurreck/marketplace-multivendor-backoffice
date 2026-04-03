@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import "./pageVendedor.css";
+import "./Vendedor.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -40,9 +40,9 @@ import {
   AlertCircle,
   User,
 } from "lucide-react";
-import PerfilVendedor from "../perfil/PerfilVendedor";
+import PerfilVendedor from "../Perfil/PerfilVendedor";
 
-export default function PageVendedor() {
+export default function Vendedor() {
   const navegar = useNavigate();
   const { logout: cerrarSesion, user } = useAuth();
   const { isDarkMode: esModoOscuro, toggleTheme: alternarTema } = useTheme();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import "./pageSoporte.css";
+import "./Soporte.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -29,7 +29,7 @@ import {
   Store,
 } from "lucide-react";
 
-export default function PaginaSoporte() {
+export default function Soporte() {
   const navegar = useNavigate();
   const { logout: cerrarSesion, user: usuario } = useAuth();
   const { isDarkMode: esModoOscuro, toggleTheme: alternarTema } = useTheme();

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './forgot_Password.css';
+import './RecuperarPassword.css';
 import logo from '../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -12,7 +12,7 @@ import {
     ArrowLeft
 } from 'lucide-react';
 
-export default function ForgotPassword() {
+export default function RecuperarPassword() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);

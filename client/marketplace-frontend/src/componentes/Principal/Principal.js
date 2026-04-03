@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './page.css';
+import './Principal.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
-import DivPromo from '../divPromo/divPromo';
+import SeccionPromocion from '../Promocion/SeccionPromocion';
 import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
 import ModalLogin from '../Modal/ModalLogin';
 import { 
@@ -198,7 +198,7 @@ export default function Principal() {
       />
 
       {/* Sección de Promociones */}
-      <DivPromo products={products} handlePromoAddToCart={handlePromoAddToCart} />
+      <SeccionPromocion products={products} handlePromoAddToCart={handlePromoAddToCart} />
 
       <div className="contenedor-mayor">
         <section className="seccion-productos">

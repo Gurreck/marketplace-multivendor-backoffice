@@ -24,7 +24,7 @@ import {
   Star,
   Gift
 } from 'lucide-react';
-import './tracking.css';
+import './Rastreo.css';
 
 
 // Configuración necesaria para que los iconos de Leaflet se carguen correctamente en React
@@ -65,7 +65,7 @@ const FLUJO_ESTADOS = ["created", "pending", "paid", "packed", "shipped", "deliv
  * Vista premium sincronizada con el estilo Nexora para el seguimiento de paquetes.
  * El progreso lo controla el vendedor desde su panel, no es automático.
  */
-const Tracking = ({ isEmbedded = false, orden = null }) => {
+const Rastreo = ({ isEmbedded = false, orden = null }) => {
   const { isDarkMode: esModoOscuro } = useTheme();
   const { user, logout: cerrarSesion } = useAuth();
   const { cartCount: cantidadCarrito } = useCart();
@@ -418,4 +418,4 @@ const Tracking = ({ isEmbedded = false, orden = null }) => {
   );
 };
 
-export default Tracking;
+export default Rastreo;
