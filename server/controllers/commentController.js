@@ -174,10 +174,34 @@ const getCommentsByVendor = async (req, res) => {
   }
 };
 
+// @desc    Obtener comentarios que ha hecho un usuario específico
+// @route   GET /api/comments/user
+// @access  Private
+const getCommentsByUser = async (req, res) => {
+  try {
+    const comments = await Comment.find({ user: req.user.id })
+      .populate("product", "name images price slug")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: comments,
+      count: comments.length,
+    });
+  } catch (error) {
+    console.error("Error en getCommentsByUser:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createComment,
   getCommentsByProduct,
   getCommentsByVendor,
+  getCommentsByUser,
   deleteComment,
   checkReviewStatus,
 };

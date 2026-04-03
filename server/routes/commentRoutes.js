@@ -3,6 +3,7 @@ const {
   createComment,
   getCommentsByProduct,
   getCommentsByVendor,
+  getCommentsByUser,
   deleteComment,
   checkReviewStatus,
 } = require("../controllers/commentController");
@@ -15,6 +16,7 @@ router.get("/product/:productId", getCommentsByProduct);
 router.get("/vendor/:vendorId", getCommentsByVendor);
 
 // Rutas protegidas (requieren autenticación)
+router.get("/user", protect, getCommentsByUser);
 router.post("/", protect, createComment);
 router.get("/status/:productId", protect, checkReviewStatus);
 router.delete("/:id", protect, deleteComment);
