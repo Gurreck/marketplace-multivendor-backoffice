@@ -2,6 +2,7 @@ const express = require("express");
 const {
   createComment,
   getCommentsByProduct,
+  getCommentsByVendor,
   deleteComment,
   checkReviewStatus,
 } = require("../controllers/commentController");
@@ -11,6 +12,7 @@ const router = express.Router();
 
 // Rutas públicas
 router.get("/product/:productId", getCommentsByProduct);
+router.get("/vendor/:vendorId", getCommentsByVendor);
 
 // Rutas protegidas (requieren autenticación)
 router.post("/", protect, createComment);

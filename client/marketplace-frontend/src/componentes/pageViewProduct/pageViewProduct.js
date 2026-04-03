@@ -8,6 +8,7 @@ import api from '../../services/api';
 
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
 import ModalLogin from '../Modal/ModalLogin';
+import ModalPerfilVendedor from '../Modal/ModalPerfilVendedor';
 import Reseña from '../Reseña/Reseña';
 import { commentService } from '../../services/commentService';
 
@@ -50,6 +51,7 @@ const PageViewProduct = () => {
     // ===== ESTADO DE UI =====
     const [showNotification, setShowNotification] = useState(''); // Mensaje de notificación temporal
     const [showLoginModal, setShowLoginModal] = useState(false); // Control del modal de login sugerido
+    const [showVendorModal, setShowVendorModal] = useState(false); // Modal de perfil de vendedor
 
     const fetchComments = useCallback(async () => {
         try {
@@ -145,6 +147,13 @@ const PageViewProduct = () => {
                 mensaje="Debes iniciar sesión para realizar esta acción"
             />
 
+            {/* Modal Perfil del Vendedor */}
+            <ModalPerfilVendedor
+                isOpen={showVendorModal}
+                onClose={() => setShowVendorModal(false)}
+                vendor={selectedProduct.vendor}
+            />
+
             <div className={`barra-navegacion-secundaria ${!isDarkMode ? 'modo-claro' : ''}`}>
                 <NavbarSecundario
                     toggleTheme={toggleTheme}
@@ -227,9 +236,14 @@ const PageViewProduct = () => {
                         </div>
 
                         <div className="meta-producto">
-                            <div className="vendedor">
-                                <User size={16} style={{ marginRight: '8px' }} />
-                                Vendedor: <strong>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
+                            <div 
+                                className="vendedor" 
+                                style={{ cursor: "pointer", color: "var(--color-primario)", padding: "4px 8px", borderRadius: "8px", background: "rgba(0,148,255,0.05)", display: "inline-flex", alignItems: "center", border: "1px solid rgba(0,148,255,0.1)" }}
+                                onClick={() => setShowVendorModal(true)}
+                                title="Ver perfil del vendedor"
+                            >
+                                <User size={16} style={{ marginRight: '8px' }} color="#0094FF" />
+                                Vendedor: <strong style={{ marginLeft: "4px" }}>{selectedProduct.vendor?.nombre || selectedProduct.vendor}</strong>
                             </div>
                         </div>
 
