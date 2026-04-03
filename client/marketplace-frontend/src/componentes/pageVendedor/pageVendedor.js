@@ -24,7 +24,6 @@ import {
   Sun,
   LogOut,
   Menu,
-  Zap,
   Search,
   BarChart3,
   TrendingUp,
@@ -39,11 +38,13 @@ import {
   ToggleLeft,
   ToggleRight,
   AlertCircle,
+  User,
 } from "lucide-react";
+import PerfilVendedor from "../perfil/PerfilVendedor";
 
 export default function PageVendedor() {
   const navegar = useNavigate();
-  const { logout: cerrarSesion } = useAuth();
+  const { logout: cerrarSesion, user } = useAuth();
   const { isDarkMode: esModoOscuro, toggleTheme: alternarTema } = useTheme();
 
   // ===== ESTADO GENERAL =====
@@ -83,17 +84,7 @@ export default function PageVendedor() {
   const [historialOrden, setHistorialOrden] = useState([]);
   const [comentarioEstado, setComentarioEstado] = useState("");
 
-  const categories = [
-    "Todos",
-    "Computadoras",
-    "Audio",
-    "Pantallas",
-    "Periféricos",
-    "Tablets",
-    "Wearables",
-    "Cámaras",
-    "Accesorios",
-  ];
+  const [categories, setCategories] = useState(["Todos"]);
 
   const estadosOrden = ["created", "paid", "packed", "shipped", "delivered"];
   const etiquetasEstado = {
@@ -211,6 +202,24 @@ export default function PageVendedor() {
     }
   }, []);
 
+  const cargarCategorias = useCallback(async () => {
+    try {
+      const response = await api.get('/categories');
+      if (response.data.success) {
+        const catNames = response.data.data
+          .filter(c => c.activa)
+          .map(c => c.nombre);
+        setCategories(['Todos', ...catNames]);
+      }
+    } catch (err) {
+      console.error('Error al cargar categorias:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarCategorias();
+  }, [cargarCategorias]);
+
   useEffect(() => {
     switch (seccionActiva) {
       case "dashboard":
@@ -271,7 +280,7 @@ export default function PageVendedor() {
       name: "",
       description: "",
       price: "",
-      category: categories[1],
+      category: categories.length > 1 ? categories[1] : "",
       brand: "",
       stock: "0",
     });
@@ -538,6 +547,11 @@ export default function PageVendedor() {
 
   // ===== SECCIONES DE NAVEGACIÓN =====
   const elementosNav = [
+    {
+      clave: "perfil",
+      icono: <User size={20} />,
+      etiqueta: "Perfil",
+    },
     {
       clave: "dashboard",
       icono: <LayoutDashboard size={20} />,
@@ -1415,9 +1429,27 @@ export default function PageVendedor() {
       <aside
         className={`barra-lateral-vend ${menuAbierto ? "abierta" : ""}`}
       >
-        <div className="marca-barra-lateral-vend">
-          <Zap size={24} color="var(--vend-azul)" />
-          <h2>Nexora Seller</h2>
+        <div className="perfil-sidebar-vend" style={{ 
+          padding: '24px 20px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px',
+          borderBottom: '1px solid var(--vend-borde)',
+          marginBottom: '10px'
+        }}>
+          <img 
+              src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || user?.email || 'V')}&background=0ea5e9&color=fff`} 
+              alt="Perfil" 
+              style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--vend-azul)' }}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <span style={{ fontWeight: '600', fontSize: '15px', color: 'var(--vend-texto)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  {user?.nombre || user?.email?.split('@')[0]}
+              </span>
+              <span style={{ fontSize: '12px', color: 'var(--vend-texto-secundario)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {user?.email}
+              </span>
+          </div>
         </div>
 
         <nav className="nav-vend">
@@ -1459,6 +1491,7 @@ export default function PageVendedor() {
 
       {/* Contenido Principal */}
       <main className="principal-vend">
+        {seccionActiva === "perfil" && <PerfilVendedor />}
         {seccionActiva === "dashboard" && renderDashboard()}
         {seccionActiva === "productos" && renderProductos()}
         {seccionActiva === "ordenes" && renderOrdenes()}

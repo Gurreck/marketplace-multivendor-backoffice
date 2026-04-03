@@ -25,7 +25,16 @@ export default function NavbarPrincipal({
     cartCount,
     categories,
     selectedCategory,
-    setSelectedCategory
+    setSelectedCategory,
+    priceMin,
+    setPriceMin,
+    priceMax,
+    setPriceMax,
+    selectedVendor,
+    setSelectedVendor,
+    vendors,
+    onlyInStock,
+    setOnlyInStock
 }) {
     const navigate = useNavigate();
     const { isDarkMode, toggleTheme } = useTheme();
@@ -128,6 +137,27 @@ export default function NavbarPrincipal({
                         {category}
                     </button>
                 ))}
+            </div>
+
+            {/* Filtros Avanzados */}
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', padding: '12px 24px', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Precio:</label>
+                    <input type="number" placeholder="Min" value={priceMin} onChange={e => setPriceMin(e.target.value)} style={{ width: '80px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }} />
+                    <span style={{ color: 'rgba(255,255,255,0.4)' }}>-</span>
+                    <input type="number" placeholder="Max" value={priceMax} onChange={e => setPriceMax(e.target.value)} style={{ width: '80px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Vendedor:</label>
+                    <select value={selectedVendor} onChange={e => setSelectedVendor(e.target.value)} style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }}>
+                        <option value="">Todos</option>
+                        {vendors?.map(v => <option key={v._id} value={v._id}>{v.nombre}</option>)}
+                    </select>
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={onlyInStock} onChange={e => setOnlyInStock(e.target.checked)} />
+                    Solo disponibles
+                </label>
             </div>
         </header>
     );

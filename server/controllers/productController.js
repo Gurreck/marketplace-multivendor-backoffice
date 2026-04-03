@@ -87,7 +87,7 @@ const getProducts = async (req, res) => {
 
     const products = await Product.find(query).populate(
       "vendor",
-      "nombre email"
+      "nombre email profilePicture shippingAddress createdAt"
     );
 
     res.status(200).json({
@@ -109,7 +109,7 @@ const getVendorProducts = async (req, res) => {
   try {
     const products = await Product.find({ vendor: req.user.id }).populate(
       "vendor",
-      "nombre email"
+      "nombre email profilePicture shippingAddress createdAt"
     );
 
     res.status(200).json({
@@ -131,7 +131,7 @@ const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate(
       "vendor",
-      "nombre email"
+      "nombre email profilePicture shippingAddress createdAt"
     );
 
     if (!product) {
