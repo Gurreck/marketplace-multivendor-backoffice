@@ -8,6 +8,7 @@ import MisOrdenes from '../pageMisOrdenes/MisOrdenes';
 import DetalleOrden from '../pageDetalleOrden/DetalleOrden';
 import MisTickets from '../pageMisTickets/MisTickets';
 import SolicitarDevolucion from '../pageSolicitarDevolucion/SolicitarDevolucion';
+import MisResenas from '../pageMisResenas/MisResenas';
 import './PerfilCliente.css';
 import { 
     User, 
@@ -19,7 +20,8 @@ import {
     ChevronRight,
     LogOut,
     Edit2,
-    Loader
+    Loader,
+    Star
 } from 'lucide-react';
 import { useRef } from 'react';
 
@@ -115,6 +117,11 @@ export default function PerfilCliente() {
                             <span>Devoluciones</span>
                             <ChevronRight size={16} className="arrow" />
                         </Link>
+                        <Link to="/cliente/perfil/resenas" className={`perfil-menu-item ${isActive('resenas') ? 'activo' : ''}`}>
+                            <Star size={20} />
+                            <span>Mis Reseñas</span>
+                            <ChevronRight size={16} className="arrow" />
+                        </Link>
                         <Link to="/checkout" className="perfil-menu-item">
                             <CreditCard size={20} />
                             <span>Checkout / Pago</span>
@@ -136,6 +143,7 @@ export default function PerfilCliente() {
                         <Route path="ordenes/:id" element={<DetalleOrden />} />
                         <Route path="tickets" element={<MisTickets />} />
                         <Route path="devoluciones" element={<SolicitarDevolucion />} />
+                        <Route path="resenas" element={<MisResenas />} />
                     </Routes>
                 </main>
             </div>
@@ -148,7 +156,6 @@ function ResumenPerfil({ user }) {
     
     // Estados de edición individuales
     const [editPersonal, setEditPersonal] = useState(false);
-    const [editPassword, setEditPassword] = useState(false);
     const [editCard, setEditCard] = useState(false);
     const [editAddress, setEditAddress] = useState(false);
     

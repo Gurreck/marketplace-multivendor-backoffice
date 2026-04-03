@@ -4,6 +4,10 @@ import api from '../../services/api';
 import './SolicitarDevolucion.css';
 
 export default function SolicitarDevolucion() {
+    const [viewMode, setViewMode] = useState('list');
+    const [rmasList, setRmasList] = useState([]);
+    const [loadingRmas, setLoadingRmas] = useState(true);
+
     const [step, setStep] = useState(0); // 0 = seleccionar orden/items, 1 = motivo, 2 = evidencia, 3 = finalizado
     const [motivo, setMotivo] = useState('');
     const [detalle, setDetalle] = useState('');
@@ -29,8 +33,26 @@ export default function SolicitarDevolucion() {
     ];
 
     useEffect(() => {
-        fetchOrders();
-    }, []);
+        if (viewMode === 'list') {
+            fetchRMAs();
+        } else {
+            fetchOrders();
+        }
+    }, [viewMode]);
+
+    const fetchRMAs = async () => {
+        try {
+            setLoadingRmas(true);
+            const response = await api.get('/support/rma');
+            if (response.data.success) {
+                setRmasList(response.data.data);
+            }
+        } catch (err) {
+            console.error('Error al cargar RMAs:', err);
+        } finally {
+            setLoadingRmas(false);
+        }
+    };
 
     const fetchOrders = async () => {
         try {
@@ -97,6 +119,74 @@ export default function SolicitarDevolucion() {
         }
     };
 
+    const traducirEstado = (estado) => {
+        switch(estado) {
+            case 'requested': return 'Solicitado';
+            case 'approved': return 'Aprobado';
+            case 'rejected': return 'Rechazado';
+            case 'received': return 'Recibido';
+            case 'refunded': return 'Reembolsado';
+            default: return estado;
+        }
+    };
+
+    if (viewMode === 'list') {
+        if (loadingRmas) return (
+            <div className="seccion-devolucion" style={{ textAlign: 'center', padding: '60px' }}>
+                <Loader2 size={40} style={{ animation: 'spin 1s linear infinite' }} />
+                <p>Cargando tus devoluciones...</p>
+            </div>
+        );
+
+        return (
+            <div className="seccion-devolucion">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h2 className="titulo-seccion" style={{ marginBottom: 0 }}><RotateCcw size={28} /> Mis Devoluciones</h2>
+                    <button className="boton-primario" onClick={() => { setStep(0); setViewMode('form'); }}>
+                        + Nueva Devolución
+                    </button>
+                </div>
+
+                {rmasList.length === 0 ? (
+                    <div className="alerta-devolucion" style={{ textAlign: 'center', padding: '40px' }}>
+                        <Package size={48} color="var(--text-muted)" style={{ margin: '0 auto 15px' }} />
+                        <p>No tienes solicitudes de devolución actualmente.</p>
+                    </div>
+                ) : (
+                    <div className="lista-ordenes-rma">
+                        {rmasList.map(rma => (
+                            <div key={rma._id} className="orden-rma-card" style={{ cursor: 'default' }}>
+                                <div className="orden-rma-info" style={{ width: '100%' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                        <span className="orden-rma-id">RMA-{rma._id.slice(-8).toUpperCase()}</span>
+                                        <span className={`rma-status-badge ${rma.estado}`}>{traducirEstado(rma.estado)}</span>
+                                    </div>
+                                    <p style={{ margin: '0 0 5px', fontSize: '14px', color: 'var(--text-muted)' }}>
+                                        Orden: #{rma.order?._id?.slice(-6).toUpperCase()}
+                                    </p>
+                                    <p style={{ margin: '0 0 5px', fontSize: '14px', color: 'var(--text-muted)' }}>
+                                        Fecha: {new Date(rma.createdAt).toLocaleDateString()}
+                                    </p>
+                                    <p style={{ margin: '0 0 10px', fontSize: '14px' }}>
+                                        <strong>Motivo:</strong> {rma.motivo}
+                                    </p>
+                                    <div style={{ padding: '10px', background: 'var(--info-bg)', borderRadius: '8px' }}>
+                                        <p style={{ margin: '0 0 5px', fontSize: '13px', fontWeight: 'bold' }}>Productos a devolver:</p>
+                                        <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px' }}>
+                                            {rma.items.map((it, idx) => (
+                                                <li key={idx}>{it.product?.name} (x{it.quantity})</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     if (loading) return (
         <div className="seccion-devolucion" style={{ textAlign: 'center', padding: '60px' }}>
             <Loader2 size={40} style={{ animation: 'spin 1s linear infinite' }} />
@@ -106,7 +196,12 @@ export default function SolicitarDevolucion() {
 
     return (
         <div className="seccion-devolucion">
-            <h2 className="titulo-seccion"><RotateCcw size={28} /> Solicitar Devolución</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                <button className="boton-secundario" style={{ padding: '8px 12px' }} onClick={() => setViewMode('list')}>
+                    &larr; Volver
+                </button>
+                <h2 className="titulo-seccion" style={{ marginBottom: 0 }}><RotateCcw size={28} /> Solicitar Devolución</h2>
+            </div>
 
             <div className="pasos-devolucion">
                 <div className={`paso ${step >= 0 ? 'activo' : ''}`}>0. Seleccionar Ítems</div>
@@ -275,7 +370,7 @@ export default function SolicitarDevolucion() {
                             Número de trámite: <strong>RMA-{rmaResult._id?.slice(-8).toUpperCase()}</strong>
                         </div>
                     )}
-                    <button className="boton-primario" onClick={() => window.location.href = '/cliente/perfil'}>Volver al Perfil</button>
+                    <button className="boton-primario" onClick={() => setViewMode('list')}>Volver a Mis Devoluciones</button>
                 </div>
             )}
         </div>

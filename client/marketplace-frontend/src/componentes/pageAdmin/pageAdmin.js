@@ -45,7 +45,7 @@ import {
 
 export default function PaginaAdmin() {
   const navegar = useNavigate();
-  const { logout: cerrarSesion, user: usuario } = useAuth();
+  const { logout: cerrarSesion } = useAuth();
   const { isDarkMode: esModoOscuro, toggleTheme: alternarTema } = useTheme();
 
   // ===== ESTADO GENERAL =====
@@ -1167,6 +1167,7 @@ export default function PaginaAdmin() {
                     <option value="cliente">Cliente</option>
                     <option value="vendedor">Vendedor</option>
                     <option value="administrador">Administrador</option>
+                    <option value="soporte">Soporte</option>
                   </select>
                 </div>
               </div>
@@ -1201,6 +1202,7 @@ export default function PaginaAdmin() {
                   <option value="cliente">Cliente</option>
                   <option value="vendedor">Vendedor</option>
                   <option value="administrador">Administrador</option>
+                  <option value="soporte">Soporte</option>
                 </select>
               </div>
               <div className="acciones-formulario-admin">
