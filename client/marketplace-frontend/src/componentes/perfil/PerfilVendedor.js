@@ -11,6 +11,7 @@ export default function PerfilVendedor() {
     // Estados de edición individuales
     const [editPersonal, setEditPersonal] = useState(false);
     const [editAddress, setEditAddress] = useState(false);
+    const [editStore, setEditStore] = useState(false);
     
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
@@ -24,7 +25,9 @@ export default function PerfilVendedor() {
             ciudad: user?.shippingAddress?.ciudad || '',
             codigoPostal: user?.shippingAddress?.codigoPostal || '',
             direccion: user?.shippingAddress?.direccion || ''
-        }
+        },
+        storeDescription: user?.storeDescription || '',
+        storeBanner: user?.storeBanner || ''
     });
 
     const handleInputChange = (e) => {
@@ -52,6 +55,10 @@ export default function PerfilVendedor() {
                 }
             }
             if (section === 'address') dataToUpdate.shippingAddress = formData.shippingAddress;
+            if (section === 'store') {
+                dataToUpdate.storeDescription = formData.storeDescription;
+                dataToUpdate.storeBanner = formData.storeBanner;
+            }
 
             await updateProfile(dataToUpdate);
             setMessage("Información actualizada con éxito");
@@ -61,6 +68,7 @@ export default function PerfilVendedor() {
                 setFormData(prev => ({ ...prev, password: '' }));
             }
             if (section === 'address') setEditAddress(false);
+            if (section === 'store') setEditStore(false);
         } catch (error) {
             setMessage("Error al actualizar la información");
         } finally {
@@ -214,6 +222,60 @@ export default function PerfilVendedor() {
                             </div>
                         </div>
                     )}
+                </div>
+
+                {/* Perfil Público de Tienda */}
+                <div className="perfil-card" style={{ background: 'var(--vend-card)', border: '1px solid var(--vend-borde)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--vend-borde)', paddingBottom: '10px' }}>
+                        <h3 style={{ margin: 0, border: 'none', padding: 0, color: 'var(--vend-texto)' }}>Perfil Público de Tienda</h3>
+                        {!editStore ? (
+                            <button className="boton-secundario" onClick={() => setEditStore(true)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Editar</button>
+                        ) : (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button className="boton-secundario" onClick={() => setEditStore(false)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Cancelar</button>
+                                <button className="boton-primario" onClick={() => handleSave('store')} disabled={loading} style={{ padding: '5px 15px', fontSize: '0.85rem', background: 'var(--vend-azul)', color: 'white', border: 'none', borderRadius: '8px' }}>{loading ? 'Guardando...' : 'Guardar'}</button>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="info-group">
+                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Descripción de la Tienda</label>
+                        {editStore ? (
+                            <textarea 
+                                name="storeDescription" 
+                                value={formData.storeDescription} 
+                                onChange={handleInputChange} 
+                                className="input-field" 
+                                placeholder="Describe qué vendes, tus políticas, etc."
+                                style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)', minHeight: '80px', resize: 'vertical' }} 
+                            />
+                        ) : (
+                            <p style={{ color: 'var(--vend-texto)', whiteSpace: 'pre-line' }}>
+                                {user?.storeDescription || <span style={{ color: 'var(--vend-texto-secundario)', fontStyle: 'italic' }}>Sin descripción (añade en Editar)</span>}
+                            </p>
+                        )}
+                    </div>
+                    
+                    <div className="info-group" style={{ marginTop: '15px' }}>
+                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Banner de la Tienda (URL de la imagen)</label>
+                        {editStore ? (
+                            <input 
+                                type="text" 
+                                name="storeBanner" 
+                                value={formData.storeBanner} 
+                                onChange={handleInputChange} 
+                                className="input-field" 
+                                placeholder="https://ejemplo.com/banner.jpg"
+                                style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} 
+                            />
+                        ) : (
+                            user?.storeBanner ? (
+                                <img src={user.storeBanner} alt="Banner Tienda" style={{ width: '100%', maxHeight: '150px', objectFit: 'cover', borderRadius: '8px', marginTop: '10px' }} />
+                            ) : (
+                                <p style={{ color: 'var(--vend-texto-secundario)', fontStyle: 'italic' }}>Sin banner configurado.</p>
+                            )
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

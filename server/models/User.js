@@ -63,6 +63,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  storeDescription: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  storeBanner: {
+    type: String,
+    default: "",
+  },
 }, {
   timestamps: true,
 });

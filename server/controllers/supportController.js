@@ -3,6 +3,112 @@ const RMA = require("../models/RMA");
 const Order = require("../models/Order");
 const { registrarAuditoria } = require("./adminController");
 
+// ========== ÓRDENES (ENVÍOS) ==========
+
+// @desc    Obtener todas las órdenes para gestionar envíos (Team Soporte)
+// @route   GET /api/support/orders
+const getSupportOrders = async (req, res) => {
+  try {
+    const { estado, page = 1, limit = 20 } = req.query;
+    const filter = {};
+    if (estado) filter.status = estado;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [orders, total] = await Promise.all([
+      Order.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate("user", "nombre email")
+        .populate("items.product", "name images price")
+        .populate("items.vendor", "nombre"),
+      Order.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      currentPage: parseInt(page),
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Error al obtener órdenes de soporte:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Actualizar el estado de envío de una orden
+// @route   PUT /api/support/orders/:orderId/status
+const actualizarEstadoOrdenSoporte = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { estado, comentario } = req.body;
+
+    if (!estado) {
+      return res.status(400).json({ success: false, message: "El campo 'estado' es obligatorio." });
+    }
+
+    const estadosValidos = ["packed", "shipped", "delivered"];
+    if (!estadosValidos.includes(estado)) {
+      return res.status(400).json({
+        success: false,
+        message: `Estado no válido. Válidos: ${estadosValidos.join(", ")}`,
+      });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Orden no encontrada." });
+    }
+
+    const flujoEstados = ["created", "pending", "paid", "packed", "shipped", "delivered"];
+    const indiceActual = flujoEstados.indexOf(order.status);
+    const indiceNuevo = flujoEstados.indexOf(estado);
+
+    if (indiceNuevo <= indiceActual) {
+      return res.status(400).json({
+        success: false,
+        message: `No se puede cambiar de "${order.status}" a "${estado}".`,
+      });
+    }
+
+    const estadoAnterior = order.status;
+    order.status = estado;
+
+    order.statusHistory.push({
+      estado,
+      usuarioQueCambio: req.user.id,
+      fecha: new Date(),
+      comentario: comentario || `Soporte/Logística cambió estado a "${estado}"`,
+    });
+
+    await order.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "cambio_estado_orden_soporte",
+      entidad: "orden",
+      entidadId: order._id,
+      detalles: `Soporte cambió estado de orden de "${estadoAnterior}" a "${estado}"`,
+      datosAnteriores: { estado: estadoAnterior },
+      datosNuevos: { estado },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Estado de la orden actualizado a "${estado}"`,
+      data: order,
+    });
+  } catch (error) {
+    console.error("Error en actualizarEstadoOrdenSoporte:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // ========== TICKETS ==========
 
 // @desc    Crear un ticket de soporte
@@ -457,4 +563,6 @@ module.exports = {
   createRMA,
   getRMAs,
   updateRMAStatus,
+  getSupportOrders,
+  actualizarEstadoOrdenSoporte,
 };

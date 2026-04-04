@@ -20,7 +20,9 @@ export default function ModalPerfilVendedor({ isOpen, onClose, vendor }) {
     const borderColor = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
     const textColor = isDarkMode ? 'white' : '#1f2937';
     const softTextColor = isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
-    const headerBg = isDarkMode ? 'linear-gradient(135deg, rgba(0,148,255,0.2) 0%, rgba(236,72,153,0.2) 100%)' : 'linear-gradient(135deg, rgba(0,148,255,0.1) 0%, rgba(236,72,153,0.1) 100%)';
+    const headerBg = vendor?.storeBanner 
+        ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url(${vendor.storeBanner}) center/cover no-repeat`
+        : (isDarkMode ? 'linear-gradient(135deg, rgba(0,148,255,0.2) 0%, rgba(236,72,153,0.2) 100%)' : 'linear-gradient(135deg, rgba(0,148,255,0.1) 0%, rgba(236,72,153,0.1) 100%)');
     const tabBg = isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.03)';
     const itemBg = isDarkMode ? 'rgba(255,255,255,0.03)' : '#f9fafb';
     const itemBorder = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -76,10 +78,10 @@ export default function ModalPerfilVendedor({ isOpen, onClose, vendor }) {
                         alt="Foto del vendedor" 
                         style={{ width: '80px', height: '80px', borderRadius: '50%', border: '3px solid #0094FF', objectFit: 'cover', margin: '0 auto 10px', display: 'block' }} 
                     />
-                    <h2 style={{ margin: '0 0 5px 0', fontSize: '22px', color: textColor }}>{vendor.nombre}</h2>
-                    <p style={{ margin: '0 0 10px 0', color: softTextColor, fontSize: '14px' }}>Vendedor Oficial en Nexora</p>
+                    <h2 style={{ margin: '0 0 5px 0', fontSize: '22px', color: vendor?.storeBanner ? 'white' : textColor }}>{vendor.nombre}</h2>
+                    <p style={{ margin: '0 0 10px 0', color: vendor?.storeBanner ? 'rgba(255,255,255,0.8)' : softTextColor, fontSize: '14px' }}>Vendedor Oficial en Nexora</p>
                     
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', color: softTextColor, fontSize: '13px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', color: vendor?.storeBanner ? 'rgba(255,255,255,0.8)' : softTextColor, fontSize: '13px' }}>
                         {vendor.shippingAddress?.ciudad && (
                             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 <MapPin size={14} /> {vendor.shippingAddress.ciudad}, {vendor.shippingAddress.pais}
@@ -91,6 +93,12 @@ export default function ModalPerfilVendedor({ isOpen, onClose, vendor }) {
                             </span>
                         )}
                     </div>
+
+                    {vendor.storeDescription && (
+                        <div style={{ marginTop: '15px', padding: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontStyle: 'italic', maxWidth: '80%', margin: '15px auto 0' }}>
+                            {vendor.storeDescription}
+                        </div>
+                    )}
                 </div>
 
                 {/* Stats */}
