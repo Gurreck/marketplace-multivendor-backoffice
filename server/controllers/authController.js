@@ -44,6 +44,7 @@ const register = async (req, res) => {
         token,
         debitCard: user.debitCard,
         shippingAddress: user.shippingAddress,
+        telefono: user.telefono,
         profilePicture: user.profilePicture,
         firstPurchaseCompleted: user.firstPurchaseCompleted,
         wheelSpun: user.wheelSpun,
@@ -123,6 +124,7 @@ const login = async (req, res) => {
         token,
         debitCard: user.debitCard,
         shippingAddress: user.shippingAddress,
+        telefono: user.telefono,
         profilePicture: user.profilePicture,
         firstPurchaseCompleted: user.firstPurchaseCompleted,
         wheelSpun: user.wheelSpun,
@@ -159,6 +161,10 @@ const updateProfile = async (req, res) => {
       user.debitCard = req.body.debitCard;
     }
 
+    if (req.body.telefono !== undefined) {
+      user.telefono = req.body.telefono;
+    }
+
     if (req.body.shippingAddress) {
       user.shippingAddress = req.body.shippingAddress;
     }
@@ -179,6 +185,7 @@ const updateProfile = async (req, res) => {
         role: updatedUser.role,
         debitCard: updatedUser.debitCard,
         shippingAddress: updatedUser.shippingAddress,
+        telefono: updatedUser.telefono,
         profilePicture: updatedUser.profilePicture,
       },
     });
@@ -211,6 +218,7 @@ const getProfile = async (req, res) => {
         role: user.role,
         shippingAddress: user.shippingAddress,
         debitCard: user.debitCard,
+        telefono: user.telefono,
         profilePicture: user.profilePicture,
         firstPurchaseCompleted: user.firstPurchaseCompleted,
         wheelSpun: user.wheelSpun,
@@ -252,6 +260,7 @@ const uploadProfilePicture = async (req, res) => {
         role: updatedUser.role,
         debitCard: updatedUser.debitCard,
         shippingAddress: updatedUser.shippingAddress,
+        telefono: updatedUser.telefono,
         profilePicture: updatedUser.profilePicture,
       },
     });

@@ -243,25 +243,40 @@
 
 .notificacion {
     position: fixed;
-    top: 80px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    z-index: 1000;
-    animation: slideIn 0.3s ease;
+    top: 85px;
+    right: 24px;
+    background: rgba(10, 14, 39, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #ffffff;
+    padding: 14px 20px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 148, 255, 0.35);
+    box-shadow: 0 8px 32px rgba(0, 148, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    animation: slideInNotif 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     display: flex;
     align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 240px;
+    max-width: 340px;
 }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-    }
+.notificacion svg {
+    color: #0094ff;
+    flex-shrink: 0;
+}
 
+@keyframes slideInNotif {
+    from {
+        opacity: 0;
+        transform: translateX(110%) scale(0.9);
+    }
     to {
-        transform: translateX(0);
+        opacity: 1;
+        transform: translateX(0) scale(1);
     }
 }
 

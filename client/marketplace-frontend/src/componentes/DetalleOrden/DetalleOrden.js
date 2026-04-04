@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Package, MapPin, CreditCard, Calendar, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import { commentService } from '../../services/commentService';
-import Tracking from '../Tracking/tracking';
+import Rastreo from '../Rastreo/Rastreo';
 import DejarReseña from '../DejarReseña/DejarReseña';
 import './DetalleOrden.css';
 
@@ -248,7 +248,7 @@ export default function DetalleOrden() {
             )}
 
             <div style={{ marginTop: '20px' }}>
-                <Tracking isEmbedded={true} orden={order} />
+                <Rastreo isEmbedded={true} orden={order} />
             </div>
         </div>
     );

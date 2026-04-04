@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './Address.css';
+import './DireccionEnvio.css';
 import { MapPin, Phone, User, CheckCircle } from 'lucide-react';
 
-const Address = ({ onAddressSave, initialAddress, user }) => {
+const DireccionEnvio = ({ onAddressSave, initialAddress, user }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         direccion: '',
@@ -208,4 +208,4 @@ const Address = ({ onAddressSave, initialAddress, user }) => {
     );
 };
 
-export default Address;
+export default DireccionEnvio;

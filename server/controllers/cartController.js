@@ -6,7 +6,10 @@ const Product = require("../models/Product");
 // @access  Private
 exports.getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user.id }).populate("items.product");
+    const cart = await Cart.findOne({ user: req.user.id }).populate({
+      path: "items.product",
+      populate: { path: "vendor", select: "nombre email" }
+    });
     if (!cart) {
       return res.json({ success: true, data: { items: [] } });
     }
@@ -72,7 +75,10 @@ exports.addToCart = async (req, res) => {
     }
 
     // Poblar el producto para la respuesta
-    await cart.populate("items.product");
+    await cart.populate({
+      path: "items.product",
+      populate: { path: "vendor", select: "nombre email" }
+    });
 
     res.json({ success: true, data: cart });
   } catch (error) {
@@ -111,7 +117,10 @@ exports.updateCartItem = async (req, res) => {
 
     item.quantity = quantity;
     await cart.save();
-    await cart.populate("items.product");
+    await cart.populate({
+      path: "items.product",
+      populate: { path: "vendor", select: "nombre email" }
+    });
 
     res.json({ success: true, data: cart });
   } catch (error) {
@@ -134,7 +143,10 @@ exports.removeFromCart = async (req, res) => {
 
     cart.items = cart.items.filter(item => item.product.toString() !== productId);
     await cart.save();
-    await cart.populate("items.product");
+    await cart.populate({
+      path: "items.product",
+      populate: { path: "vendor", select: "nombre email" }
+    });
 
     res.json({ success: true, data: cart });
   } catch (error) {
