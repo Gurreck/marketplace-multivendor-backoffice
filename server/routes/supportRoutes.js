@@ -14,6 +14,8 @@ const {
   createRMA,
   getRMAs,
   updateRMAStatus,
+  getSupportOrders,
+  actualizarEstadoOrdenSoporte,
 } = require("../controllers/supportController");
 
 // Todas las rutas requieren autenticación
@@ -42,5 +44,11 @@ router.post("/rma", upload.array("evidencia", 5), createRMA);
 router.get("/rma", getRMAs);
 // PUT /api/support/rma/:id/status — Aprobar/Rechazar/Reembolsar
 router.put("/rma/:id/status", authorize("soporte", "administrador"), updateRMAStatus);
+
+// ========== ÓRDENES (ENVÍOS) ==========
+// GET /api/support/orders — Listar todas las órdenes
+router.get("/orders", authorize("soporte", "administrador"), getSupportOrders);
+// PUT /api/support/orders/:orderId/status — Avanzar estado del envío de la orden
+router.put("/orders/:orderId/status", authorize("soporte", "administrador"), actualizarEstadoOrdenSoporte);
 
 module.exports = router;

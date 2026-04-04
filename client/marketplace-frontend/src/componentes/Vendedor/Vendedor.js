@@ -40,7 +40,7 @@ import {
   AlertCircle,
   User,
 } from "lucide-react";
-import PerfilVendedor from "../Perfil/PerfilVendedor";
+import PerfilVendedor from "../perfil/PerfilVendedor";
 
 export default function Vendedor() {
   const navegar = useNavigate();
@@ -443,7 +443,6 @@ export default function Vendedor() {
 
   const actualizarEstadoOrden = async (idOrden, nuevoEstado) => {
     try {
-      // Usar la orden actual de la lista o la seleccionada para saber el estado anterior
       const ordenObjetivo = ordenSeleccionada || ordenes.find((o) => o._id === idOrden);
       const estadoAnterior = ordenObjetivo ? ordenObjetivo.estado : "";
 
@@ -1120,20 +1119,6 @@ export default function Vendedor() {
                       >
                         <Eye size={16} />
                       </button>
-                      {obtenerSiguienteEstado(orden.estado) && (
-                        <button
-                          className="boton-accion-vend success"
-                          onClick={() =>
-                            actualizarEstadoOrden(
-                              orden._id,
-                              obtenerSiguienteEstado(orden.estado),
-                            )
-                          }
-                          title={`Avanzar a ${etiquetasEstado[obtenerSiguienteEstado(orden.estado)]}`}
-                        >
-                          <ChevronRight size={16} />
-                        </button>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -1149,7 +1134,6 @@ export default function Vendedor() {
   const renderDetalleOrden = () => {
     if (!ordenSeleccionada) return null;
     const orden = ordenSeleccionada;
-    const siguienteEstado = obtenerSiguienteEstado(orden.estado);
 
     return (
       <>
@@ -1255,35 +1239,13 @@ export default function Vendedor() {
               })}
             </div>
 
-            {/* Actualizar estado */}
-            {siguienteEstado && (
-              <div className="actualizar-estado-vend">
-                <textarea
-                  className="textarea-estado-vend"
-                  placeholder="Comentario (obligatorio para historial)..."
-                  value={comentarioEstado}
-                  onChange={(e) => setComentarioEstado(e.target.value)}
-                  rows="2"
-                  disabled={cargando}
-                />
-                <button
-                  className="boton-primario-vend"
-                  disabled={cargando}
-                  onClick={async () => {
-                    setCargando(true);
-                    await actualizarEstadoOrden(orden._id, siguienteEstado);
-                    setCargando(false);
-                  }}
-                  style={{ opacity: cargando ? 0.6 : 1, cursor: cargando ? 'not-allowed' : 'pointer' }}
-                >
-                  <ChevronRight
-                    size={18}
-                    style={{ marginRight: "8px" }}
-                  />
-                  {cargando ? "Actualizando..." : `Avanzar a "${etiquetasEstado[siguienteEstado]}"`}
-                </button>
-              </div>
-            )}
+            {/* Actualizar estado (Movido a Soporte) */}
+            <div className="actualizar-estado-vend" style={{ padding: '15px', background: 'var(--vend-card)', borderRadius: '8px', border: '1px solid var(--vend-borde)', marginTop: '20px' }}>
+              <p style={{ color: 'var(--vend-texto)', margin: 0, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <CheckCircle2 size={18} color="var(--vend-azul)" />
+                El proceso de envío y logística es gestionado directamente por el equipo de Soporte.
+              </p>
+            </div>
           </div>
         </div>
 

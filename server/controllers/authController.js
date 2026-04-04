@@ -128,6 +128,8 @@ const login = async (req, res) => {
         profilePicture: user.profilePicture,
         firstPurchaseCompleted: user.firstPurchaseCompleted,
         wheelSpun: user.wheelSpun,
+        storeDescription: user.storeDescription,
+        storeBanner: user.storeBanner,
       },
     });
   } catch (error) {
@@ -173,6 +175,14 @@ const updateProfile = async (req, res) => {
       user.profilePicture = req.body.profilePicture;
     }
 
+    if (req.body.storeDescription !== undefined) {
+      user.storeDescription = req.body.storeDescription;
+    }
+
+    if (req.body.storeBanner !== undefined) {
+      user.storeBanner = req.body.storeBanner;
+    }
+
     const updatedUser = await user.save();
 
     res.status(200).json({
@@ -187,6 +197,8 @@ const updateProfile = async (req, res) => {
         shippingAddress: updatedUser.shippingAddress,
         telefono: updatedUser.telefono,
         profilePicture: updatedUser.profilePicture,
+        storeDescription: updatedUser.storeDescription,
+        storeBanner: updatedUser.storeBanner,
       },
     });
   } catch (error) {
@@ -222,6 +234,8 @@ const getProfile = async (req, res) => {
         profilePicture: user.profilePicture,
         firstPurchaseCompleted: user.firstPurchaseCompleted,
         wheelSpun: user.wheelSpun,
+        storeDescription: user.storeDescription,
+        storeBanner: user.storeBanner,
       },
     });
   } catch (error) {

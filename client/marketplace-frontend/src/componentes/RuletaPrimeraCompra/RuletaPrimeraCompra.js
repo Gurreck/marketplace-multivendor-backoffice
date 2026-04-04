@@ -53,9 +53,14 @@ export default function RuletaPrimeraCompra() {
 
     try {
       const respuesta = await servicioGamificacion.girarRuleta();
+      const payloadData = respuesta.data || respuesta; // Fallback in case axios unwraps differently
 
       // Calcular rotación basada en el descuento obtenido
-      const indiceSegmento = SEGMENTOS.findIndex(s => s.valor === respuesta.data.descuentoPorcentaje);
+      const descuentoValidado = parseInt(payloadData.descuentoPorcentaje, 10);
+      let indiceSegmento = SEGMENTOS.findIndex(s => s.valor === descuentoValidado);
+      
+      if (indiceSegmento === -1) indiceSegmento = 0; // Fallback preventivo
+
       const anguloSegmento = 360 / SEGMENTOS.length;
       const anguloObjetivo = 360 - (indiceSegmento * anguloSegmento + anguloSegmento / 2);
       const vueltas = 5 + Math.random() * 3;
@@ -65,7 +70,7 @@ export default function RuletaPrimeraCompra() {
 
       // Esperar a que la animación termine
       setTimeout(() => {
-        setResultado(respuesta.data);
+        setResultado(payloadData);
         setGirando(false);
       }, 4000);
     } catch (err) {
