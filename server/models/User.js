@@ -51,6 +51,27 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  firstPurchaseCompleted: {
+    type: Boolean,
+    default: false,
+  },
+  wheelSpun: {
+    type: Boolean,
+    default: false,
+  },
+  telefono: {
+    type: String,
+    trim: true,
+  },
+  storeDescription: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  storeBanner: {
+    type: String,
+    default: "",
+  },
 }, {
   timestamps: true,
 });
