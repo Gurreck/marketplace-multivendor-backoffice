@@ -68,11 +68,15 @@
 }
 
 .encabezado-modal h3 {
-    color: #0c7579;
+    color: var(--nexora-text, #ffffff);
     margin: 0;
     font-size: 1.8rem;
     font-weight: 700;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.modo-claro .encabezado-modal h3 {
+    color: #0c7579;
 }
 
 /* Cuerpo del Modal */
@@ -82,10 +86,14 @@
 }
 
 .cuerpo-modal p {
-    color: #0536c8;
+    color: var(--nexora-text, #ffffff);
     font-size: 1.1rem;
     line-height: 1.5;
     margin: 0;
+}
+
+.modo-claro .cuerpo-modal p {
+    color: #0536c8;
 }
 
 /* Botones */

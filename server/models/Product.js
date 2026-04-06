@@ -62,6 +62,15 @@ const productSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    lowStockThreshold: {
+      type: Number,
+      default: 5,
+      min: 0,
+    },
   },
   {
     timestamps: true,
@@ -69,5 +78,6 @@ const productSchema = new mongoose.Schema(
 );
 
 productSchema.index({ vendor: 1 });
+productSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model("Product", productSchema);

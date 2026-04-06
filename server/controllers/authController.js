@@ -42,6 +42,12 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        debitCard: user.debitCard,
+        shippingAddress: user.shippingAddress,
+        telefono: user.telefono,
+        profilePicture: user.profilePicture,
+        firstPurchaseCompleted: user.firstPurchaseCompleted,
+        wheelSpun: user.wheelSpun,
       },
     });
   } catch (error) {
@@ -116,6 +122,14 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         token,
+        debitCard: user.debitCard,
+        shippingAddress: user.shippingAddress,
+        telefono: user.telefono,
+        profilePicture: user.profilePicture,
+        firstPurchaseCompleted: user.firstPurchaseCompleted,
+        wheelSpun: user.wheelSpun,
+        storeDescription: user.storeDescription,
+        storeBanner: user.storeBanner,
       },
     });
   } catch (error) {
@@ -128,4 +142,150 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+// @desc    Actualizar perfil
+// @route   PUT /api/auth/profile
+// @access  Privado
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    user.nombre = req.body.nombre || user.nombre;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+      // El hook pre('save') en el modelo User hasheará automáticamente
+    }
+
+    if (req.body.debitCard) {
+      user.debitCard = req.body.debitCard;
+    }
+
+    if (req.body.telefono !== undefined) {
+      user.telefono = req.body.telefono;
+    }
+
+    if (req.body.shippingAddress) {
+      user.shippingAddress = req.body.shippingAddress;
+    }
+
+    if (req.body.profilePicture !== undefined) {
+      user.profilePicture = req.body.profilePicture;
+    }
+
+    if (req.body.storeDescription !== undefined) {
+      user.storeDescription = req.body.storeDescription;
+    }
+
+    if (req.body.storeBanner !== undefined) {
+      user.storeBanner = req.body.storeBanner;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Perfil actualizado exitosamente.",
+      data: {
+        id: updatedUser._id,
+        nombre: updatedUser.nombre,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        debitCard: updatedUser.debitCard,
+        shippingAddress: updatedUser.shippingAddress,
+        telefono: updatedUser.telefono,
+        profilePicture: updatedUser.profilePicture,
+        storeDescription: updatedUser.storeDescription,
+        storeBanner: updatedUser.storeBanner,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error al actualizar perfil:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar el perfil.",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Obtener perfil del usuario actual
+// @route   GET /api/auth/profile
+// @access  Privado
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        shippingAddress: user.shippingAddress,
+        debitCard: user.debitCard,
+        telefono: user.telefono,
+        profilePicture: user.profilePicture,
+        firstPurchaseCompleted: user.firstPurchaseCompleted,
+        wheelSpun: user.wheelSpun,
+        storeDescription: user.storeDescription,
+        storeBanner: user.storeBanner,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener el perfil.",
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Subir foto de perfil
+// @route   PUT /api/auth/profile/picture
+// @access  Privado
+const uploadProfilePicture = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No se subió ninguna imagen." });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    user.profilePicture = req.file.path; // Cloudinary returns the URL in path
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Foto de perfil actualizada exitosamente.",
+      data: {
+        id: updatedUser._id,
+        nombre: updatedUser.nombre,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        debitCard: updatedUser.debitCard,
+        shippingAddress: updatedUser.shippingAddress,
+        telefono: updatedUser.telefono,
+        profilePicture: updatedUser.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error al subir foto de perfil:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al subir la foto de perfil.",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, updateProfile, getProfile, uploadProfilePicture };

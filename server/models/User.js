@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ["cliente", "vendedor", "administrador"],
-      message: "Rol no válido. Debe ser: cliente, vendedor o administrador",
+      values: ["cliente", "vendedor", "administrador", "soporte"],
+      message: "Rol no válido. Debe ser: cliente, vendedor, administrador o soporte",
     },
     default: "cliente",
   },
@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema({
     codigoPostal: { type: String },
     direccion: { type: String }
   },
+  debitCard: {
+    cardNumber: { type: String },
+    cardName: { type: String },
+    expiryDate: { type: String },
+    cvv: { type: String }
+  },
   activo: {
     type: Boolean,
     default: true,
@@ -45,8 +51,44 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  firstPurchaseCompleted: {
+    type: Boolean,
+    default: false,
+  },
+  wheelSpun: {
+    type: Boolean,
+    default: false,
+  },
+  telefono: {
+    type: String,
+    trim: true,
+  },
+  storeDescription: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  storeBanner: {
+    type: String,
+    default: "",
+  },
 }, {
   timestamps: true,
+});
+
+// Hash password antes de guardar
+userSchema.pre("save", async function () {
+  // Solo hashear si la contraseña fue modificada
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  } catch (error) {
+    throw error;
+  }
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {

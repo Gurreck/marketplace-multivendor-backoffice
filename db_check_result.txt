@@ -1,0 +1,29 @@
+TOTAL_ORDERS: 20
+ORDER id=698e311d02a15942740a3027 user=698e2ede02a15942740a2fc8 status=pending total=undefined
+ORDER id=698f56e9be63f29770e2e84a user=698e2ede02a15942740a2fc8 status=pending total=undefined
+ORDER id=698f5732be63f29770e2ede8 user=698e2ede02a15942740a2fc8 status=pending total=undefined
+ORDER id=698f66adfcf2e7ee8deef0c1 user=698e2ede02a15942740a2fc8 status=pending total=undefined
+ORDER id=69c2334c42c0c0a885e512c9 user=69bed8d9a429fc6a1c9d89aa status=pagado total=undefined
+ORDER id=69c2336642c0c0a885e512f0 user=69bed8d9a429fc6a1c9d89aa status=pagado total=undefined
+ORDER id=69c235d4f33afcc31ad7b558 user=69bed8d9a429fc6a1c9d89aa status=pagado total=undefined
+ORDER id=69c5c9a52cf76be38c910ee6 user=69b3ae2406024b79898dead9 status=paid total=3600
+ORDER id=69c5cad52cf76be38c910ef9 user=69b3ae2406024b79898dead9 status=paid total=3600
+ORDER id=69c5cbff2cf76be38c910f0c user=69b3ae2406024b79898dead9 status=paid total=4800
+ORDER id=69c7114f27dbc5ed6fb2c35c user=698e2ede02a15942740a2fc8 status=paid total=1
+ORDER id=69c954d51e7a655e7fe7ad3d user=69bed8d9a429fc6a1c9d89aa status=paid total=359
+ORDER id=69c954f11e7a655e7fe7ad4e user=69bed8d9a429fc6a1c9d89aa status=paid total=800
+ORDER id=69c957251e7a655e7fe7ad5b user=69bed8d9a429fc6a1c9d89aa status=paid total=162
+ORDER id=69caa81524e183eb72c12301 user=69bed8d9a429fc6a1c9d89aa status=paid total=71
+ORDER id=69cab84d9c8c987d86309d82 user=69a1e47acec00950aa95cb9f status=paid total=1200
+ORDER id=69cad45d654ba5b399a2f3e5 user=69a1e47acec00950aa95cb9f status=paid total=150
+ORDER id=69cad5f9654ba5b399a2f3fe user=69a1e47acec00950aa95cb9f status=paid total=10000
+ORDER id=69cada46654ba5b399a2f427 user=69a1e47acec00950aa95cb9f status=paid total=1200
+ORDER id=69cada8d654ba5b399a2f440 user=69a1e47acec00950aa95cb9f status=paid total=624
+TOTAL_CLIENTS: 7
+CLIENT id=698d4a9f5c9e6d4ddb23a606 name=MOISES DELGADO MUÑOZ email=a@gmail.com
+CLIENT id=698e2ede02a15942740a2fc8 name=ALISON NICOLE NUÑEZ AGUIRRE email=samu3delgado@gmail.com
+CLIENT id=69a0ba8c44e390b7c987d2f3 name=Pruebas email=pruebas@gmail.com
+CLIENT id=69a1e47acec00950aa95cb9f name=camilo nuñez email=camilo.20.xd@gmail.com
+CLIENT id=69bed8d9a429fc6a1c9d89aa name=Gerald Alberto Arias Garcia email=pollolag@gmail.com
+CLIENT id=69b3ae2406024b79898dead9 name=SK_GARY email=y@gmail.com
+CLIENT id=69c33155884fd24c35daf416 name=Test User email=v1@v1.com

@@ -2,17 +2,20 @@ import React from "react";
 import "./App.css";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
-import Login from "./componentes/inicio/login";
-import Register from "./componentes/inicio/register";
-import ForgotPassword from "./componentes/inicio/forgot_Password";
-import Principal from "./componentes/pages/page";
-import PageViewProduct from "./componentes/pageViewProduct/pageViewProduct";
-import PagePay from "./componentes/pagePay/pagePay";
-import PaymentGateway from "./componentes/pagePay/paymentGateway";
-import PageVendedor from "./componentes/pageVendedor/pageVendedor";
-import PaginaAdmin from "./componentes/pageAdmin/pageAdmin";
+import IniciarSesion from "./componentes/Acceso/IniciarSesion";
+import Registro from "./componentes/Acceso/Registro";
+import RecuperarPassword from "./componentes/Acceso/RecuperarPassword";
+import Principal from "./componentes/Principal/Principal";
+import VistaProducto from "./componentes/VistaProducto/VistaProducto";
+import Carrito from "./componentes/PasarelaDePago/Carrito";
+import PasarelaDePago from "./componentes/PasarelaDePago/PasarelaDePago";
+import Vendedor from "./componentes/Vendedor/Vendedor";
+import Admin from "./componentes/Admin/Admin";
+import Soporte from "./componentes/Soporte/Soporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
-import PerfilCliente from "./componentes/perfil/PerfilCliente";
+import PerfilCliente from "./componentes/Perfil/PerfilCliente";
+import Rastreo from "./componentes/Rastreo/Rastreo";
+import RuletaPrimeraCompra from "./componentes/RuletaPrimeraCompra/RuletaPrimeraCompra";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -23,6 +26,8 @@ const obtenerRutaPorRol = (rol) => {
       return "/admin/dashboard";
     case "vendedor":
       return "/vendedor";
+    case "soporte":
+      return "/soporte";
     case "cliente":
       return "/cliente";
     default:
@@ -66,6 +71,11 @@ const RutaRaiz = () => {
     return <Navigate to="/vendedor" replace />;
   }
 
+  // Si es soporte, redirigir a su panel
+  if (user && user.role === "soporte") {
+    return <Navigate to="/soporte" replace />;
+  }
+
   // Para clientes o visitantes, mostrar la página principal
   return <Principal />;
 };
@@ -79,26 +89,29 @@ function App() {
     <div className="Aplicacion">
       <Routes>
 
-        {/* ⭐ rutas públicas */}
-        <Route
-          path="/login"
-          element={<Login />}
-        />
-
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-
-        <Route
-          path="/forgot-password"
-          element={<ForgotPassword />}
-        />
+        {/* 🔑 Rutas Públicas */}
+        <Route path="/login" element={<IniciarSesion />} />
+        <Route path="/register" element={<Registro />} />
+        <Route path="/forgot-password" element={<RecuperarPassword />} />
 
         <Route
           path="/product/:id"
           element={
-              <PageViewProduct />
+              <VistaProducto />
+          }
+        />
+
+        <Route
+          path="/rastreo"
+          element={<Rastreo />}
+        />
+
+        <Route
+          path="/ruleta"
+          element={
+            <RutaProtegida rolesPermitidos={["cliente"]}>
+              <RuletaPrimeraCompra />
+            </RutaProtegida>
           }
         />
 
@@ -108,7 +121,7 @@ function App() {
           path="/admin/dashboard"
           element={
             <RutaProtegida rolesPermitidos={["administrador"]}>
-              <PaginaAdmin />
+              <Admin />
             </RutaProtegida>
           }
         />
@@ -123,7 +136,16 @@ function App() {
           path="/vendedor"
           element={
             <RutaProtegida rolesPermitidos={["vendedor"]}>
-              <PageVendedor />
+              <Vendedor />
+            </RutaProtegida>
+          }
+        />
+
+        <Route
+          path="/soporte"
+          element={
+            <RutaProtegida rolesPermitidos={["soporte"]}>
+              <Soporte />
             </RutaProtegida>
           }
         />
@@ -147,19 +169,19 @@ function App() {
         />
 
         <Route
-          path="/checkout"
+          path="/carrito"
           element={
             <RutaProtegida>
-              <PagePay />
+              <Carrito />
             </RutaProtegida>
           }
         />
 
         <Route
-          path="/paymentGateway"
+          path="/pasarela-pago"
           element={
             <RutaProtegida>
-              <PaymentGateway />
+              <PasarelaDePago />
             </RutaProtegida>
           }
         />
