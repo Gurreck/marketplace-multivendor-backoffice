@@ -1,0 +1,266 @@
+/* ModalPerfilVendedor.css */
+.modal-vendedor-overlay {
+    --vend-base-bg: #000B18;
+    --vend-border: rgba(255, 255, 255, 0.1);
+    --vend-text: white;
+    --vend-text-soft: rgba(255, 255, 255, 0.6);
+    --vend-tab-bg: rgba(0, 0, 0, 0.2);
+    --vend-item-bg: rgba(255, 255, 255, 0.03);
+    --vend-item-border: rgba(255, 255, 255, 0.05);
+    --vend-gradient: linear-gradient(135deg, rgba(0, 148, 255, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+}
+
+.modal-vendedor-overlay.modo-claro {
+    --vend-base-bg: #ffffff;
+    --vend-border: rgba(0, 0, 0, 0.1);
+    --vend-text: #1f2937;
+    --vend-text-soft: rgba(0, 0, 0, 0.6);
+    --vend-tab-bg: rgba(0, 0, 0, 0.03);
+    --vend-item-bg: #f9fafb;
+    --vend-item-border: rgba(0, 0, 0, 0.05);
+    --vend-gradient: linear-gradient(135deg, rgba(0, 148, 255, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+}
+
+.modal-vendedor-content {
+    width: 90%;
+    max-width: 600px;
+    padding: 0;
+    overflow: hidden;
+    background: var(--vend-base-bg);
+    border: 1px solid var(--vend-border);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-vendedor-header {
+    position: relative;
+    padding: 40px 20px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--vend-border);
+}
+
+.modal-vendedor-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--vend-text);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-vendedor-close-btn:hover {
+    color: #f87171;
+}
+
+.modal-vendedor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #0094FF;
+    object-fit: cover;
+    margin: 0 auto 10px;
+    display: block;
+}
+
+.modal-vendedor-name {
+    margin: 0 0 5px 0;
+    font-size: 22px;
+}
+
+.modal-vendedor-subtitle {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.modal-vendedor-info-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-size: 13px;
+}
+
+.modal-vendedor-info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.modal-vendedor-desc {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    font-style: italic;
+    max-width: 80%;
+    margin: 15px auto 0;
+}
+
+.modal-vendedor-stats-row {
+    display: flex;
+    border-bottom: 1px solid var(--vend-border);
+}
+
+.modal-vendedor-stat-box {
+    flex: 1;
+    padding: 15px;
+    text-align: center;
+    border-right: 1px solid var(--vend-border);
+}
+
+.modal-vendedor-stat-box:last-child {
+    border-right: none;
+}
+
+.modal-vendedor-stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--vend-text);
+}
+
+.modal-vendedor-stat-label {
+    font-size: 12px;
+    color: var(--vend-text-soft);
+}
+
+.modal-vendedor-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--vend-border);
+    background: var(--vend-tab-bg);
+}
+
+.modal-vendedor-tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    color: var(--vend-text-soft);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-vendedor-tab-btn.active {
+    color: #0094FF;
+    border-bottom: 2px solid #0094FF;
+    font-weight: bold;
+}
+
+.modal-vendedor-body {
+    padding: 20px;
+    height: 350px;
+    overflow-y: auto;
+}
+
+.modal-vendedor-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: var(--vend-text-soft);
+}
+
+.modal-vendedor-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    padding-right: 5px;
+}
+
+.modal-vendedor-product-card {
+    background: var(--vend-item-bg);
+    border-radius: 8px;
+    border: 1px solid var(--vend-item-border);
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.modal-vendedor-product-card:hover {
+    border-color: #0094FF;
+}
+
+.modal-vendedor-product-img {
+    width: 100%;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.modal-vendedor-product-title {
+    margin: 0 0 5px 0;
+    font-size: 12px;
+    color: var(--vend-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-vendedor-product-price {
+    margin: 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #0094FF;
+}
+
+.modal-vendedor-empty-msg {
+    color: var(--vend-text-soft);
+    text-align: center;
+    padding: 20px 0;
+}
+
+.modal-vendedor-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-vendedor-review-card {
+    background: var(--vend-item-bg);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--vend-item-border);
+}
+
+.modal-vendedor-review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.modal-vendedor-review-user {
+    font-weight: bold;
+    color: var(--vend-text);
+    font-size: 14px;
+}
+
+.modal-vendedor-review-date {
+    color: var(--vend-text-soft);
+    font-size: 12px;
+}
+
+.modal-vendedor-review-prod {
+    color: #0094FF;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.modal-vendedor-review-stars {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.modal-vendedor-review-text {
+    margin: 0;
+    color: var(--vend-text);
+    opacity: 0.8;
+    font-size: 14px;
+    line-height: 1.4;
+}
