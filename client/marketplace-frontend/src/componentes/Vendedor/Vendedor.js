@@ -17,7 +17,7 @@ import {
   XCircle,
   User,
 } from "lucide-react";
-import PerfilVendedor from "../Perfil/PerfilVendedor";
+import PerfilVendedor from "../perfil/PerfilVendedor";
 
 // Import local components
 import VendedorDashboard from "./VendedorDashboard";
