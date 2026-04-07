@@ -20,43 +20,48 @@ export default function RecuperarPassword() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
-
-
-    /**
-     * Alterna el tema entre claro y oscuro
-     */
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
     };
 
-    // ===== MANEJADORES DE EVENTOS =====
-    /**
-     * Procesa la solicitud de recuperación de contraseña
-     */
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setMessage('');
-        setLoading(true);
-        setError('');
-        setMessage('');
+    e.preventDefault();
+    setError('');
+    setMessage('');
+    setLoading(true);
 
-        // Validación básica de email
-        if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            setError('Por favor, ingresa un email válido');
-            setLoading(false);
-            return;
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        setError('Por favor, ingresa un email válido');
+        setLoading(false);
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Ocurrió un error al procesar la solicitud');
         }
 
-        // Simulación de envío de correo (integrar con API en el futuro)
-        setTimeout(() => {
-            console.log('Recuperar contraseña para:', email);
-            setMessage(`Si el correo ${email} está registrado, recibirás instrucciones para restablecer tu contraseña.`);
-            setLoading(false);
-        }, 1500);
-    };
+        setMessage(
+            data.message || 'Si el correo existe, se enviará un enlace de recuperación.'
+        );
+        setEmail('');
+    } catch (err) {
+        setError(err.message || 'Error al enviar la solicitud');
+    } finally {
+        setLoading(false);
+    }
+};
 
-    // ===== RENDERIZADO =====
     return (
         <div className={`contenedor-olvido ${!isDarkMode ? 'modo-claro' : ''}`}>
             <div className="tarjeta-olvido">
@@ -73,7 +78,9 @@ export default function RecuperarPassword() {
                 </div>
 
                 <h2 className="titulo-olvido">¿Olvidaste tu contraseña?</h2>
-                <p className="subtitulo-olvido">Ingresa tu email para recibir un enlace de recuperación</p>
+                <p className="subtitulo-olvido">
+                    Ingresa tu email para recibir un enlace de recuperación
+                </p>
 
                 {error && (
                     <div className="error-olvido">
@@ -90,8 +97,12 @@ export default function RecuperarPassword() {
                 <form onSubmit={handleSubmit} className="formulario-olvido">
                     <div className="grupo-formulario">
                         <label htmlFor="email">
-                            <span className="icono-etiqueta"><Mail size={18} /></span> Email de recuperación
+                            <span className="icono-etiqueta">
+                                <Mail size={18} />
+                            </span>
+                            {' '}Email de recuperación
                         </label>
+
                         <div className="contenedor-entrada-icono">
                             <input
                                 type="email"
@@ -115,7 +126,9 @@ export default function RecuperarPassword() {
                                 <Loader2 className="animacion-giro" size={20} />
                                 Procesando...
                             </>
-                        ) : 'Enviar instrucciones'}
+                        ) : (
+                            'Enviar instrucciones'
+                        )}
                     </button>
                 </form>
 
@@ -126,7 +139,10 @@ export default function RecuperarPassword() {
                         onClick={() => navigate('/login')}
                         disabled={loading}
                     >
-                        <ArrowLeft size={16} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+                        <ArrowLeft
+                            size={16}
+                            style={{ marginRight: '5px', verticalAlign: 'middle' }}
+                        />
                         Volver al inicio de sesión
                     </button>
                 </div>
