@@ -89,6 +89,15 @@ const login = async (req, res) => {
       });
     }
 
+    // Check if user is active
+    if (user.activo === false) {
+      return res.status(403).json({
+        success: false,
+        message: "Tu cuenta ha sido bloqueada. Por favor, contacta a soporte.",
+      });
+    }
+
+    // Comparar contraseñas
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
