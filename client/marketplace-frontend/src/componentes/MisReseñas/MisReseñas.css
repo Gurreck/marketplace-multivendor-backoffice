@@ -1,0 +1,126 @@
+.mis-resenas-container {
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+}
+
+.mis-resenas-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: var(--text-muted);
+    gap: 15px;
+}
+
+.subtitulo-seccion {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.mis-resenas-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 0;
+    color: var(--text-muted);
+    gap: 15px;
+    font-size: 1.1rem;
+}
+
+.resenas-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.resena-card {
+    background: var(--info-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 15px 20px;
+    transition: all 0.2s ease;
+}
+
+.resena-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.resena-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.resena-producto {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.resena-producto img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+}
+
+.resena-producto a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1.05rem;
+}
+
+.resena-producto a:hover {
+    text-decoration: underline;
+}
+
+.resena-fecha {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.btn-eliminar-resena {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-eliminar-resena:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.05);
+}
+
+.resena-estrellas {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 10px;
+}
+
+.resena-texto {
+    color: var(--text-main);
+    line-height: 1.5;
+    font-size: 0.95rem;
+    margin: 0;
+}

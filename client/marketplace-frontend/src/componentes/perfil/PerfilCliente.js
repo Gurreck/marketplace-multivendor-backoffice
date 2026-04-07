@@ -4,10 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useCart } from '../../context/CartContext';
 import NavbarSecundario from '../NavbarSecundario/NavbarSecundario';
-import MisOrdenes from '../pageMisOrdenes/MisOrdenes';
-import DetalleOrden from '../pageDetalleOrden/DetalleOrden';
-import MisTickets from '../pageMisTickets/MisTickets';
-import SolicitarDevolucion from '../pageSolicitarDevolucion/SolicitarDevolucion';
+import MisOrdenes from '../MisOrdenes/MisOrdenes';
+import DetalleOrden from '../DetalleOrden/DetalleOrden';
+import MisTickets from '../MisTickets/MisTickets';
+import SolicitarDevolucion from '../SolicitarDevolucion/SolicitarDevolucion';
+import MisReseñas from '../MisReseñas/MisReseñas';
 import './PerfilCliente.css';
 import { 
     User, 
@@ -17,15 +18,21 @@ import {
     CreditCard, 
     MapPin, 
     ChevronRight,
-    LogOut
+    LogOut,
+    Edit2,
+    Loader,
+    Star
 } from 'lucide-react';
+import { useRef } from 'react';
 
 export default function PerfilCliente() {
-    const { user, logout } = useAuth();
+    const { user, logout, uploadProfilePicture } = useAuth();
     const { isDarkMode } = useTheme();
     const { cartCount } = useCart();
     const navigate = useNavigate();
     const location = useLocation();
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const handleLogout = () => {
         logout();
@@ -33,6 +40,25 @@ export default function PerfilCliente() {
     };
 
     const isActive = (path) => location.pathname.includes(path);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                setUploading(true);
+                await uploadProfilePicture(file);
+            } catch (error) {
+                console.error("Error subiendo foto:", error);
+                alert("Hubo un error al subir la foto de perfil");
+            } finally {
+                setUploading(false);
+            }
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
 
     return (
         <div className={`perfil-cliente-container ${!isDarkMode ? 'modo-claro' : ''}`}>
@@ -46,11 +72,24 @@ export default function PerfilCliente() {
                 {/* Sidebar */}
                 <aside className="perfil-sidebar">
                     <div className="perfil-info-resumen">
-                        <img 
-                            src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || 'U')}&background=0094FF&color=fff`} 
-                            alt="avatar" 
-                            className="perfil-avatar-grande"
-                        />
+                        <div className="perfil-avatar-container">
+                            <img 
+                                src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || 'U')}&background=0094FF&color=fff`} 
+                                alt="avatar" 
+                                className="perfil-avatar-grande"
+                                style={{ opacity: uploading ? 0.5 : 1 }}
+                            />
+                            <div className="perfil-avatar-edit" onClick={triggerFileInput} title="Cambiar foto de perfil">
+                                {uploading ? <Loader size={16} className="lucide-spin" /> : <Edit2 size={16} />}
+                            </div>
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                ref={fileInputRef} 
+                                style={{ display: 'none' }} 
+                                onChange={handleFileChange}
+                            />
+                        </div>
                         <div className="perfil-nombres">
                             <h3>{user?.nombre || "Usuario"}</h3>
                             <p>{user?.email}</p>
@@ -78,11 +117,17 @@ export default function PerfilCliente() {
                             <span>Devoluciones</span>
                             <ChevronRight size={16} className="arrow" />
                         </Link>
-                        <Link to="/checkout" className="perfil-menu-item">
-                            <CreditCard size={20} />
-                            <span>Checkout / Pago</span>
+                        <Link to="/cliente/perfil/resenas" className={`perfil-menu-item ${isActive('resenas') ? 'activo' : ''}`}>
+                            <Star size={20} />
+                            <span>Mis Reseñas</span>
                             <ChevronRight size={16} className="arrow" />
                         </Link>
+                        <Link to="/carrito" className="perfil-menu-item">
+                            <CreditCard size={20} />
+                            <span>Carrito / Compra</span>
+                            <ChevronRight size={16} className="arrow" />
+                        </Link>
+
                         <div className="divisor" />
                         <button onClick={handleLogout} className="perfil-menu-item logout">
                             <LogOut size={20} />
@@ -99,6 +144,7 @@ export default function PerfilCliente() {
                         <Route path="ordenes/:id" element={<DetalleOrden />} />
                         <Route path="tickets" element={<MisTickets />} />
                         <Route path="devoluciones" element={<SolicitarDevolucion />} />
+                        <Route path="resenas" element={<MisReseñas />} />
                     </Routes>
                 </main>
             </div>
@@ -111,7 +157,6 @@ function ResumenPerfil({ user }) {
     
     // Estados de edición individuales
     const [editPersonal, setEditPersonal] = useState(false);
-    const [editPassword, setEditPassword] = useState(false);
     const [editCard, setEditCard] = useState(false);
     const [editAddress, setEditAddress] = useState(false);
     
@@ -127,6 +172,7 @@ function ResumenPerfil({ user }) {
             expiryDate: user?.debitCard?.expiryDate || '',
             cvv: user?.debitCard?.cvv || ''
         },
+        telefono: user?.telefono || '',
         shippingAddress: {
             pais: user?.shippingAddress?.pais || '',
             provincia: user?.shippingAddress?.provincia || '',
@@ -135,6 +181,28 @@ function ResumenPerfil({ user }) {
             direccion: user?.shippingAddress?.direccion || ''
         }
     });
+
+    // Sincronizar formData cuando el usuario cambie (ej: tras guardar)
+    React.useEffect(() => {
+        setFormData({
+            nombre: user?.nombre || '',
+            password: '',
+            debitCard: {
+                cardNumber: user?.debitCard?.cardNumber || '',
+                cardName: user?.debitCard?.cardName || '',
+                expiryDate: user?.debitCard?.expiryDate || '',
+                cvv: user?.debitCard?.cvv || ''
+            },
+            telefono: user?.telefono || '',
+            shippingAddress: {
+                pais: user?.shippingAddress?.pais || '',
+                provincia: user?.shippingAddress?.provincia || '',
+                ciudad: user?.shippingAddress?.ciudad || '',
+                codigoPostal: user?.shippingAddress?.codigoPostal || '',
+                direccion: user?.shippingAddress?.direccion || ''
+            }
+        });
+    }, [user]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -160,17 +228,24 @@ function ResumenPerfil({ user }) {
             setLoading(true);
             const dataToUpdate = {};
             
-            if (section === 'personal') dataToUpdate.nombre = formData.nombre;
-            if (section === 'password') dataToUpdate.password = formData.password;
+            if (section === 'personal') {
+                dataToUpdate.nombre = formData.nombre;
+                if (formData.password && formData.password.trim() !== '') {
+                    dataToUpdate.password = formData.password;
+                }
+                dataToUpdate.telefono = formData.telefono;
+            }
             if (section === 'card') dataToUpdate.debitCard = formData.debitCard;
-            if (section === 'address') dataToUpdate.shippingAddress = formData.shippingAddress;
+            if (section === 'address') {
+                dataToUpdate.shippingAddress = formData.shippingAddress;
+                dataToUpdate.telefono = formData.telefono;
+            }
 
             await updateProfile(dataToUpdate);
             setMessage("Información actualizada con éxito");
             
-            if (section === 'personal') setEditPersonal(false);
-            if (section === 'password') {
-                setEditPassword(false);
+            if (section === 'personal') {
+                setEditPersonal(false);
                 setFormData(prev => ({ ...prev, password: '' }));
             }
             if (section === 'card') setEditCard(false);
@@ -212,6 +287,22 @@ function ResumenPerfil({ user }) {
                         )}
                     </div>
                     <div className="info-group">
+                        <label>Contraseña</label>
+                        {editPersonal ? (
+                            <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field" placeholder="Nueva contraseña (dejar vacío para no cambiar)" />
+                        ) : (
+                            <p>**************</p>
+                        )}
+                    </div>
+                    <div className="info-group">
+                        <label>Teléfono de Contacto</label>
+                        {editPersonal ? (
+                            <input type="text" name="telefono" value={formData.telefono} onChange={handleInputChange} className="input-field" placeholder="Ej. 88888888" />
+                        ) : (
+                            <p>{user?.telefono || "No especificado"}</p>
+                        )}
+                    </div>
+                    <div className="info-group">
                         <label>Correo Electrónico</label>
                         <p>{user?.email}</p>
                     </div>
@@ -219,30 +310,6 @@ function ResumenPerfil({ user }) {
                         <label>Rol de Usuario</label>
                         <p className="tag-rol">{user?.role}</p>
                     </div>
-                </div>
-
-                {/* Contraseña */}
-                <div className="perfil-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--info-bg)', paddingBottom: '10px' }}>
-                        <h3 style={{ margin: 0, border: 'none', padding: 0 }}>Cambiar Contraseña</h3>
-                        {!editPassword ? (
-                            <button className="boton-secundario" onClick={() => setEditPassword(true)} style={{ padding: '5px 10px', fontSize: '0.85rem' }}>Cambiar</button>
-                        ) : (
-                            <div style={{ display: 'flex', gap: '5px' }}>
-                                <button className="boton-secundario" onClick={() => setEditPassword(false)} style={{ padding: '5px 10px', fontSize: '0.85rem' }}>Cancelar</button>
-                                <button className="boton-primario" onClick={() => handleSave('password')} disabled={loading} style={{ padding: '5px 10px', fontSize: '0.85rem' }}>Guardar</button>
-                            </div>
-                        )}
-                    </div>
-                    
-                    {!editPassword ? (
-                        <p className="no-data" style={{ margin: 0 }}>**************</p>
-                    ) : (
-                        <div className="info-group">
-                            <label>Nueva Contraseña</label>
-                            <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field" placeholder="Escribe la nueva contraseña" />
-                        </div>
-                    )}
                 </div>
 
                 {/* Tarjeta de Débito */}
@@ -318,6 +385,7 @@ function ResumenPerfil({ user }) {
                                     <p>{user.shippingAddress.direccion}</p>
                                     <p>{user.shippingAddress.ciudad}, {user.shippingAddress.provincia}</p>
                                     <p>{user.shippingAddress.pais} - {user.shippingAddress.codigoPostal}</p>
+                                    {user.telefono && <p style={{ marginTop: '5px', color: 'var(--nexora-blue)' }}><strong>Tel:</strong> {user.telefono}</p>}
                                 </div>
                             </div>
                         ) : (
@@ -348,6 +416,10 @@ function ResumenPerfil({ user }) {
                                     <label>Código Postal</label>
                                     <input type="text" name="addr_codigoPostal" value={formData.shippingAddress.codigoPostal} onChange={handleInputChange} className="input-field" />
                                 </div>
+                            </div>
+                            <div className="info-group">
+                                <label>Teléfono de Contacto</label>
+                                <input type="text" name="telefono" value={formData.telefono} onChange={handleInputChange} className="input-field" placeholder="Ej. 88888888" />
                             </div>
                         </div>
                     )}

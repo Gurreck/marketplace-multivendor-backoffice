@@ -8,6 +8,19 @@ const createComment = async (req, res) => {
   try {
     const { productId, rating, text } = req.body;
 
+    // Verificar si el usuario ya dejó una reseña para este producto
+    const existingComment = await Comment.findOne({ 
+      product: productId, 
+      user: req.user.id 
+    });
+
+    if (existingComment) {
+      return res.status(400).json({
+        success: false,
+        message: "Ya has dejado una reseña para este producto",
+      });
+    }
+
     // Verificar que el producto existe
     const product = await Product.findById(productId);
     if (!product) {
@@ -33,6 +46,29 @@ const createComment = async (req, res) => {
     });
   } catch (error) {
     console.error("Error en createComment:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Verificar si el usuario ya dejó una reseña
+// @route   GET /api/comments/status/:productId
+// @access  Private
+const checkReviewStatus = async (req, res) => {
+  try {
+    const comment = await Comment.findOne({
+      product: req.params.productId,
+      user: req.user.id
+    });
+
+    res.status(200).json({
+      success: true,
+      hasReviewed: !!comment
+    });
+  } catch (error) {
+    console.error("Error en checkReviewStatus:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -106,8 +142,66 @@ const deleteComment = async (req, res) => {
   }
 };
 
+// @desc    Obtener comentarios hacia un vendedor (sus productos)
+// @route   GET /api/comments/vendor/:vendorId
+// @access  Public
+const getCommentsByVendor = async (req, res) => {
+  try {
+    const products = await Product.find({ vendor: req.params.vendorId }).select('_id');
+    const productIds = products.map(p => p._id);
+    
+    const comments = await Comment.find({ product: { $in: productIds } })
+      .populate("user", "nombre")
+      .populate("product", "name")
+      .sort({ createdAt: -1 });
+
+    const avgRating = comments.length > 0
+      ? (comments.reduce((sum, c) => sum + c.rating, 0) / comments.length).toFixed(1)
+      : 0;
+
+    res.status(200).json({
+      success: true,
+      data: comments,
+      averageRating: avgRating,
+      count: comments.length,
+    });
+  } catch (error) {
+    console.error("Error en getCommentsByVendor:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Obtener comentarios que ha hecho un usuario específico
+// @route   GET /api/comments/user
+// @access  Private
+const getCommentsByUser = async (req, res) => {
+  try {
+    const comments = await Comment.find({ user: req.user.id })
+      .populate("product", "name images price slug")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: comments,
+      count: comments.length,
+    });
+  } catch (error) {
+    console.error("Error en getCommentsByUser:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createComment,
   getCommentsByProduct,
+  getCommentsByVendor,
+  getCommentsByUser,
   deleteComment,
+  checkReviewStatus,
 };

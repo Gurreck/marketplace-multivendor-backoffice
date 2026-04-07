@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
+const { registrarAuditoria } = require("./adminController");
 
 // @desc    Crear un nuevo producto
 // @route   POST /api/products
@@ -40,18 +41,53 @@ const createProduct = async (req, res) => {
   }
 };
 
-// @desc    Obtener todos los productos
+// @desc    Obtener todos los productos (con filtros avanzados)
 const getProducts = async (req, res) => {
   try {
     let query = {};
 
+    // Solo productos activos por defecto (soft delete)
     if (req.query.vendor === "me" && req.user) {
       query.vendor = req.user.id;
+      // Vendedor ve todos sus productos, incluso inactivos
+    } else {
+      query.isActive = { $ne: false };
+    }
+
+    // Búsqueda por texto (nombre o descripción)
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, "i");
+      query.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+      ];
+    }
+
+    // Filtro por categoría
+    if (req.query.category && req.query.category !== "Todos") {
+      query.category = req.query.category;
+    }
+
+    // Filtro por rango de precio
+    if (req.query.priceMin || req.query.priceMax) {
+      query.price = {};
+      if (req.query.priceMin) query.price.$gte = parseFloat(req.query.priceMin);
+      if (req.query.priceMax) query.price.$lte = parseFloat(req.query.priceMax);
+    }
+
+    // Filtro por vendedor
+    if (req.query.vendor && req.query.vendor !== "me") {
+      query.vendor = req.query.vendor;
+    }
+
+    // Filtro por disponibilidad (stock > 0)
+    if (req.query.inStock === "true") {
+      query.stock = { $gt: 0 };
     }
 
     const products = await Product.find(query).populate(
       "vendor",
-      "nombre email"
+      "nombre email profilePicture shippingAddress createdAt"
     );
 
     res.status(200).json({
@@ -73,7 +109,7 @@ const getVendorProducts = async (req, res) => {
   try {
     const products = await Product.find({ vendor: req.user.id }).populate(
       "vendor",
-      "nombre email"
+      "nombre email profilePicture shippingAddress createdAt"
     );
 
     res.status(200).json({
@@ -95,7 +131,7 @@ const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate(
       "vendor",
-      "nombre email"
+      "nombre email profilePicture shippingAddress createdAt"
     );
 
     if (!product) {
@@ -186,7 +222,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-// @desc    Eliminar producto
+// @desc    Eliminar producto (SOFT DELETE)
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -208,16 +244,23 @@ const deleteProduct = async (req, res) => {
       });
     }
 
-    // ⭐ eliminar imágenes de Cloudinary
-    for (const image of product.images) {
-      await cloudinary.uploader.destroy(image.public_id);
-    }
+    // ⭐ SOFT DELETE: marcar como inactivo en vez de borrar
+    await Product.findByIdAndUpdate(req.params.id, { isActive: false });
 
-    await product.deleteOne();
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "eliminar_producto",
+      entidad: "producto",
+      entidadId: product._id,
+      detalles: `Producto "${product.name}" desactivado (soft delete)`,
+      datosAnteriores: { isActive: true },
+      datosNuevos: { isActive: false },
+    });
 
     res.status(200).json({
       success: true,
-      message: "Producto eliminado",
+      message: "Producto desactivado exitosamente",
     });
   } catch (error) {
     console.error("Error en deleteProduct:", error);
@@ -228,6 +271,33 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+// @desc    Toggle isActive de un producto
+// @route   PUT /api/products/:id/toggle
+const toggleProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado" });
+    }
+
+    if (!product.vendor.equals(req.user.id) && req.user.role !== "administrador") {
+      return res.status(403).json({ success: false, message: "No autorizado" });
+    }
+
+    product.isActive = !product.isActive;
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Producto ${product.isActive ? "activado" : "pausado"}`,
+      data: product,
+    });
+  } catch (error) {
+    console.error("Error en toggleProduct:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
@@ -235,4 +305,5 @@ module.exports = {
   getProductById,
   updateProduct,
   deleteProduct,
+  toggleProduct,
 };
