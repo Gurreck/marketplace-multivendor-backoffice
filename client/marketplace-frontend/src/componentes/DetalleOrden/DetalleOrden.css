@@ -1,0 +1,249 @@
+.detalle-orden-container {
+    padding: 20px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.boton-retroceder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    transition: color 0.3s;
+    padding: 0;
+}
+
+.boton-retroceder:hover {
+    color: white;
+}
+
+.detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+}
+
+.detalle-header h1 {
+    margin: 0 0 10px;
+    font-size: 1.7rem;
+    color: white;
+}
+
+.id-resaltado {
+    color: var(--accent);
+}
+
+.fecha-detalle {
+    margin: 0;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.estado-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.estado-badge.entregado { border-color: #10b981; color: #10b981; }
+.estado-badge.pendiente { border-color: #f59e0b; color: #f59e0b; }
+.estado-badge.cancelado { border-color: #ef4444; color: #ef4444; }
+.estado-badge.en-proceso { border-color: var(--accent); color: var(--accent); }
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 30px;
+}
+
+.detalle-card {
+    background: rgba(14, 25, 45, 0.7);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.detalle-card h3 {
+    margin: 0 0 20px;
+    font-size: 1.1rem;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 15px;
+}
+
+.producto-item-detalle {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    border-bottom: 1px solid var(--divisor);
+}
+
+.prod-img-wrapper {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--card-border);
+}
+
+.prod-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: var(--info-bg);
+}
+
+.prod-info {
+    flex: 1;
+}
+
+.prod-info h4 {
+    margin: 0 0 5px;
+    color: var(--title-color);
+    font-size: 1.1rem;
+}
+
+.prod-info p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.prod-precio {
+    font-weight: bold;
+    color: #10b981;
+    font-size: 1.15rem;
+}
+
+.linea-resumen {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    color: var(--text-muted);
+}
+
+.linea-resumen.total {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--divisor);
+    color: var(--title-color);
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.metodo-pago-label {
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent);
+    font-size: 0.95rem;
+    background: rgba(0, 148, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 8px;
+}
+
+.nombre-receptor {
+    color: var(--title-color);
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.texto-direccion {
+    color: var(--text-muted);
+    margin: 0 0 5px;
+    line-height: 1.4;
+}
+
+/* Timeline */
+.linea-tiempo {
+    padding-left: 20px;
+    position: relative;
+    border-left: 2px solid var(--card-border);
+}
+
+.paso-tiempo {
+    position: relative;
+    padding-left: 40px;
+    padding-bottom: 30px;
+}
+
+.paso-tiempo .punto {
+    position: absolute;
+    left: -41.5px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    background: var(--card-bg); /* Ocultar trasfondo local */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    border-radius: 50%;
+}
+
+.paso-completo .punto {
+    color: #10b981;
+}
+
+.paso-completo .paso-evento {
+    color: #10b981;
+    font-weight: bold;
+}
+
+.paso-evento {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.paso-fecha {
+    margin: 5px 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: rotate 1.5s linear infinite;
+}
+
+@media (max-width: 1100px) {
+    .detalle-grid {
+        grid-template-columns: 1fr;
+    }
+}

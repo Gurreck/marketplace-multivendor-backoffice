@@ -12,6 +12,11 @@ const servicioSoporte = {
     return respuesta.data;
   },
 
+  crearTicket: async (datos) => {
+    const respuesta = await api.post("/support/tickets", datos);
+    return respuesta.data;
+  },
+
   obtenerDetalleTicket: async (idTicket) => {
     const respuesta = await api.get(`/support/tickets/${idTicket}`);
     return respuesta.data;

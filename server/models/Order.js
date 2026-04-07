@@ -10,8 +10,13 @@ const orderItemSchema = new mongoose.Schema(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },
+    image: { type: String },
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  { _id: false }
+  { _id: true }
 );
 
 const shippingAddressSchema = new mongoose.Schema(
@@ -21,6 +26,19 @@ const shippingAddressSchema = new mongoose.Schema(
     ciudad: { type: String, required: true },
     codigoPostal: { type: String, required: true },
     direccion: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const statusHistorySchema = new mongoose.Schema(
+  {
+    estado: { type: String, required: true },
+    usuarioQueCambio: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    fecha: { type: Date, default: Date.now },
+    comentario: { type: String, default: "" },
   },
   { _id: false }
 );
@@ -47,14 +65,35 @@ const orderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     shipping: { type: Number, required: true, min: 0, default: 0 },
     total: { type: Number, required: true, min: 0 },
+    paymentMethod: {
+      brand: { type: String, default: "Tarjeta" },
+      last4: { type: String, default: "****" }
+    },
     status: {
       type: String,
-      enum: ["pending", "paid", "cancelled"],
-      default: "pending",
+      enum: ["created", "pending", "paid", "packed", "shipped", "delivered", "cancelled"],
+      default: "created",
+    },
+    statusHistory: {
+      type: [statusHistorySchema],
+      default: [],
+    },
+    couponApplied: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Coupon",
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     paidAt: { type: Date },
   },
   { timestamps: true }
 );
+
+orderSchema.index({ user: 1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ "items.vendor": 1 });
 
 module.exports = mongoose.model("Order", orderSchema);

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import logo from '../../resource/logo1.png';
-import './NavbarSecunsario.css';
+import './NavbarSecundario.css';
 import { 
     Home, 
     Sun, 
@@ -109,7 +109,7 @@ export default function NavbarSecundario({
                     {/* Carrito */}
                     <button
                         className="boton-carrito"
-                        onClick={() => disableCart ? null : navigate('/checkout')}
+                        onClick={() => disableCart ? null : navigate('/carrito')}
                         disabled={disableCart}
                         style={disableCart ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                         title={disableCart ? "Carrito desactivado para vendedores" : ""}

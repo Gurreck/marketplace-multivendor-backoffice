@@ -11,11 +11,14 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+    console.log("Token from localStorage:", token);
     if (token && token !== "undefined" && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log("Authorization header set:", config.headers.Authorization);
     } else {
       // Eliminar el header Authorization si no hay token válido
       delete config.headers.Authorization;
+      console.log("No token, Authorization header removed");
     }
     return config;
   },
