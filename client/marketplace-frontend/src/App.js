@@ -16,6 +16,7 @@ import Mascota from "./componentes/MascotaNexo/MascotaNexo";
 import PerfilCliente from "./componentes/Perfil/PerfilCliente";
 import Rastreo from "./componentes/Rastreo/Rastreo";
 import RuletaPrimeraCompra from "./componentes/RuletaPrimeraCompra/RuletaPrimeraCompra";
+import ResetPassword from './componentes/Acceso/ReseteoPassword'; 
 
 import { useAuth } from "./context/AuthContext";
 
@@ -93,6 +94,7 @@ function App() {
         <Route path="/login" element={<IniciarSesion />} />
         <Route path="/register" element={<Registro />} />
         <Route path="/forgot-password" element={<RecuperarPassword />} />
+        <Route path="/ReseteoPassword/:token" element={<ResetPassword />} />
 
         <Route
           path="/product/:id"
@@ -149,6 +151,8 @@ function App() {
             </RutaProtegida>
           }
         />
+
+        
 
         <Route
           path="/cliente"
