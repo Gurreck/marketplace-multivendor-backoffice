@@ -1,0 +1,106 @@
+/* ===== FILTROS DE AUDITORÍA ===== */
+.filtros-admin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: var(--admin-tarjeta-bg);
+    border: 1px solid var(--admin-borde);
+    border-radius: 16px;
+}
+
+.grupo-filtro-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.grupo-filtro-admin label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.grupo-filtro-admin select,
+.grupo-filtro-admin input {
+    background: var(--admin-entrada-bg);
+    border: 1px solid var(--admin-borde);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--admin-texto);
+    font-size: 13px;
+    outline: none;
+    min-width: 150px;
+}
+
+.grupo-filtro-admin select:focus,
+.grupo-filtro-admin input:focus {
+    border-color: var(--admin-azul);
+}
+
+.boton-filtro-admin {
+    align-self: flex-end;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--admin-borde);
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.boton-filtro-admin:hover {
+    background: rgba(0, 148, 255, 0.1);
+    border-color: var(--admin-azul);
+    color: var(--admin-azul);
+}
+
+/* ===== PAGINACIÓN ===== */
+.paginacion-admin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+}
+
+.boton-pagina-admin {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--admin-borde);
+    background: transparent;
+    color: var(--admin-texto);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.boton-pagina-admin:hover {
+    background: rgba(0, 148, 255, 0.1);
+    border-color: var(--admin-azul);
+}
+
+.boton-pagina-admin.activo {
+    background: var(--admin-azul);
+    color: white;
+    border-color: var(--admin-azul);
+}
+
+.boton-pagina-admin:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ===== DETALLES DE AUDITORÍA ===== */
+.detalles-auditoria-admin {
+    font-size: 12px;
+    color: #9ca3af;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
