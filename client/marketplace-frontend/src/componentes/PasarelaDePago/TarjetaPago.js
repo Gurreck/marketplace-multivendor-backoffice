@@ -207,79 +207,90 @@ const TarjetaPago = ({
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setGeneralError("");
+  e.preventDefault();
+  setGeneralError("");
 
-        if (!address) {
-            setGeneralError("Selecciona una dirección de envío primero.");
-            return;
-        }
+  if (!address) {
+    setGeneralError("Selecciona una dirección de envío primero.");
+    return;
+  }
 
-        if (!validate()) return;
+  if (!validate()) return;
 
-        setIsProcessing(true);
-        try {
-            const orderData = {
-                items: selectedItems.map(item => ({
-                    product: item.product?._id || item._id || item.id,
-                    quantity: parseInt(item.quantity)
-                })),
-                shippingAddress: {
-                    pais: address.pais || "Costa Rica",
-                    provincia: address.provincia,
-                    ciudad: address.ciudad,
-                    codigoPostal: address.codigoPostal,
-                    direccion: address.direccion
-                },
-                subtotal: parseFloat(selectedSubtotal),
-                shipping: 0,
-                total: parseFloat(finalTotal),
-                paymentMethod: {
-                    brand: cardType || "Tarjeta",
-                    last4: cardNumber.replace(/\s/g, "").slice(-4)
-                },
-                couponCode: couponValidated ? couponValidated.codigo : undefined,
-            };
+  setIsProcessing(true);
 
-            const response = await orderService.createOrder(orderData);
-            
-            // Actualizar perfil con los últimos datos usados
-            try {
-                if (updateProfile) {
-                    await updateProfile({
-                        debitCard: {
-                            cardNumber: cardNumber.replace(/\s/g, ""),
-                            cardName,
-                            expiryDate,
-                            cvv
-                        },
-                        shippingAddress: {
-                            pais: address.pais || "Costa Rica",
-                            provincia: address.provincia,
-                            ciudad: address.ciudad,
-                            codigoPostal: address.codigoPostal,
-                            direccion: address.direccion
-                        },
-                        telefono: address.telefono
-                    });
-                }
-            } catch (err) {
-                console.error("No se pudo guardar la información en el perfil:", err);
-            }
-
-            setCreatedOrder(response.data.data || response.data);
-            const clean = cardNumber.replace(/\s/g, "");
-            setLastFourDigits(clean.slice(-4));
-            setMaskedCardDisplay(clean.slice(0, 4) + " **** ****");
-            setShowSuccessModal(true);
-            setIsProcessing(false);
-        } catch (error) {
-            console.error("Error al procesar pago:", error);
-            setIsProcessing(false);
-            setGeneralError(error.response?.data?.message || "Error al procesar el pago. Intenta de nuevo.");
-            if (onPaymentError) onPaymentError(error);
-        }
+  try {
+    const orderData = {
+      items: selectedItems.map(item => ({
+        product: item.product?._id || item._id || item.id,
+        quantity: parseInt(item.quantity)
+      })),
+      shippingAddress: {
+        pais: address.pais || "Costa Rica",
+        provincia: address.provincia,
+        ciudad: address.ciudad,
+        codigoPostal: address.codigoPostal,
+        direccion: address.direccion
+      },
+      subtotal: parseFloat(selectedSubtotal),
+      shipping: 0,
+      total: parseFloat(finalTotal),
+      paymentMethod: {
+        brand: cardType || "Tarjeta",
+        last4: cardNumber.replace(/\s/g, "").slice(-4)
+      },
+      couponCode: couponValidated ? couponValidated.codigo : undefined,
     };
+
+    // 1. Crear orden
+    const response = await orderService.createOrder(orderData);
+    const createdOrderData = response.data.data || response.data;
+
+    // 2. Marcar orden como pagada para disparar factura
+    await orderService.markOrderAsPaid(createdOrderData._id);
+
+    // 3. Guardar datos del perfil
+    try {
+      if (updateProfile) {
+        await updateProfile({
+          debitCard: {
+            cardNumber: cardNumber.replace(/\s/g, ""),
+            cardName,
+            expiryDate,
+            cvv
+          },
+          shippingAddress: {
+            pais: address.pais || "Costa Rica",
+            provincia: address.provincia,
+            ciudad: address.ciudad,
+            codigoPostal: address.codigoPostal,
+            direccion: address.direccion
+          },
+          telefono: address.telefono
+        });
+      }
+    } catch (err) {
+      console.error("No se pudo guardar la información en el perfil:", err);
+    }
+
+    setCreatedOrder(createdOrderData);
+
+    const clean = cardNumber.replace(/\s/g, "");
+    setLastFourDigits(clean.slice(-4));
+    setMaskedCardDisplay(clean.slice(0, 4) + " **** ****");
+    setShowSuccessModal(true);
+    setIsProcessing(false);
+
+  } catch (error) {
+    console.error("Error al procesar pago:", error);
+    setIsProcessing(false);
+    setGeneralError(
+      error.response?.data?.message || "Error al procesar el pago. Intenta de nuevo."
+    );
+
+    if (onPaymentError) onPaymentError(error);
+  }
+};
 
     const handleContinue = () => {
         setShowSuccessModal(false);
