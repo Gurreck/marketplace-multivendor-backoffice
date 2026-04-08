@@ -154,9 +154,9 @@ const TarjetaPago = ({
 
     const getMaskedCardNumber = (number) => {
         const clean = number.toString().replace(/\s/g, "");
-        if (clean.length === 0) return "#### #### #### ####";
-        const parts = clean.match(/.{1,4}/g) || [];
-        return parts.join(" ");
+        if (clean.length === 0) return "**** **** **** ####";
+        const last4 = clean.slice(-4);
+        return `**** **** **** ${last4}`;
     };
 
     const formatExpiryDateInput = (value) => {
@@ -207,70 +207,92 @@ const TarjetaPago = ({
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setGeneralError("");
+  e.preventDefault();
+  setGeneralError("");
 
-        if (!address) {
-            setGeneralError("Selecciona una dirección de envío primero.");
-            return;
-        }
+  if (!address) {
+    setGeneralError("Selecciona una dirección de envío primero.");
+    return;
+  }
 
-        if (!validate()) return;
+  if (!validate()) return;
 
-        setIsProcessing(true);
-        try {
-            const orderData = {
-                items: selectedItems.map(item => ({
-                    product: item.product?._id || item._id || item.id,
-                    quantity: parseInt(item.quantity)
-                })),
-                shippingAddress: {
-                    pais: address.pais || "Costa Rica",
-                    provincia: address.provincia,
-                    ciudad: address.ciudad,
-                    codigoPostal: address.codigoPostal,
-                    direccion: address.direccion
-                },
-                subtotal: parseFloat(selectedSubtotal),
-                shipping: 0,
-                total: parseFloat(finalTotal),
-                paymentMethod: {
-                    brand: cardType || "Tarjeta",
-                    last4: cardNumber.replace(/\s/g, "").slice(-4)
-                },
-                couponCode: couponValidated ? couponValidated.codigo : undefined,
-            };
+  setIsProcessing(true);
 
-            const response = await orderService.createOrder(orderData);
-            
-            // Actualizar perfil con los últimos datos usados
-            try {
-                if (updateProfile) {
-                    await updateProfile({
-                        debitCard: {
-                            cardNumber: cardNumber.replace(/\s/g, ""),
-                            cardName,
-                            expiryDate,
-                            cvv
-                        },
-                        shippingAddress: {
-                            pais: address.pais || "Costa Rica",
-                            provincia: address.provincia,
-                            ciudad: address.ciudad,
-                            codigoPostal: address.codigoPostal,
-                            direccion: address.direccion
-                        },
-                        telefono: address.telefono
-                    });
-                }
-            } catch (err) {
-                console.error("No se pudo guardar la información en el perfil:", err);
-            }
+  try {
+    const orderData = {
+      items: selectedItems.map(item => ({
+        product: item.product?._id || item._id || item.id,
+        quantity: parseInt(item.quantity)
+      })),
+      shippingAddress: {
+        pais: address.pais || "Costa Rica",
+        provincia: address.provincia,
+        ciudad: address.ciudad,
+        codigoPostal: address.codigoPostal,
+        direccion: address.direccion
+      },
+      subtotal: parseFloat(selectedSubtotal),
+      shipping: 0,
+      total: parseFloat(finalTotal),
+      paymentMethod: {
+        brand: cardType || "Tarjeta",
+        last4: cardNumber.replace(/\s/g, "").slice(-4)
+      },
+      couponCode: couponValidated ? couponValidated.codigo : undefined,
+    };
+
+    // 1. Crear orden
+    const response = await orderService.createOrder(orderData);
+    const createdOrderData = response.data.data || response.data;
+
+    // 2. Marcar orden como pagada para disparar factura
+    await orderService.markOrderAsPaid(createdOrderData._id);
+
+    // 3. Guardar datos del perfil
+    try {
+      if (updateProfile) {
+        await updateProfile({
+          debitCard: {
+            cardNumber: cardNumber.replace(/\s/g, ""),
+            cardName,
+            expiryDate,
+            cvv
+          },
+          shippingAddress: {
+            pais: address.pais || "Costa Rica",
+            provincia: address.provincia,
+            ciudad: address.ciudad,
+            codigoPostal: address.codigoPostal,
+            direccion: address.direccion
+          },
+          telefono: address.telefono
+        });
+      }
+    } catch (err) {
+      console.error("No se pudo guardar la información en el perfil:", err);
+    }
+
+    setCreatedOrder(createdOrderData);
+
+    const clean = cardNumber.replace(/\s/g, "");
+    setLastFourDigits(clean.slice(-4));
+    setMaskedCardDisplay(clean.slice(0, 4) + " **** ****");
+    setShowSuccessModal(true);
+    setIsProcessing(false);
+
+  } catch (error) {
+    console.error("Error al procesar pago:", error);
+    setIsProcessing(false);
+    setGeneralError(
+      error.response?.data?.message || "Error al procesar el pago. Intenta de nuevo."
+    );
+
 
             setCreatedOrder(response.data.data || response.data);
             const clean = cardNumber.replace(/\s/g, "");
             setLastFourDigits(clean.slice(-4));
-            setMaskedCardDisplay(clean.slice(0, 4) + " **** ****");
+            setMaskedCardDisplay("•••• " + clean.slice(-4));
             setShowSuccessModal(true);
             setIsProcessing(false);
         } catch (error) {
@@ -280,6 +302,7 @@ const TarjetaPago = ({
             if (onPaymentError) onPaymentError(error);
         }
     };
+
 
     const handleContinue = () => {
         setShowSuccessModal(false);
@@ -299,71 +322,75 @@ const TarjetaPago = ({
                 {generalError && <div className="error-general-pago">{generalError}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <div className={`vista-previa-tarjeta-pasarela ${cardType ? cardType.toLowerCase() : ""}`}>
-                        <div className="interior-vista-previa-tarjeta">
-                            <div className="chip-tarjeta-pasarela"></div>
-                            <div className="vista-previa-numero-tarjeta">
-                                {getMaskedCardNumber(cardNumber)}
-                            </div>
-                            <div className="vista-previa-detalles-tarjeta">
-                                <div className="vista-previa-nombre-tarjeta">
-                                    {cardName.toUpperCase() || "TITULAR DE TARJETA"}
+                    <div className="contenido-tarjeta-dos-columnas">
+                        <div className="columna-izquierda-tarjeta">
+                            <div className={`vista-previa-tarjeta-pasarela ${cardType ? cardType.toLowerCase() : ""}`}>
+                                <div className="chip-tarjeta-pasarela"></div>
+                                <div className="vista-previa-numero-tarjeta">
+                                    {getMaskedCardNumber(cardNumber)}
                                 </div>
-                                <div className="vista-previa-vencimiento-tarjeta">
-                                    {expiryDate || "MM/AA"}
+                                <div className="vista-previa-detalles-tarjeta">
+                                    <div className="vista-previa-nombre-tarjeta">
+                                        {cardName.toUpperCase() || "TITULAR"}
+                                    </div>
+                                    <div className="vista-previa-vencimiento-tarjeta">
+                                        {expiryDate || "MM/AA"}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="vista-previa-logo-tarjeta">
-                                {getCardLogo(cardType)}
+                                <div className="vista-previa-logo-tarjeta">
+                                    {getCardLogo(cardType)}
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="formulario-pago-pasarela">
-                        <input
-                            type="text"
-                            placeholder="Nombre en la tarjeta"
-                            className={`entrada-pago-pasarela ${errors.cardName ? "error-entrada" : ""}`}
-                            value={cardName}
-                            onChange={(e) => setCardName(e.target.value)}
-                        />
-                        {errors.cardName && <span className="mensaje-error-pasarela">{errors.cardName}</span>}
-
-                        <input
-                            type="text"
-                            placeholder="Número de tarjeta"
-                            className={`entrada-pago-pasarela ${errors.cardNumber ? "error-entrada" : ""}`}
-                            value={cardNumber}
-                            onChange={handleCardNumberChange}
-                        />
-                        {errors.cardNumber && <span className="mensaje-error-pasarela">{errors.cardNumber}</span>}
-
-                        <div className="fila-detalles-tarjeta-pasarela">
-                            <div className="grupo-entrada-pasarela">
+                        <div className="columna-derecha-formulario">
+                            <div className="formulario-pago-pasarela">
                                 <input
                                     type="text"
-                                    placeholder="MM/AA"
-                                    className={`entrada-pago-pasarela ${errors.expiryDate ? "error-entrada" : ""}`}
-                                    value={expiryDate}
-                                    onChange={handleExpiryDateChange}
-                                    maxLength={5}
+                                    placeholder="Nombre en la tarjeta"
+                                    className={`entrada-pago-pasarela ${errors.cardName ? "error-entrada" : ""}`}
+                                    value={cardName}
+                                    onChange={(e) => setCardName(e.target.value)}
                                 />
-                                {errors.expiryDate && <span className="mensaje-error-pasarela">{errors.expiryDate}</span>}
-                            </div>
-                            <div className="grupo-entrada-pasarela">
-                                <div className="campo-cvv-pasarela">
-                                    <input
-                                        type={showCvv ? "text" : "password"}
-                                        placeholder="CVV"
-                                        className={`entrada-pago-pasarela ${errors.cvv ? "error-entrada" : ""}`}
-                                        value={cvv}
-                                        onChange={handleCvvChange}
-                                    />
-                                    <button type="button" className="alternar-cvv-pasarela" onClick={() => setShowCvv(!showCvv)}>
-                                        {showCvv ? <EyeOff size={16} /> : <Eye size={16} />}
-                                    </button>
+                                {errors.cardName && <span className="mensaje-error-pasarela">{errors.cardName}</span>}
+
+                                <input
+                                    type="text"
+                                    placeholder="Número de tarjeta"
+                                    className={`entrada-pago-pasarela ${errors.cardNumber ? "error-entrada" : ""}`}
+                                    value={cardNumber}
+                                    onChange={handleCardNumberChange}
+                                />
+                                {errors.cardNumber && <span className="mensaje-error-pasarela">{errors.cardNumber}</span>}
+
+                                <div className="fila-detalles-tarjeta-pasarela">
+                                    <div className="grupo-entrada-pasarela">
+                                        <input
+                                            type="text"
+                                            placeholder="MM/AA"
+                                            className={`entrada-pago-pasarela ${errors.expiryDate ? "error-entrada" : ""}`}
+                                            value={expiryDate}
+                                            onChange={handleExpiryDateChange}
+                                            maxLength={5}
+                                        />
+                                        {errors.expiryDate && <span className="mensaje-error-pasarela">{errors.expiryDate}</span>}
+                                    </div>
+                                    <div className="grupo-entrada-pasarela">
+                                        <div className="campo-cvv-pasarela">
+                                            <input
+                                                type={showCvv ? "text" : "password"}
+                                                placeholder="CVV"
+                                                className={`entrada-pago-pasarela ${errors.cvv ? "error-entrada" : ""}`}
+                                                value={cvv}
+                                                onChange={handleCvvChange}
+                                            />
+                                            <button type="button" className="alternar-cvv-pasarela" onClick={() => setShowCvv(!showCvv)}>
+                                                {showCvv ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                        </div>
+                                        {errors.cvv && <span className="mensaje-error-pasarela">{errors.cvv}</span>}
+                                    </div>
                                 </div>
-                                {errors.cvv && <span className="mensaje-error-pasarela">{errors.cvv}</span>}
                             </div>
                         </div>
                     </div>
@@ -438,14 +465,9 @@ const TarjetaPago = ({
 
                 <div className="seccion-confianza-pasarela">
                     <p className="texto-pago-seguro-pasarela"><Lock size={14} /> Transacción Segura</p>
-                    <div className="metodos-pago-pasarela">
-                        <span>Visa</span>
-                        <span>Mastercard</span>
-                        <span>Amex</span>
-                    </div>
                 </div>
             </div>
-
+            
             {showSuccessModal && (
                 <div className={`capa-modal-exito-pasarela ${!isDarkMode ? "modo-claro" : ""}`}>
                     <div className={`modal-exito-pasarela ${!isDarkMode ? "modo-claro" : ""}`}>
@@ -458,7 +480,7 @@ const TarjetaPago = ({
                             <div className="info-tarjeta-modal-pasarela">
                                 <div className="fila-info-modal-pasarela">
                                     <span className="etiqueta-modal-pasarela">Tarjeta</span>
-                                    <span className="valor-modal-pasarela">{maskedCardDisplay} ****</span>
+                                    <span className="valor-modal-pasarela">{maskedCardDisplay}</span>
                                 </div>
                                 <div className="fila-info-modal-pasarela">
                                     <span className="etiqueta-modal-pasarela">Total</span>

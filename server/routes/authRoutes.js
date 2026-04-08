@@ -56,7 +56,7 @@ router.put(
 router.post("/forgot-password", forgotPassword);
 
 // 🔑 Reset con token
-// POST /api/auth/reset-password/:token
+// POST /api/auth/ReseteoPassword/:token
 router.post("/ReseteoPassword/:token", resetPassword);
 
 // 🔑 Cambiar contraseña (logueado)

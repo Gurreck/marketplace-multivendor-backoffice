@@ -104,7 +104,7 @@ function App() {
         />
 
         <Route
-          path="/rastreo"
+          path="/rastreo/:orderId"
           element={<Rastreo />}
         />
 
