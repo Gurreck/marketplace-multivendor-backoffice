@@ -287,21 +287,9 @@ const TarjetaPago = ({
     setGeneralError(
       error.response?.data?.message || "Error al procesar el pago. Intenta de nuevo."
     );
-
-
-            setCreatedOrder(response.data.data || response.data);
-            const clean = cardNumber.replace(/\s/g, "");
-            setLastFourDigits(clean.slice(-4));
-            setMaskedCardDisplay("•••• " + clean.slice(-4));
-            setShowSuccessModal(true);
-            setIsProcessing(false);
-        } catch (error) {
-            console.error("Error al procesar pago:", error);
-            setIsProcessing(false);
-            setGeneralError(error.response?.data?.message || "Error al procesar el pago. Intenta de nuevo.");
-            if (onPaymentError) onPaymentError(error);
-        }
-    };
+    if (onPaymentError) onPaymentError(error);
+  }
+};
 
 
     const handleContinue = () => {
