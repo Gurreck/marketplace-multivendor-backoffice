@@ -17,7 +17,7 @@ import {
   XCircle,
   User,
 } from "lucide-react";
-import PerfilVendedor from "../perfil/PerfilVendedor";
+import PerfilVendedor from "../Perfil/PerfilVendedor";
 
 // Import local components
 import VendedorDashboard from "./VendedorDashboard";
@@ -97,10 +97,10 @@ export default function Vendedor() {
           ordenesPendientes: data.ordenesPendientes || 0,
           productosActivos: data.productosActivos || 0,
           productosStockBajo: data.lowStockProducts?.length || 0,
-          topProductos: [],
+          topProductos: data.topProductos || [],
           productosStockBajoLista: data.lowStockProducts || [],
           ventasPorMes: data.ventasPorMes || [],
-          ordenesPorEstado: {
+          ordenesPorEstado: data.ordenesPorEstado || {
             paid: 0,
             packed: 0,
             shipped: 0,
@@ -621,9 +621,9 @@ export default function Vendedor() {
       <main className="principal-vend">
         {seccionActiva === "perfil" && <PerfilVendedor />}
         {seccionActiva === "dashboard" && (
-          <VendedorDashboard 
-            kpis={kpis} 
-            cargando={cargando} 
+          <VendedorDashboard
+            kpis={kpis}
+            cargando={cargando}
             stockThreshold={stockThreshold}
             etiquetasEstado={etiquetasEstado}
             getStatusColor={getStatusColor}
@@ -633,7 +633,7 @@ export default function Vendedor() {
           />
         )}
         {seccionActiva === "productos" && (
-          <VendedorProductos 
+          <VendedorProductos
             filteredProducts={filteredProducts}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -653,7 +653,7 @@ export default function Vendedor() {
           />
         )}
         {seccionActiva === "ordenes" && (
-          <VendedorOrdenesLista 
+          <VendedorOrdenesLista
             ordenesFiltradas={ordenesFiltradas}
             filtroEstadoOrden={filtroEstadoOrden}
             setFiltroEstadoOrden={setFiltroEstadoOrden}
@@ -666,7 +666,7 @@ export default function Vendedor() {
           />
         )}
         {seccionActiva === "detalleOrden" && (
-          <VendedorDetalleOrden 
+          <VendedorDetalleOrden
             orden={ordenSeleccionada}
             setSeccionActiva={setSeccionActiva}
             formatearFecha={formatearFecha}
@@ -679,7 +679,7 @@ export default function Vendedor() {
       </main>
 
       {/* Modal: Crear/Editar Producto */}
-      <ModalesVendedor 
+      <ModalesVendedor
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         editingProduct={editingProduct}
