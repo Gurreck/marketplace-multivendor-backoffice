@@ -7,7 +7,8 @@ export function ModalCrearUsuario({
   cerrar,
   formulario,
   setFormulario,
-  manejarSubmit
+  manejarSubmit,
+  editando
 }) {
   if (!mostrar) return null;
 
@@ -15,7 +16,13 @@ export function ModalCrearUsuario({
     <div className="superposicion-modal-admin">
       <div className="modal-admin">
         <div className="encabezado-modal-admin">
-          <h2><UserPlus size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Nuevo Usuario</h2>
+          <h2>
+            {editando ? (
+              <><Pencil size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Editar Usuario</>
+            ) : (
+              <><UserPlus size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Nuevo Usuario</>
+            )}
+          </h2>
           <button className="cerrar-modal-admin" onClick={cerrar}><X size={20} /></button>
         </div>
         <form className="formulario-admin" onSubmit={manejarSubmit}>
@@ -41,14 +48,14 @@ export function ModalCrearUsuario({
           </div>
           <div className="fila-formulario-admin">
             <div className="grupo-formulario-admin">
-              <label>Contraseña</label>
+              <label>{editando ? "Nueva contraseña (dejar vacío para no cambiar)" : "Contraseña"}</label>
               <input
                 type="password"
                 value={formulario.password}
                 onChange={(e) => setFormulario({ ...formulario, password: e.target.value })}
-                placeholder="Mín. 6 caracteres"
-                minLength={6}
-                required
+                placeholder={editando ? "Sin cambios" : "Mín. 6 caracteres"}
+                minLength={editando ? 0 : 6}
+                required={!editando}
               />
             </div>
             <div className="grupo-formulario-admin">
@@ -69,7 +76,7 @@ export function ModalCrearUsuario({
               Cancelar
             </button>
             <button type="submit" className="boton-enviar-admin">
-              Crear Usuario
+              {editando ? "Guardar Cambios" : "Crear Usuario"}
             </button>
           </div>
         </form>

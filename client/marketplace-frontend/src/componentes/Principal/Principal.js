@@ -124,12 +124,22 @@ export default function Principal() {
   /**
    * Agrega un producto al carrito, validando sesión previa
    */
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     if (!isAuthenticated) {
       setShowLoginModal(true);
       return;
     }
-    addToCart(product);
+    if (product.stock <= 0) {
+      setShowNotification('⚠️ Este producto no tiene stock disponible');
+      setTimeout(() => setShowNotification(''), 3000);
+      return;
+    }
+    const added = await addToCart(product);
+    if (added === false) {
+      setShowNotification(`⚠️ Solo hay ${product.stock} unidades disponibles de "${product.name}"`);
+      setTimeout(() => setShowNotification(''), 3000);
+      return;
+    }
     setShowNotification(`${product.name} agregado al carrito`);
     setTimeout(() => setShowNotification(''), 3000);
   };
@@ -140,6 +150,11 @@ export default function Principal() {
   const handlePromoAddToCart = (product) => {
     if (!isAuthenticated) {
       setShowLoginModal(true);
+      return;
+    }
+    if (product.stock <= 0) {
+      setShowNotification('⚠️ Este producto no tiene stock disponible');
+      setTimeout(() => setShowNotification(''), 3000);
       return;
     }
     const discountedProduct = {
@@ -183,6 +198,8 @@ export default function Principal() {
         user={user}
         logout={logout}
         cartCount={cartCount}
+        isAuthenticated={isAuthenticated}
+        onLoginRequired={() => setShowLoginModal(true)}
         categories={categories}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
@@ -234,10 +251,19 @@ export default function Principal() {
 
                     <div className="pie-producto">
                       <span className="precio-producto">₡{product.price.toLocaleString()}</span>
-                      <button className="boton-agregar" onClick={() => handleAddToCart(product)}>
-                        <Plus size={16} />
-                        Agregar
-                      </button>
+                      {product.stock > 0 ? (
+                        <button className="boton-agregar" onClick={() => handleAddToCart(product)}>
+                          <Plus size={16} />
+                          Agregar
+                        </button>
+                      ) : (
+                        <button className="boton-agregar sin-stock" onClick={() => {
+                          setShowNotification('⚠️ Este producto no tiene stock disponible');
+                          setTimeout(() => setShowNotification(''), 3000);
+                        }}>
+                          Sin stock
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
