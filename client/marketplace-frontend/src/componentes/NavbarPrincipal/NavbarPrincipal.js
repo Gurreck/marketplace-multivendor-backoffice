@@ -23,6 +23,8 @@ export default function NavbarPrincipal({
     user,
     logout,
     cartCount,
+    isAuthenticated,
+    onLoginRequired,
     categories,
     selectedCategory,
     setSelectedCategory,
@@ -114,7 +116,13 @@ export default function NavbarPrincipal({
                     {/* Carrito */}
                     <button
                         className="boton-carrito"
-                        onClick={() => navigate('/carrito')}
+                        onClick={() => {
+                            if (!isAuthenticated) {
+                                onLoginRequired();
+                                return;
+                            }
+                            navigate('/carrito');
+                        }}
                     >
                         <ShoppingCart size={20} />
                         {cartCount > 0 && <span className="etiqueta-carrito">{cartCount}</span>}

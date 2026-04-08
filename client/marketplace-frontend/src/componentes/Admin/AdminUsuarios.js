@@ -7,6 +7,8 @@ import {
   Key, 
   Ban, 
   Check, 
+  Pencil, 
+  Trash2, 
   Loader2 
 } from 'lucide-react';
 
@@ -16,11 +18,13 @@ export default function AdminUsuarios({
   setBuscarUsuario,
   setFormularioUsuario,
   setMostrarModalUsuario,
+  setUsuarioEditando,
   cargando,
   setUsuarioSeleccionado,
   setNuevoRol,
   setMostrarModalRol,
   manejarCambiarEstadoUsuario,
+  manejarEliminarUsuario,
   obtenerIniciales,
   formatearFecha
 }) {
@@ -33,7 +37,7 @@ export default function AdminUsuarios({
     <>
       <div className="encabezado-pagina-admin">
         <h1>Gestión de Usuarios</h1>
-        <p>Crear, listar, asignar roles y desactivar usuarios</p>
+        <p>Crear, editar, asignar roles, desactivar y eliminar usuarios</p>
       </div>
 
       <div className="contenedor-tabla-admin">
@@ -53,6 +57,7 @@ export default function AdminUsuarios({
             <button
               className="boton-primario-admin"
               onClick={() => {
+                setUsuarioEditando(null);
                 setFormularioUsuario({ nombre: "", email: "", password: "", role: "cliente" });
                 setMostrarModalUsuario(true);
               }}
@@ -104,6 +109,22 @@ export default function AdminUsuarios({
                   <td>
                     <div className="botones-accion-admin">
                       <button
+                        className="boton-accion-admin editar"
+                        onClick={() => {
+                          setUsuarioEditando(u);
+                          setFormularioUsuario({
+                            nombre: u.nombre,
+                            email: u.email,
+                            password: "",
+                            role: u.role,
+                          });
+                          setMostrarModalUsuario(true);
+                        }}
+                        title="Editar usuario"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
                         className="boton-accion-admin"
                         onClick={() => {
                           setUsuarioSeleccionado(u);
@@ -120,6 +141,13 @@ export default function AdminUsuarios({
                         title={u.activo !== false ? "Desactivar" : "Activar"}
                       >
                         {u.activo !== false ? <Ban size={16} /> : <Check size={16} />}
+                      </button>
+                      <button
+                        className="boton-accion-admin eliminar"
+                        onClick={() => manejarEliminarUsuario(u._id, u.nombre)}
+                        title="Eliminar usuario"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>

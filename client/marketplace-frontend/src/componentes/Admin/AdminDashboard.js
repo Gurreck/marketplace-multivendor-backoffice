@@ -43,7 +43,10 @@ export default function AdminDashboard() {
 
   if (!kpis) return null;
 
-  const { resumen, productosPorCategoria, topProductos, topVendedores } = kpis;
+  const resumen = kpis.resumen || { totalUsuarios: 0, totalVendedores: 0, totalClientes: 0, totalProductos: 0 };
+  const productosPorCategoria = kpis.productosPorCategoria || [];
+  const topProductos = kpis.topProductos || [];
+  const topVendedores = kpis.topVendedores || [];
   const maximoCategoria = productosPorCategoria.length > 0
     ? Math.max(...productosPorCategoria.map((c) => c.count))
     : 1;

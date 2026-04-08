@@ -118,6 +118,7 @@ const getVendorDashboard = async (req, res) => {
           _id: p._id,
           name: p.name,
           stock: p.stock,
+          price: p.price,
           lowStockThreshold: p.lowStockThreshold,
         })),
         ventasPorMes,
