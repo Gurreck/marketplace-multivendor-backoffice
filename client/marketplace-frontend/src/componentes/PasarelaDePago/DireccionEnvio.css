@@ -37,11 +37,10 @@
     max-width: 100%;
     width: 100%;
     box-sizing: border-box;
-    right: auto;
     position: relative;
     top: auto;
-    margin-top: 40px;
-    margin-right: 150px;
+    margin-top: 0;
+    margin-left: 0;
 }
 
 .titulo-direccion-pasarela {
