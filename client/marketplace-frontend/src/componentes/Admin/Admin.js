@@ -17,7 +17,8 @@ import {
   X,
   CheckCircle2,
   XCircle,
-  Zap
+  Zap,
+  FileBarChart
 } from 'lucide-react';
 
 // Import local components
@@ -26,6 +27,7 @@ import AdminUsuarios from "./AdminUsuarios";
 import AdminVendedores from "./AdminVendedores";
 import AdminCategorias from "./AdminCategorias";
 import AdminAuditoria from "./AdminAuditoria";
+import AdminReportes from "./AdminReportes";
 import { ModalCrearUsuario, ModalAsignarRol, ModalCategoria } from "./ModalesAdmin";
 
 export default function Admin() {
@@ -47,6 +49,7 @@ export default function Admin() {
   const [mostrarModalRol, setMostrarModalRol] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [nuevoRol, setNuevoRol] = useState("");
+  const [usuarioEditando, setUsuarioEditando] = useState(null);
 
   // ===== VENDEDORES =====
   const [vendedores, setVendedores] = useState([]);
@@ -205,6 +208,40 @@ export default function Admin() {
     }
   };
 
+  // ===== ACCIONES: EDITAR USUARIO =====
+  const manejarEditarUsuario = async (e) => {
+    e.preventDefault();
+    if (!usuarioEditando) return;
+    try {
+      const datos = { ...formularioUsuario };
+      if (!datos.password) delete datos.password;
+      const respuesta = await servicioAdmin.actualizarUsuario(usuarioEditando._id, datos);
+      if (respuesta.success) {
+        mostrarNotificacion("Usuario actualizado exitosamente");
+        setMostrarModalUsuario(false);
+        setUsuarioEditando(null);
+        setFormularioUsuario({ nombre: "", email: "", password: "", role: "cliente" });
+        cargarUsuarios();
+      }
+    } catch (err) {
+      mostrarNotificacion(err.response?.data?.message || "Error al actualizar usuario", "error");
+    }
+  };
+
+  // ===== ACCIONES: ELIMINAR USUARIO =====
+  const manejarEliminarUsuario = async (idUsuario, nombreUsuario) => {
+    if (!window.confirm(`¿Seguro que deseas eliminar al usuario "${nombreUsuario}"? Esta acción es permanente.`)) return;
+    try {
+      const respuesta = await servicioAdmin.eliminarUsuario(idUsuario);
+      if (respuesta.success) {
+        mostrarNotificacion(respuesta.message || "Usuario eliminado");
+        cargarUsuarios();
+      }
+    } catch (err) {
+      mostrarNotificacion(err.response?.data?.message || "Error al eliminar usuario", "error");
+    }
+  };
+
   // ===== ACCIONES: VENDEDORES =====
   const manejarAprobarVendedor = async (idVendedor) => {
     try {
@@ -333,6 +370,7 @@ export default function Admin() {
     { clave: "vendedores", icono: <Store size={20} />, etiqueta: "Vendedores" },
     { clave: "categorias", icono: <Tag size={20} />, etiqueta: "Categorías" },
     { clave: "auditoria", icono: <ClipboardList size={20} />, etiqueta: "Auditoría" },
+    { clave: "reportes", icono: <FileBarChart size={20} />, etiqueta: "Reportes" },
   ];
 
   // ===== RENDER PRINCIPAL =====
@@ -396,11 +434,13 @@ export default function Admin() {
             setBuscarUsuario={setBuscarUsuario}
             setFormularioUsuario={setFormularioUsuario}
             setMostrarModalUsuario={setMostrarModalUsuario}
+            setUsuarioEditando={setUsuarioEditando}
             cargando={cargando}
             setUsuarioSeleccionado={setUsuarioSeleccionado}
             setNuevoRol={setNuevoRol}
             setMostrarModalRol={setMostrarModalRol}
             manejarCambiarEstadoUsuario={manejarCambiarEstadoUsuario}
+            manejarEliminarUsuario={manejarEliminarUsuario}
             obtenerIniciales={obtenerIniciales}
             formatearFecha={formatearFecha}
           />
@@ -442,14 +482,16 @@ export default function Admin() {
             formatearFecha={formatearFecha}
           />
         )}
+        {seccionActiva === "reportes" && <AdminReportes />}
       </main>
 
       <ModalCrearUsuario
         mostrar={mostrarModalUsuario}
-        cerrar={() => setMostrarModalUsuario(false)}
+        cerrar={() => { setMostrarModalUsuario(false); setUsuarioEditando(null); }}
         formulario={formularioUsuario}
         setFormulario={setFormularioUsuario}
-        manejarSubmit={manejarCrearUsuario}
+        manejarSubmit={usuarioEditando ? manejarEditarUsuario : manejarCrearUsuario}
+        editando={usuarioEditando}
       />
 
       <ModalAsignarRol

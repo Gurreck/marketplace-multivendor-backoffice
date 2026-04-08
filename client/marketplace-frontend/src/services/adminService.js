@@ -22,6 +22,16 @@ const servicioAdmin = {
     return respuesta.data;
   },
 
+  actualizarUsuario: async (idUsuario, datosUsuario) => {
+    const respuesta = await api.put(`/admin/users/${idUsuario}`, datosUsuario);
+    return respuesta.data;
+  },
+
+  eliminarUsuario: async (idUsuario) => {
+    const respuesta = await api.delete(`/admin/users/${idUsuario}`);
+    return respuesta.data;
+  },
+
   // ========== VENDEDORES ==========
   obtenerVendedores: async () => {
     const respuesta = await api.get("/admin/vendors");

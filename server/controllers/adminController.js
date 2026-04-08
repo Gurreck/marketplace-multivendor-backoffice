@@ -56,7 +56,6 @@ const createUser = async (req, res) => {
       });
     }
 
-    // Verificar si el email ya existe
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -65,13 +64,11 @@ const createUser = async (req, res) => {
       });
     }
 
-    const bcrypt = require("bcryptjs");
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // NO hashear aquí — el modelo User tiene un pre('save') hook que lo hace automáticamente
     const user = await User.create({
       nombre,
       email,
-      password: hashedPassword,
+      password,
       role: role || "cliente",
     });
 
@@ -96,9 +93,126 @@ const createUser = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error en createUser:", error);
     res.status(500).json({
       success: false,
       message: "Error al crear el usuario.",
+    });
+  }
+};
+
+// @desc    Actualizar datos de un usuario
+// @route   PUT /api/admin/users/:id
+// @access  Solo Administrador
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, email, password, role } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    const datosAnteriores = { nombre: user.nombre, email: user.email, role: user.role };
+
+    if (nombre) user.nombre = nombre;
+    if (email && email !== user.email) {
+      const existente = await User.findOne({ email });
+      if (existente) {
+        return res.status(400).json({
+          success: false,
+          message: "Ya existe otro usuario con ese email.",
+        });
+      }
+      user.email = email;
+    }
+    if (role) user.role = role;
+    if (password && password.length >= 6) {
+      user.password = password; // El pre('save') hook hashea automáticamente
+    }
+
+    await user.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "editar_usuario",
+      entidad: "usuario",
+      entidadId: user._id,
+      detalles: `Usuario "${user.nombre}" actualizado`,
+      datosAnteriores,
+      datosNuevos: { nombre: user.nombre, email: user.email, role: user.role },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Usuario actualizado exitosamente.",
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        activo: user.activo,
+      },
+    });
+  } catch (error) {
+    console.error("Error en updateUser:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar el usuario.",
+    });
+  }
+};
+
+// @desc    Eliminar un usuario
+// @route   DELETE /api/admin/users/:id
+// @access  Solo Administrador
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    // No permitir eliminar al mismo admin
+    if (id === req.user.id) {
+      return res.status(400).json({
+        success: false,
+        message: "No puedes eliminarte a ti mismo.",
+      });
+    }
+
+    const datosEliminados = { nombre: user.nombre, email: user.email, role: user.role };
+    await User.findByIdAndDelete(id);
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "eliminar_usuario",
+      entidad: "usuario",
+      entidadId: id,
+      detalles: `Usuario "${datosEliminados.nombre}" eliminado permanentemente`,
+      datosAnteriores: datosEliminados,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Usuario "${datosEliminados.nombre}" eliminado exitosamente.`,
+    });
+  } catch (error) {
+    console.error("Error en deleteUser:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al eliminar el usuario.",
     });
   }
 };
@@ -515,6 +629,8 @@ const getKPIs = async (req, res) => {
 module.exports = {
   getUsers,
   createUser,
+  updateUser,
+  deleteUser,
   assignRole,
   toggleUserStatus,
   getVendors,

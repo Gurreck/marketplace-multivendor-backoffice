@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import "./SoporteOrdenes.css";
 
-export function SoporteOrdenes({
+export default function SoporteOrdenes({
   ordenesFiltradas,
   buscarOrden,
   setBuscarOrden,
