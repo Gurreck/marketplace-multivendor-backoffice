@@ -5,12 +5,16 @@ console.log('===================== DEBUG .ENV =====================');
 console.log('PORT:', process.env.PORT);
 console.log('MONGODB_URI:', process.env.MONGODB_URI);
 console.log('JWT_SECRET existe?:', !!process.env.JWT_SECRET);
+console.log('CLIENT_URL:', process.env.CLIENT_URL);
 console.log('====================================================');
 
-// ... resto del código
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const path = require("path");
+const helmet = require("helmet");
+const http = require("http");
+const { Server } = require("socket.io");
 
 // Importar rutas
 const authRoutes = require("./routes/authRoutes");
@@ -23,54 +27,49 @@ const cartRoutes = require("./routes/cartRoutes");
 const supportRoutes = require("./routes/supportRoutes");
 const vendorRoutes = require("./routes/vendorRoutes");
 const gamificationRoutes = require("./routes/gamificationRoutes");
+const addressRoutes = require("./routes/addressRoutes");
 const { getCategories } = require("./controllers/categoryController");
 
 const app = express();
 
-const helmet = require("helmet");
-
-// ⚠️ COMENTADOS - Incompatibles con Node.js v24
-// const xss = require("xss-clean");
-// const hpp = require("hpp");
-
-// 1️⃣ PRIMERO: CORS (antes de cualquier cosa)
+// 1️⃣ CORS
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:5173",
+    ],
     credentials: true,
   })
 );
 
-// 2️⃣ SEGUNDO: Parsear el body (ANTES de sanitizar)
+// 2️⃣ Parsear body
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// 3️⃣ TERCERO: Middleware de seguridad
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }, // Permitir cargar imágenes desde otro origen
-})); // Headers de seguridad HTTP
-// app.use(xss()); // ⚠️ DESACTIVADO - Incompatible con Node.js v24
-// app.use(hpp()); // ⚠️ DESACTIVADO - Incompatible con Node.js v24
+// 3️⃣ Seguridad
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 
-// Servir archivos estáticos de la carpeta uploads
-const path = require("path");
+// 4️⃣ Archivos estáticos
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// 4️⃣ CUARTO: Rutas
+// 5️⃣ Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/products", productRoutes); // <-- PÚBLICA ANTES
-const addressRoutes = require("./routes/addressRoutes");
+app.use("/api/products", productRoutes);
 app.use("/api/address", addressRoutes);
-app.use("/api/orders", orderRoutes); // Nueva ruta de órdenes
-app.use("/api/cart", cartRoutes); // Nueva ruta del carrito
-app.use("/api/support", supportRoutes); // Rutas de soporte (tickets + RMA)
-app.use("/api/vendor", vendorRoutes); // Rutas de vendedor (dashboard + órdenes)
-app.use("/api/gamification", gamificationRoutes); // Rutas de gamificación (ruleta + cupones)
-app.get("/api/categories", getCategories); // Ruta pública de categorías
-app.use("/api", protectedRoutes);        // <-- PROTEGIDA DESPUÉS
-
-// Rutas de comentarios
+app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/support", supportRoutes);
+app.use("/api/vendor", vendorRoutes);
+app.use("/api/gamification", gamificationRoutes);
+app.get("/api/categories", getCategories);
+app.use("/api", protectedRoutes);
 app.use("/api/comments", commentRoutes);
 
 // Ruta de prueba
@@ -111,7 +110,7 @@ app.use((err, req, res, next) => {
   console.error('Error completo:', err);
   console.error('Stack:', err.stack);
   console.error('===============================================');
-  
+
   res.status(500).json({
     success: false,
     message: "Error interno del servidor.",
@@ -119,11 +118,44 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Conectar a MongoDB y levantar servidor
+// ✅ Crear servidor HTTP a partir de app
+const server = http.createServer(app);
+
+// ✅ Configurar Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT"],
+    credentials: true,
+  },
+});
+
+io.on("connection", (socket) => {
+  
+
+  socket.on("joinOrderRoom", (orderId) => {
+    socket.join(orderId);
+    
+  });
+
+  socket.on("leaveOrderRoom", (orderId) => {
+    socket.leave(orderId);
+    
+  });
+
+  socket.on("disconnect", () => {
+    
+  });
+});
+
+// ✅ Guardar io para usarlo en controllers
+app.set("io", io);
+
+// ✅ Conectar a MongoDB y levantar servidor UNA sola vez
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
+  server.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
   });
 });
