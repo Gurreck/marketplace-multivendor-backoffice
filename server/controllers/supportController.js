@@ -87,6 +87,15 @@ const actualizarEstadoOrdenSoporte = async (req, res) => {
 
     await order.save();
 
+    const orderActualizada = await Order.findById(order._id)
+      .populate("user", "nombre email")
+      .populate("items.product", "name images price")
+      .populate("items.vendor", "nombre")
+      .populate("statusHistory.usuarioQueCambio", "nombre");
+
+    const io = req.app.get("io");
+    io.to(order._id.toString()).emit("orderStatusUpdated", orderActualizada);
+
     await registrarAuditoria({
       usuario: req.user.id,
       usuarioNombre: req.user.nombre,
@@ -101,7 +110,7 @@ const actualizarEstadoOrdenSoporte = async (req, res) => {
     res.status(200).json({
       success: true,
       message: `Estado de la orden actualizado a "${estado}"`,
-      data: order,
+      data: orderActualizada,
     });
   } catch (error) {
     console.error("Error en actualizarEstadoOrdenSoporte:", error);
