@@ -22,6 +22,7 @@ const getVendorDashboard = async (req, res) => {
     let ventasTotales = 0;
     let totalOrdenes = 0;
     const ordenesPendientes = [];
+    const ordenesPorEstado = { paid: 0, packed: 0, shipped: 0, delivered: 0 };
 
     vendorOrders.forEach((order) => {
       let tieneItems = false;
@@ -33,6 +34,11 @@ const getVendorDashboard = async (req, res) => {
       });
       if (tieneItems) {
         totalOrdenes++;
+        if (ordenesPorEstado[order.status] !== undefined) {
+          ordenesPorEstado[order.status]++;
+        } else {
+          ordenesPorEstado[order.status] = 1;
+        }
         if (["paid", "packed"].includes(order.status)) {
           ordenesPendientes.push(order);
         }
@@ -75,6 +81,31 @@ const getVendorDashboard = async (req, res) => {
       { $sort: { "_id.year": 1, "_id.month": 1 } },
     ]);
 
+    // Top productos más vendidos
+    const topProductos = await Order.aggregate([
+      {
+        $match: {
+          "items.vendor": vendorId,
+          status: { $in: ["paid", "packed", "shipped", "delivered"] },
+        },
+      },
+      { $unwind: "$items" },
+      {
+        $match: {
+          "items.vendor": vendorId,
+        },
+      },
+      {
+        $group: {
+          _id: "$items.product",
+          name: { $first: "$items.name" },
+          sold: { $sum: "$items.quantity" },
+        },
+      },
+      { $sort: { sold: -1 } },
+      { $limit: 5 },
+    ]);
+
     res.status(200).json({
       success: true,
       data: {
@@ -90,6 +121,8 @@ const getVendorDashboard = async (req, res) => {
           lowStockThreshold: p.lowStockThreshold,
         })),
         ventasPorMes,
+        ordenesPorEstado,
+        topProductos,
       },
     });
   } catch (error) {

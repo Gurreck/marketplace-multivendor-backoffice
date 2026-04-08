@@ -97,10 +97,10 @@ export default function Vendedor() {
           ordenesPendientes: data.ordenesPendientes || 0,
           productosActivos: data.productosActivos || 0,
           productosStockBajo: data.lowStockProducts?.length || 0,
-          topProductos: [],
+          topProductos: data.topProductos || [],
           productosStockBajoLista: data.lowStockProducts || [],
           ventasPorMes: data.ventasPorMes || [],
-          ordenesPorEstado: {
+          ordenesPorEstado: data.ordenesPorEstado || {
             paid: 0,
             packed: 0,
             shipped: 0,
