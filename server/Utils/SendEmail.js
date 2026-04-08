@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async ({ email, subject, html }) => {
+const sendEmail = async ({ email, subject, html, attachments = [] }) => {
   console.log("📧 EMAIL_USER:", process.env.EMAIL_USER);
   console.log("📧 EMAIL_PASS existe:", !!process.env.EMAIL_PASS);
 
@@ -15,13 +15,16 @@ const sendEmail = async ({ email, subject, html }) => {
   console.log("📨 Enviando correo a:", email);
 
   const info = await transporter.sendMail({
-    from: `"Marketplace" <${process.env.EMAIL_USER}>`,
+    from: `"Marketplace Nexora" <${process.env.EMAIL_USER}>`,
     to: email,
     subject,
     html,
+    attachments,
   });
 
   console.log("✅ Correo enviado. Message ID:", info.messageId);
+
+  return info;
 };
 
 module.exports = sendEmail;
