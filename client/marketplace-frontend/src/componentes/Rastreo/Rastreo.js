@@ -58,7 +58,7 @@ const ETIQUETAS_ESTADO = {
 };
 
 // Orden de flujo de estados
-const FLUJO_ESTADOS = ["created", "pending", "paid", "packed", "shipped", "delivered"];
+const FLUJO_ESTADOS = ["created", "pending", "paid", "packed", "shipped", "delivered", "receipt_confirmed"];
 
 const Rastreo = ({ isEmbedded = false, orden = null }) => {
   const { isDarkMode: esModoOscuro } = useTheme();
@@ -114,7 +114,17 @@ const Rastreo = ({ isEmbedded = false, orden = null }) => {
       return;
     }
 
-    const estadoActual = ordenDatos.status || "created";
+    const yaConfirmado = (ordenDatos.statusHistory || []).some(
+      (h) => h.estado === 'receipt_confirmed'
+    );
+    setEntregaConfirmada(yaConfirmado);
+
+    // Si ya fue confirmado, forzamos el estado a 'receipt_confirmed' para la lógica visual
+    let estadoActual = ordenDatos.status || "created";
+    if (yaConfirmado) {
+      estadoActual = "receipt_confirmed";
+    }
+
     const indiceEstadoActual = FLUJO_ESTADOS.indexOf(estadoActual);
 
     const idRastreo = (ordenDatos._id || "NEXORA-ORD").toString().slice(-10).toUpperCase();
@@ -130,11 +140,6 @@ const Rastreo = ({ isEmbedded = false, orden = null }) => {
         activo: indicePaso === indiceEstadoActual,
       };
     });
-
-    const yaConfirmado = (ordenDatos.statusHistory || []).some(
-      (h) => h.estado === 'receipt_confirmed'
-    );
-    setEntregaConfirmada(yaConfirmado);
 
     const historial = (ordenDatos.statusHistory || [])
       .slice()
@@ -214,7 +219,10 @@ const Rastreo = ({ isEmbedded = false, orden = null }) => {
 
     try {
       if (datosEnvio?.ordenOriginal?._id) {
-        await api.put(`/orders/${datosEnvio.ordenOriginal._id}/confirm-receipt`);
+        const respuesta = await api.put(`/orders/${datosEnvio.ordenOriginal._id}/confirm-receipt`);
+        if (respuesta.data && respuesta.data.data) {
+          cargarDatosTracking(respuesta.data.data);
+        }
       }
 
       setEntregaConfirmada(true);
