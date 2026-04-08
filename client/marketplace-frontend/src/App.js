@@ -13,10 +13,10 @@ import Vendedor from "./componentes/Vendedor/Vendedor";
 import Admin from "./componentes/Admin/Admin";
 import Soporte from "./componentes/Soporte/Soporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
-import PerfilCliente from "./componentes/perfil/PerfilCliente";
+import PerfilCliente from "./componentes/Perfil/PerfilCliente";
 import Rastreo from "./componentes/Rastreo/Rastreo";
 import RuletaPrimeraCompra from "./componentes/RuletaPrimeraCompra/RuletaPrimeraCompra";
-import ResetPassword from './componentes/Acceso/ReseteoPassword'; 
+import ResetPassword from "./componentes/Acceso/ReseteoPassword";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -89,24 +89,15 @@ function App() {
   return (
     <div className="Aplicacion">
       <Routes>
-
         {/* 🔑 Rutas Públicas */}
         <Route path="/login" element={<IniciarSesion />} />
         <Route path="/register" element={<Registro />} />
         <Route path="/forgot-password" element={<RecuperarPassword />} />
         <Route path="/ReseteoPassword/:token" element={<ResetPassword />} />
 
-        <Route
-          path="/product/:id"
-          element={
-            <VistaProducto />
-          }
-        />
+        <Route path="/product/:id" element={<VistaProducto />} />
 
-        <Route
-          path="/rastreo/:orderId"
-          element={<Rastreo />}
-        />
+        <Route path="/rastreo/:orderId" element={<Rastreo />} />
 
         <Route
           path="/ruleta"
@@ -116,7 +107,6 @@ function App() {
             </RutaProtegida>
           }
         />
-
 
         {/* ⭐ rutas protegidas - Administrador */}
         <Route
@@ -151,8 +141,6 @@ function App() {
             </RutaProtegida>
           }
         />
-
-        
 
         <Route
           path="/cliente"
@@ -191,16 +179,10 @@ function App() {
         />
 
         {/* ⭐ ruta raíz inteligente — redirige según rol */}
-        <Route
-          path="/"
-          element={<RutaRaiz />}
-        />
+        <Route path="/" element={<RutaRaiz />} />
 
         {/* ⭐ fallback */}
-        <Route
-          path="*"
-          element={<RutaRaiz />}
-        />
+        <Route path="*" element={<RutaRaiz />} />
       </Routes>
 
       {/*  DEJAR SIEMPRE FUERA DE </Routes> */}
