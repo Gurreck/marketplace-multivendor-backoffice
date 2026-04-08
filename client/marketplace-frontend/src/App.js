@@ -13,7 +13,7 @@ import Vendedor from "./componentes/Vendedor/Vendedor";
 import Admin from "./componentes/Admin/Admin";
 import Soporte from "./componentes/Soporte/Soporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
-import PerfilCliente from "./componentes/Perfil/PerfilCliente";
+import PerfilCliente from "./componentes/perfil/PerfilCliente";
 import Rastreo from "./componentes/Rastreo/Rastreo";
 import RuletaPrimeraCompra from "./componentes/RuletaPrimeraCompra/RuletaPrimeraCompra";
 import ResetPassword from './componentes/Acceso/ReseteoPassword'; 
