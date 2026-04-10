@@ -65,29 +65,62 @@ const orderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     shipping: { type: Number, required: true, min: 0, default: 0 },
     total: { type: Number, required: true, min: 0 },
+
     paymentMethod: {
       brand: { type: String, default: "Tarjeta" },
       last4: { type: String, default: "****" }
     },
+
     status: {
       type: String,
-      enum: ["created", "pending", "paid", "packed", "shipped", "delivered", "cancelled"],
+      enum: [
+        "created",
+        "pending",
+        "paid",
+        "packed",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
       default: "created",
     },
+
     statusHistory: {
       type: [statusHistorySchema],
       default: [],
     },
+
     couponApplied: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Coupon",
     },
+
     discountAmount: {
       type: Number,
       default: 0,
       min: 0,
     },
+
     paidAt: { type: Date },
+
+    // FACTURA
+    invoiceNumber: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
+    invoiceSent: {
+      type: Boolean,
+      default: false,
+    },
+    invoiceSentAt: {
+      type: Date,
+    },
+    invoicePdfUrl: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -95,5 +128,6 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({ user: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ "items.vendor": 1 });
+orderSchema.index({ invoiceNumber: 1 });
 
 module.exports = mongoose.model("Order", orderSchema);

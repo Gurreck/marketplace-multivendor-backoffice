@@ -201,6 +201,22 @@
     color: var(--admin-advertencia);
 }
 
+.boton-accion-admin.editar:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.boton-accion-admin.eliminar {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.boton-accion-admin.eliminar:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
 /* ===== FECHA DE AUDITORÍA ===== */
 .fecha-auditoria-admin {
     font-family: 'Courier New', Courier, monospace;

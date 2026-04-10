@@ -3,6 +3,8 @@ const router = express.Router();
 const {
   getUsers,
   createUser,
+  updateUser,
+  deleteUser,
   assignRole,
   toggleUserStatus,
   getVendors,
@@ -33,6 +35,10 @@ router.use(authorize("administrador"));
 router.get("/users", getUsers);
 // POST /api/admin/users - Crear un usuario
 router.post("/users", createUser);
+// PUT /api/admin/users/:id - Actualizar un usuario
+router.put("/users/:id", updateUser);
+// DELETE /api/admin/users/:id - Eliminar un usuario
+router.delete("/users/:id", deleteUser);
 // PUT /api/admin/users/:id/role - Asignar rol a un usuario
 router.put("/users/:id/role", assignRole);
 // PUT /api/admin/users/:id/status - Activar/Desactivar usuario
