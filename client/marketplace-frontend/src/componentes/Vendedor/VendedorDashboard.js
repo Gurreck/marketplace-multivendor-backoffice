@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   BarChart3,
   Package,
+  Loader2,
 } from "lucide-react";
 import "./VendedorDashboard.css";
 
@@ -23,6 +24,7 @@ export default function VendedorDashboard({
   if (cargando && !kpis) {
     return (
       <div className="cargando-vend">
+        <Loader2 className="animacion-giro" size={40} />
         <p>Cargando métricas...</p>
       </div>
     );

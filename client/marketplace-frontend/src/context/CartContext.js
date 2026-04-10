@@ -91,23 +91,35 @@ export const CartProvider = ({ children }) => {
   }, [cartItems, token, user]);
 
   const addToCart = async (product) => {
+    // Bloquear si el producto no tiene stock
+    const stock = product.stock;
+    if (stock !== undefined && stock <= 0) {
+      return false;
+    }
+
     const productId = getProductId(product);
 
+    // Verificar si ya tiene en carrito y excede stock
+    const existingItem = cartItems.find((item) => getProductId(item) === productId);
+    if (existingItem && stock !== undefined && existingItem.quantity >= stock) {
+      return false;
+    }
+
     if (token && user) {
-      // Usuario autenticado: usar backend
       try {
         setLoading(true);
         const response = await cartService.addToCart(productId, 1);
         setCartItems(response.data.items);
       } catch (error) {
         console.error("Error adding to cart:", error);
-        // Fallback: agregar localmente
         setCartItems((prevItems) => {
-          const existingItem = prevItems.find((item) => getProductId(item) === productId);
-          if (existingItem) {
+          const existing = prevItems.find((item) => getProductId(item) === productId);
+          if (existing) {
+            const newQty = existing.quantity + 1;
+            if (stock !== undefined && newQty > stock) return prevItems;
             return prevItems.map((item) =>
               getProductId(item) === productId
-                ? { ...item, quantity: item.quantity + 1 }
+                ? { ...item, quantity: newQty }
                 : item,
             );
           } else {
@@ -118,13 +130,14 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     } else {
-      // Usuario no autenticado: usar localStorage
       setCartItems((prevItems) => {
-        const existingItem = prevItems.find((item) => getProductId(item) === productId);
-        if (existingItem) {
+        const existing = prevItems.find((item) => getProductId(item) === productId);
+        if (existing) {
+          const newQty = existing.quantity + 1;
+          if (stock !== undefined && newQty > stock) return prevItems;
           return prevItems.map((item) =>
             getProductId(item) === productId
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: newQty }
               : item,
           );
         } else {
@@ -132,6 +145,7 @@ export const CartProvider = ({ children }) => {
         }
       });
     }
+    return true;
   };
 
   const removeFromCart = async (productId) => {
