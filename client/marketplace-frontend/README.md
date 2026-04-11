@@ -1,70 +1,61 @@
-# Getting Started with Create React App
+# Proyecto Corto #5 - Pruebas Unitarias en Stack MERN
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Descripción
+Este proyecto implementa pruebas unitarias en una aplicación MERN existente con el objetivo de validar el correcto funcionamiento del backend y frontend, asegurando calidad del software y manejo correcto de errores.
 
-## Available Scripts
+## Objetivo
+Aplicar pruebas unitarias sobre el proyecto final del curso, utilizando Jest, Supertest y React Testing Library para verificar el comportamiento del sistema.
 
-In the project directory, you can run:
+## Herramientas utilizadas
+- Jest
+- Supertest
+- React Testing Library
+- @testing-library/jest-dom
+- @testing-library/user-event
 
-### `npm start`
+## Backend
+Se implementaron pruebas unitarias sobre endpoints funcionales del servidor.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Archivos de prueba
+- `server/tests/auth.test.js`
+- `server/tests/products.test.js`
+- `server/tests/categories.test.js`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Cobertura del backend
+Se validaron:
+- Códigos de estado HTTP
+- Validación de datos de entrada
+- Manejo de errores
+- Respuestas para rutas existentes e inexistentes
 
-### `npm test`
+### Endpoints probados
+- `GET /api/auth/profile`
+- `POST /api/auth/login`
+- `POST /api/auth/register`
+- `GET /api/products`
+- `GET /api/categories`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Frontend
+Se implementaron pruebas unitarias en componentes de React.
 
-### `npm run build`
+### Archivos de prueba
+- `client/marketplace-frontend/src/App.test.js`
+- `client/marketplace-frontend/src/__tests__/IniciarSesion.test.js`
+- `client/marketplace-frontend/src/__tests__/Resena.test.js`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Cobertura del frontend
+Se validó:
+- Renderizado de componentes
+- Interacción del usuario
+- Estados internos de los componentes
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Total de pruebas
+Se realizaron 21 pruebas en total:
+- Backend: 12 pruebas
+- Frontend: 9 pruebas
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Cómo ejecutar las pruebas
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Backend
+```bash
+npm test

@@ -33,6 +33,15 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/src/__mocks__/react-router-dom.js",
+      "^leaflet$": "<rootDir>/src/__mocks__/leaflet.js"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-leaflet|@react-leaflet|leaflet)/)"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
