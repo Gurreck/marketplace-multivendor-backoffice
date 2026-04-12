@@ -265,16 +265,103 @@
     font-weight: 600;
 }
 
+/* Filtros Avanzados */
+.filtros-avanzados-navbar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 60px;
+
+}
+
+.grupo-filtro-navbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.etiqueta-filtro-navbar {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.input-precio-navbar {
+    width: 80px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-precio-navbar:focus {
+    border-color: var(--nexora-blue);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.separador-precio-navbar {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.select-vendedor-navbar {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-vendedor-navbar:focus {
+    border-color: var(--nexora-blue);
+}
+
+.select-vendedor-navbar option {
+    background: #0f172a;
+    color: white;
+}
+
+.label-checkbox-navbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.label-checkbox-navbar:hover {
+    color: white;
+}
+
+.label-checkbox-navbar input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: var(--nexora-blue);
+}
+
 /* Responsividad */
 @media (max-width: 1024px) {
     .encabezado {
         padding: 15px 30px;
     }
-    
+
+    .filtros-avanzados-navbar {
+        padding: 12px 30px;
+    }
+
     .texto-logo {
         font-size: 24px;
     }
-    
+
     .imagen-logo-encabezado {
         width: 45px;
     }
@@ -296,11 +383,12 @@
         gap: 8px;
     }
 
-    .boton-carrito, .boton-salir {
+    .boton-carrito,
+    .boton-salir {
         padding: 8px 12px;
         font-size: 14px;
     }
-    
+
     .menu-usuario {
         width: 42px;
         height: 42px;
@@ -314,13 +402,18 @@
     .menu-usuario .info-usuario {
         display: none;
     }
-    
+
     .foto-perfil {
         margin: 0;
     }
-    
+
     .texto-logo {
         font-size: 20px;
+    }
+
+    .filtros-avanzados-navbar {
+        padding: 10px 15px;
+        justify-content: center;
     }
 }
 
@@ -336,26 +429,32 @@
         margin-top: 10px;
     }
 
-    .boton-carrito, 
+    .boton-carrito,
     .boton-salir,
     .alternar-tema-encabezado {
         padding: 8px 10px;
         font-size: 13px;
         border-radius: 20px;
         flex: 1;
-        min-width: 0; /* Allow shrinking */
+        min-width: 0;
+        /* Allow shrinking */
         max-width: fit-content;
     }
-    
+
     .texto-logo {
         font-size: 20px;
     }
-    
+
     .imagen-logo-encabezado {
         width: 40px;
         scale: 1.2;
     }
-    
-    /* On extreme small screens, we might want to hide text if labels are long */
-    /* But since labels are short "Salir", "Iniciar sesión", we'll just keep them but smaller */
+
+    .filtros-avanzados-navbar {
+        gap: 8px;
+    }
+
+    .input-precio-navbar {
+        width: 65px;
+    }
 }

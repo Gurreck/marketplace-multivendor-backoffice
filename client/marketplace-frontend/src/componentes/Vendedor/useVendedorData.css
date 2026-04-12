@@ -1,0 +1,156 @@
+/* ===== VARIABLES GLOBALES VENDEDOR ===== */
+:root {
+    --vend-azul: #0094FF;
+    --vend-cian: #00C2FF;
+    --vend-oscuro: #000B18;
+    --vend-profundo: #001A2F;
+    --vend-borde: rgba(0, 194, 255, 0.3);
+    --vend-tarjeta: rgba(0, 26, 47, 0.8);
+    --vend-texto: #e5e7eb;
+    --vend-texto-secundario: #9ca3af;
+    --vend-encabezado-bg: rgba(0, 26, 47, 0.85);
+    --vend-tarjeta-bg: rgba(30, 41, 82, 0.6);
+    --vend-entrada-bg: rgba(30, 41, 82, 0.9);
+    --vend-exito: #10b981;
+    --vend-peligro: #ef4444;
+    --vend-advertencia: #f59e0b;
+    --vend-purpura: #8b5cf6;
+}
+
+.contenedor-vend.modo-claro {
+    --vend-azul: #0369a1;
+    --vend-cian: #0284c7;
+    --vend-oscuro: #f0f9ff;
+    --vend-profundo: #e0f2fe;
+    --vend-borde: rgba(0, 148, 255, 0.2);
+    --vend-tarjeta: rgba(255, 255, 255, 0.9);
+    --vend-texto: #334155;
+    --vend-texto-secundario: #64748b;
+    --vend-encabezado-bg: rgba(255, 255, 255, 0.9);
+    --vend-tarjeta-bg: rgba(255, 255, 255, 0.7);
+    --vend-entrada-bg: #ffffff;
+}
+
+/* ===== ESTADOS DE CARGA (Loader) ===== */
+.cargando-vend {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--vend-azul);
+    gap: 16px;
+}
+
+.animacion-giro {
+    animation: spin-vend 1s linear infinite;
+}
+
+@keyframes spin-vend {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== NOTIFICACIONES ===== */
+.notificacion-vend {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 16px 28px;
+    background: var(--vend-encabezado-bg);
+    border: 1px solid var(--vend-borde);
+    border-radius: 16px;
+    color: var(--vend-texto);
+    z-index: 3000;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    animation: slideInVend 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.notificacion-vend.success { 
+    border-left: 5px solid var(--vend-exito); 
+}
+
+.notificacion-vend.error { 
+    border-left: 5px solid var(--vend-peligro); 
+}
+
+@keyframes slideInVend {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ===== UTILIDADES DE COLOR (Badges) ===== */
+.insignia-vend {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.insignia-vend.blue { background: rgba(0, 148, 255, 0.15); color: #0094FF; }
+.insignia-vend.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.insignia-vend.orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.insignia-vend.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.insignia-vend.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+/* ===== ESTILO PERFIL BARRA LATERAL (Extraído de inline) ===== */
+.perfil-sidebar-vend {
+    padding: 24px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--vend-borde);
+    margin-bottom: 10px;
+}
+
+.avatar-sidebar-vend {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--vend-azul);
+    box-shadow: 0 0 10px rgba(0, 148, 255, 0.2);
+}
+
+.info-usuario-sidebar-vend {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nombre-usuario-sidebar-vend {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--vend-texto);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.email-usuario-sidebar-vend {
+    font-size: 11px;
+    color: var(--vend-texto-secundario);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+/* Mensaje vacío */
+.vacio-vend {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: var(--vend-texto-secundario);
+    gap: 12px;
+    text-align: center;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { MapPin, Edit2, Loader } from 'lucide-react';
-import './PerfilCliente.css';
+import { MapPin, Edit2, Loader, Store, User, Shield, Image as ImageIcon, CheckCircle, AlertCircle } from 'lucide-react';
+import './PerfilVendedor.css';
 
 export default function PerfilVendedor() {
     const { user, updateProfile, uploadProfilePicture } = useAuth();
@@ -97,17 +97,18 @@ export default function PerfilVendedor() {
     };
 
     return (
-        <div className="resumen-perfil" style={{ padding: '10px', maxWidth: '900px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
-                <div className="perfil-avatar-container" style={{ margin: 0, width: '90px', height: '90px' }}>
+        <div className="resumen-perfil">
+            {/* Cabecera del Perfil */}
+            <div className="perfil-header-seccion">
+                <div className="perfil-avatar-container-v2">
                     <img 
                         src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || 'V')}&background=0ea5e9&color=fff`} 
                         alt="avatar" 
-                        className="perfil-avatar-grande"
-                        style={{ opacity: uploading ? 0.5 : 1, width: '100%', height: '100%', objectFit: 'cover' }}
+                        className="perfil-avatar-grande-v2"
+                        style={{ opacity: uploading ? 0.5 : 1 }}
                     />
-                    <div className="perfil-avatar-edit" onClick={triggerFileInput} title="Cambiar foto de perfil">
-                        {uploading ? <Loader size={16} className="lucide-spin" /> : <Edit2 size={16} />}
+                    <div className="perfil-avatar-edit-v2" onClick={triggerFileInput} title="Cambiar foto de perfil">
+                        {uploading ? <Loader size={18} className="lucide-spin" /> : <Edit2 size={18} />}
                     </div>
                     <input 
                         type="file" 
@@ -117,107 +118,127 @@ export default function PerfilVendedor() {
                         onChange={handleFileChange}
                     />
                 </div>
-                <div>
-                    <h2 className="titulo-seccion-vend" style={{ color: 'var(--vend-texto)', margin: 0, fontSize: '24px', fontWeight: 'bold' }}>Perfil de Tienda</h2>
-                    <p style={{ color: 'var(--vend-texto-secundario)', margin: '5px 0 0 0' }}>Administra tu información personal y de tienda</p>
+                <div className="perfil-header-texto">
+                    <h2>Configuración de Tienda</h2>
+                    <p>Administra tu identidad comercial y detalles de contacto</p>
                 </div>
             </div>
-            {message && <p className={`mensaje-alerta ${message.includes('Error') ? 'error' : 'exito'}`} style={{ marginBottom: '15px' }}>{message}</p>}
+
+            {/* Mensajes de Alerta */}
+            {message && (
+                <div className={`alerta-v2 ${message.includes('Error') ? 'error' : 'exito'}`}>
+                    {message.includes('Error') ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
+                    {message}
+                </div>
+            )}
             
-            <div className="perfil-grid" style={{ gridTemplateColumns: 'minmax(300px, 1fr)', gap: '20px' }}>
+            <div className="perfil-grid-v2">
                 {/* Información Personal */}
-                <div className="perfil-card" style={{ background: 'var(--vend-card)', border: '1px solid var(--vend-borde)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--vend-borde)', paddingBottom: '10px' }}>
-                        <h3 style={{ margin: 0, border: 'none', padding: 0, color: 'var(--vend-texto)' }}>Información Personal</h3>
+                <div className="perfil-card-v2">
+                    <div className="perfil-card-header">
+                        <h3><User size={20} strokeWidth={2.5} color="var(--vend-azul)" /> Información Personal</h3>
                         {!editPersonal ? (
-                            <button className="boton-secundario" onClick={() => setEditPersonal(true)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Editar</button>
+                            <button className="btn-edit-v2" onClick={() => setEditPersonal(true)}>Editar</button>
                         ) : (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button className="boton-secundario" onClick={() => setEditPersonal(false)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Cancelar</button>
-                                <button className="boton-primario" onClick={() => handleSave('personal')} disabled={loading} style={{ padding: '5px 15px', fontSize: '0.85rem', background: 'var(--vend-azul)', color: 'white', border: 'none', borderRadius: '8px' }}>{loading ? 'Guardando...' : 'Guardar'}</button>
+                            <div className="perfil-card-acciones">
+                                <button className="btn-cancel-v2" onClick={() => setEditPersonal(false)}>Cancelar</button>
+                                <button className="btn-save-v2" onClick={() => handleSave('personal')} disabled={loading}>
+                                    {loading ? 'Guardando...' : 'Guardar'}
+                                </button>
                             </div>
                         )}
                     </div>
                     
-                    <div className="info-group">
-                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Nombre de la Tienda / Vendedor</label>
+                    <div className="info-group-v2">
+                        <label>Nombre de la Tienda / Vendedor</label>
                         {editPersonal ? (
-                            <input type="text" name="nombre" value={formData.nombre} onChange={handleInputChange} className="input-field" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                            <input 
+                                type="text" 
+                                name="nombre" 
+                                value={formData.nombre} 
+                                onChange={handleInputChange} 
+                                className="input-field-v2" 
+                            />
                         ) : (
-                            <p style={{ color: 'var(--vend-texto)' }}>{user?.nombre}</p>
+                            <p>{user?.nombre}</p>
                         )}
                     </div>
-                    <div className="info-group">
-                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Contraseña</label>
+                    <div className="info-group-v2">
+                        <label>Contraseña</label>
                         {editPersonal ? (
-                            <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="input-field" placeholder="Nueva contraseña (dejar vacío para no cambiar)" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                            <input 
+                                type="password" 
+                                name="password" 
+                                value={formData.password} 
+                                onChange={handleInputChange} 
+                                className="input-field-v2" 
+                                placeholder="Nueva contraseña (dejar vacío para no cambiar)" 
+                            />
                         ) : (
-                            <p style={{ color: 'var(--vend-texto)' }}>**************</p>
+                            <p>••••••••••••••</p>
                         )}
                     </div>
-                    <div className="info-group">
-                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Correo Electrónico</label>
-                        <p style={{ color: 'var(--vend-texto)' }}>{user?.email}</p>
+                    <div className="info-group-v2">
+                        <label>Correo Electrónico</label>
+                        <p>{user?.email}</p>
                     </div>
-                    <div className="info-group">
-                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Rol de Usuario</label>
-                        <div>
-                            <p className="tag-rol" style={{ background: 'var(--vend-azul)', color: 'white', display: 'inline-block', padding: '4px 12px', borderRadius: '20px', fontSize: '13px', margin: 0 }}>{user?.role}</p>
-                        </div>
+                    <div className="info-group-v2">
+                        <label>Rol de Usuario</label>
+                        <span className="tag-rol-v2">{user?.role}</span>
                     </div>
                 </div>
 
                 {/* Dirección de Tienda */}
-                <div className="perfil-card" style={{ background: 'var(--vend-card)', border: '1px solid var(--vend-borde)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--vend-borde)', paddingBottom: '10px' }}>
-                        <h3 style={{ margin: 0, border: 'none', padding: 0, color: 'var(--vend-texto)' }}>Dirección de Tienda</h3>
+                <div className="perfil-card-v2">
+                    <div className="perfil-card-header">
+                        <h3><MapPin size={20} strokeWidth={2.5} color="var(--vend-azul)" /> Ubicación del Negocio</h3>
                         {!editAddress ? (
-                            <button className="boton-secundario" onClick={() => setEditAddress(true)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Editar</button>
+                            <button className="btn-edit-v2" onClick={() => setEditAddress(true)}>Editar</button>
                         ) : (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button className="boton-secundario" onClick={() => setEditAddress(false)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Cancelar</button>
-                                <button className="boton-primario" onClick={() => handleSave('address')} disabled={loading} style={{ padding: '5px 15px', fontSize: '0.85rem', background: 'var(--vend-azul)', color: 'white', border: 'none', borderRadius: '8px' }}>{loading ? 'Guardando...' : 'Guardar'}</button>
+                            <div className="perfil-card-acciones">
+                                <button className="btn-cancel-v2" onClick={() => setEditAddress(false)}>Cancelar</button>
+                                <button className="btn-save-v2" onClick={() => handleSave('address')} disabled={loading}>
+                                    {loading ? 'Guardando...' : 'Guardar'}
+                                </button>
                             </div>
                         )}
                     </div>
                     
                     {!editAddress ? (
                         user?.shippingAddress?.direccion ? (
-                            <div className="direccion-info" style={{ marginTop: '10px', display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-                                <MapPin size={28} color="var(--vend-azul)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                                <div>
-                                    <p style={{ color: 'var(--vend-texto)', fontSize: '16px', marginBottom: '4px' }}>{user.shippingAddress.direccion}</p>
-                                    <p style={{ color: 'var(--vend-texto-secundario)', marginBottom: '2px' }}>{user.shippingAddress.ciudad}, {user.shippingAddress.provincia}</p>
-                                    <p style={{ color: 'var(--vend-texto-secundario)' }}>{user.shippingAddress.pais} - {user.shippingAddress.codigoPostal}</p>
+                            <div className="direccion-container-v2">
+                                <MapPin size={32} color="var(--vend-azul)" style={{ opacity: 0.8 }} />
+                                <div className="address-details-v2">
+                                    <h4>{user.shippingAddress.direccion}</h4>
+                                    <p>{user.shippingAddress.ciudad}, {user.shippingAddress.provincia}</p>
+                                    <p>{user.shippingAddress.pais} • {user.shippingAddress.codigoPostal}</p>
                                 </div>
                             </div>
                         ) : (
-                            <p className="no-data" style={{ color: 'var(--vend-texto-secundario)' }}>No has configurado una dirección para tu tienda.</p>
+                            <p className="no-data">No has configurado una ubicación para tu negocio.</p>
                         )
                     ) : (
-                        <div className="form-group-tarjeta" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
-                            <div className="info-group">
-                                <label style={{ color: 'var(--vend-texto-secundario)' }}>Dirección (Calle, número)</label>
-                                <input type="text" name="addr_direccion" value={formData.shippingAddress.direccion} onChange={handleInputChange} className="input-field" placeholder="Ej. Av. Siempreviva 123" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                        <div className="edit-form-v2">
+                            <div className="info-group-v2">
+                                <label>Dirección (Calle, número)</label>
+                                <input type="text" name="addr_direccion" value={formData.shippingAddress.direccion} onChange={handleInputChange} className="input-field-v2" placeholder="Ej. Av. Siempreviva 123" />
                             </div>
-                            <div style={{ display: 'flex', gap: '15px' }}>
-                                <div className="info-group" style={{ flex: 1 }}>
-                                    <label style={{ color: 'var(--vend-texto-secundario)' }}>País</label>
-                                    <input type="text" name="addr_pais" value={formData.shippingAddress.pais} onChange={handleInputChange} className="input-field" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
+                                <div className="info-group-v2">
+                                    <label>País</label>
+                                    <input type="text" name="addr_pais" value={formData.shippingAddress.pais} onChange={handleInputChange} className="input-field-v2" />
                                 </div>
-                                <div className="info-group" style={{ flex: 1 }}>
-                                    <label style={{ color: 'var(--vend-texto-secundario)' }}>Provincia/Estado</label>
-                                    <input type="text" name="addr_provincia" value={formData.shippingAddress.provincia} onChange={handleInputChange} className="input-field" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                                <div className="info-group-v2">
+                                    <label>Provincia/Estado</label>
+                                    <input type="text" name="addr_provincia" value={formData.shippingAddress.provincia} onChange={handleInputChange} className="input-field-v2" />
                                 </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: '15px' }}>
-                                <div className="info-group" style={{ flex: 1 }}>
-                                    <label style={{ color: 'var(--vend-texto-secundario)' }}>Ciudad</label>
-                                    <input type="text" name="addr_ciudad" value={formData.shippingAddress.ciudad} onChange={handleInputChange} className="input-field" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                                <div className="info-group-v2">
+                                    <label>Ciudad</label>
+                                    <input type="text" name="addr_ciudad" value={formData.shippingAddress.ciudad} onChange={handleInputChange} className="input-field-v2" />
                                 </div>
-                                <div className="info-group" style={{ flex: 1 }}>
-                                    <label style={{ color: 'var(--vend-texto-secundario)' }}>Código Postal</label>
-                                    <input type="text" name="addr_codigoPostal" value={formData.shippingAddress.codigoPostal} onChange={handleInputChange} className="input-field" style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} />
+                                <div className="info-group-v2">
+                                    <label>Código Postal</label>
+                                    <input type="text" name="addr_codigoPostal" value={formData.shippingAddress.codigoPostal} onChange={handleInputChange} className="input-field-v2" />
                                 </div>
                             </div>
                         </div>
@@ -225,54 +246,57 @@ export default function PerfilVendedor() {
                 </div>
 
                 {/* Perfil Público de Tienda */}
-                <div className="perfil-card" style={{ background: 'var(--vend-card)', border: '1px solid var(--vend-borde)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--vend-borde)', paddingBottom: '10px' }}>
-                        <h3 style={{ margin: 0, border: 'none', padding: 0, color: 'var(--vend-texto)' }}>Perfil Público de Tienda</h3>
+                <div className="perfil-card-v2" style={{ gridColumn: '1 / -1' }}>
+                    <div className="perfil-card-header">
+                        <h3><Store size={20} strokeWidth={2.5} color="var(--vend-azul)" /> Perfil Público</h3>
                         {!editStore ? (
-                            <button className="boton-secundario" onClick={() => setEditStore(true)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Editar</button>
+                            <button className="btn-edit-v2" onClick={() => setEditStore(true)}>Editar</button>
                         ) : (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <button className="boton-secundario" onClick={() => setEditStore(false)} style={{ padding: '5px 15px', fontSize: '0.85rem' }}>Cancelar</button>
-                                <button className="boton-primario" onClick={() => handleSave('store')} disabled={loading} style={{ padding: '5px 15px', fontSize: '0.85rem', background: 'var(--vend-azul)', color: 'white', border: 'none', borderRadius: '8px' }}>{loading ? 'Guardando...' : 'Guardar'}</button>
+                            <div className="perfil-card-acciones">
+                                <button className="btn-cancel-v2" onClick={() => setEditStore(false)}>Cancelar</button>
+                                <button className="btn-save-v2" onClick={() => handleSave('store')} disabled={loading}>
+                                    {loading ? 'Guardando...' : 'Guardar'}
+                                </button>
                             </div>
                         )}
                     </div>
                     
-                    <div className="info-group">
-                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Descripción de la Tienda</label>
+                    <div className="info-group-v2">
+                        <label>Descripción de la Tienda</label>
                         {editStore ? (
                             <textarea 
                                 name="storeDescription" 
                                 value={formData.storeDescription} 
                                 onChange={handleInputChange} 
-                                className="input-field" 
-                                placeholder="Describe qué vendes, tus políticas, etc."
-                                style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)', minHeight: '80px', resize: 'vertical' }} 
+                                className="input-field-v2" 
+                                style={{ minHeight: '120px', resize: 'vertical' }}
+                                placeholder="Cuéntale a tus clientes sobre tu negocio..."
                             />
                         ) : (
-                            <p style={{ color: 'var(--vend-texto)', whiteSpace: 'pre-line' }}>
-                                {user?.storeDescription || <span style={{ color: 'var(--vend-texto-secundario)', fontStyle: 'italic' }}>Sin descripción (añade en Editar)</span>}
+                            <p style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
+                                {user?.storeDescription || <span style={{ color: '#4b5563', fontStyle: 'italic' }}>Sin descripción (haz clic en editar para añadir una)</span>}
                             </p>
                         )}
                     </div>
                     
-                    <div className="info-group" style={{ marginTop: '15px' }}>
-                        <label style={{ color: 'var(--vend-texto-secundario)' }}>Banner de la Tienda (URL de la imagen)</label>
+                    <div className="info-group-v2">
+                        <label><ImageIcon size={14} style={{ marginBottom: '-2px' }} /> Banner de la Tienda (URL)</label>
                         {editStore ? (
                             <input 
                                 type="text" 
                                 name="storeBanner" 
                                 value={formData.storeBanner} 
                                 onChange={handleInputChange} 
-                                className="input-field" 
+                                className="input-field-v2" 
                                 placeholder="https://ejemplo.com/banner.jpg"
-                                style={{ background: 'var(--vend-bg)', color: 'var(--vend-texto)', border: '1px solid var(--vend-borde)' }} 
                             />
                         ) : (
                             user?.storeBanner ? (
-                                <img src={user.storeBanner} alt="Banner Tienda" style={{ width: '100%', maxHeight: '150px', objectFit: 'cover', borderRadius: '8px', marginTop: '10px' }} />
+                                <img src={user.storeBanner} alt="Banner Tienda" className="store-banner-preview" />
                             ) : (
-                                <p style={{ color: 'var(--vend-texto-secundario)', fontStyle: 'italic' }}>Sin banner configurado.</p>
+                                <div className="no-banner-placeholder">
+                                    Sin imagen de banner configurada
+                                </div>
                             )
                         )}
                     </div>
