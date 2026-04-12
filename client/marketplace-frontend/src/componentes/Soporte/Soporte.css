@@ -1,34 +1,3 @@
-/* ===== PÁGINA SOPORTE - Variables ===== */
-:root {
-    --sop-azul: #0094FF;
-    --sop-cian: #00C2FF;
-    --sop-oscuro: #000B18;
-    --sop-profundo: #001A2F;
-    --sop-borde: rgba(0, 194, 255, 0.3);
-    --sop-tarjeta: rgba(0, 26, 47, 0.8);
-    --sop-texto: #e5e7eb;
-    --sop-encabezado-bg: rgba(0, 26, 47, 0.85);
-    --sop-tarjeta-bg: rgba(30, 41, 82, 0.6);
-    --sop-entrada-bg: rgba(30, 41, 82, 0.9);
-    --sop-exito: #10b981;
-    --sop-peligro: #ef4444;
-    --sop-advertencia: #f59e0b;
-    --sop-purpura: #8b5cf6;
-}
-
-.contenedor-sop.modo-claro {
-    --sop-azul: #0369a1;
-    --sop-cian: #0284c7;
-    --sop-oscuro: #f0f9ff;
-    --sop-profundo: #e0f2fe;
-    --sop-borde: rgba(0, 148, 255, 0.2);
-    --sop-tarjeta: rgba(255, 255, 255, 0.9);
-    --sop-texto: #334155;
-    --sop-encabezado-bg: rgba(255, 255, 255, 0.9);
-    --sop-tarjeta-bg: rgba(255, 255, 255, 0.7);
-    --sop-entrada-bg: #ffffff;
-}
-
 /* ===== DISEÑO PRINCIPAL ===== */
 .contenedor-sop {
     display: flex;
@@ -344,25 +313,6 @@
 .tabla-sop tr:last-child td {
     border-bottom: none;
 }
-
-/* ===== INSIGNIAS ===== */
-.insignia-sop {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.insignia-sop.blue { background: rgba(0, 148, 255, 0.15); color: #0094FF; }
-.insignia-sop.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-.insignia-sop.orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.insignia-sop.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-.insignia-sop.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-.insignia-sop.gray { background: rgba(156, 163, 175, 0.15); color: #9ca3af; }
-.insignia-sop.teal { background: rgba(20, 184, 166, 0.15); color: #14b8a6; }
 
 /* ===== USUARIO INFO ===== */
 .info-usuario-sop {
@@ -894,64 +844,6 @@
     font-style: italic;
 }
 
-/* ===== NOTIFICACIÓN ===== */
-.notificacion-sop {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    background: var(--sop-encabezado-bg);
-    border: 1px solid var(--sop-borde);
-    border-radius: 12px;
-    color: var(--sop-texto);
-    z-index: 3000;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 600;
-    animation: slideInSop 0.3s ease forwards;
-}
-
-.notificacion-sop.success { border-left: 4px solid var(--sop-exito); }
-.notificacion-sop.error { border-left: 4px solid var(--sop-peligro); }
-
-@keyframes slideInSop {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-/* ===== ESTADOS ===== */
-.cargando-sop {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    color: var(--sop-azul);
-    gap: 16px;
-}
-
-.vacio-sop {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: #9ca3af;
-    gap: 12px;
-}
-
-/* ===== ANIMACIÓN DE GIRO ===== */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.animacion-giro {
-    animation: spin 1s linear infinite;
-}
-
 /* ===== MENÚ MÓVIL ===== */
 .boton-menu-movil-sop {
     display: none;
@@ -985,32 +877,13 @@
 }
 
 @media (max-width: 768px) {
-    .boton-menu-movil-sop {
-        display: flex;
-    }
-
-    .barra-lateral-sop {
-        transform: translateX(-100%);
-        width: 260px;
-    }
-
-    .barra-lateral-sop.abierta {
-        transform: translateX(0);
-        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-    }
-
+    .boton-menu-movil-sop { display: flex; }
+    .barra-lateral-sop { transform: translateX(-100%); width: 260px; }
+    .barra-lateral-sop.abierta { transform: translateX(0); box-shadow: 0 0 50px rgba(0, 0, 0, 0.8); }
     .barra-lateral-sop.abierta .marca-barra-lateral-sop h2,
     .barra-lateral-sop.abierta .item-nav-sop span:last-child,
-    .barra-lateral-sop.abierta .pie-barra-lateral-sop span:last-child {
-        display: block;
-    }
-
-    .principal-sop {
-        margin-left: 0;
-        padding: 20px 15px;
-        padding-top: 80px;
-    }
-
+    .barra-lateral-sop.abierta .pie-barra-lateral-sop span:last-child { display: block; }
+    .principal-sop { margin-left: 0; padding: 20px 15px; padding-top: 80px; }
     .acciones-tabla-sop { flex-direction: column; align-items: stretch; }
     .entrada-busqueda-sop { width: 100%; }
     .detalle-info-grid-sop { grid-template-columns: 1fr; }
