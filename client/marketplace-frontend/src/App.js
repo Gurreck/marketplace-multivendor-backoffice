@@ -7,7 +7,7 @@ import Registro from "./componentes/Acceso/Registro";
 import RecuperarPassword from "./componentes/Acceso/RecuperarPassword";
 import Principal from "./componentes/Principal/Principal";
 import VistaProducto from "./componentes/VistaProducto/VistaProducto";
-import Carrito from "./componentes/PasarelaDePago/Carrito";
+import Carrito from "./componentes/PasarelaDePago/Carrito/Carrito";
 import PasarelaDePago from "./componentes/PasarelaDePago/PasarelaDePago";
 import Vendedor from "./componentes/Vendedor/Vendedor";
 import Admin from "./componentes/Admin/Admin";
