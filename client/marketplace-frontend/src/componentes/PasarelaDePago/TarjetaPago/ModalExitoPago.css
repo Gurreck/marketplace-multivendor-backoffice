@@ -1,0 +1,150 @@
+/* Success Modal Styles */
+.capa-modal-exito-pasarela {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+}
+
+.modal-exito-pasarela {
+    background: var(--nexora-card, #111827);
+    border-radius: 28px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border: 1px solid var(--nexora-border, rgba(255,255,255,0.1));
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.icono-modal-exito-pasarela {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    transform: scale(1.2);
+}
+
+.modal-exito-pasarela h2 {
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.detalles-modal-exito-pasarela {
+    margin: 25px 0;
+    text-align: left;
+}
+
+.mensaje-exito-pasarela {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.info-tarjeta-modal-pasarela {
+    background: rgba(255,255,255,0.04);
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 15px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.fila-info-modal-pasarela {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.fila-info-modal-pasarela:last-child {
+    margin-bottom: 0;
+}
+
+.etiqueta-modal-pasarela { 
+    color: #9ca3af; 
+    font-size: 0.9rem; 
+}
+
+.valor-modal-pasarela { 
+    color: white; 
+    font-weight: 600; 
+    font-size: 0.95rem;
+}
+
+.monto-modal-pasarela { 
+    color: #10b981; 
+    font-size: 1.3rem; 
+    font-weight: 800;
+}
+
+.info-direccion-modal-pasarela {
+    margin-top: 20px;
+    padding: 15px 20px;
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: 16px;
+    border-left: 4px solid #10b981;
+}
+
+.direccion-detalle-modal p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: #d1d5db;
+}
+
+.direccion-detalle-modal strong {
+    color: #10b981;
+}
+
+.boton-modal-exito-pasarela {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--nexora-blue, #0094ff), #0076cc);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 148, 255, 0.3);
+}
+
+.boton-modal-exito-pasarela:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 148, 255, 0.5);
+    filter: brightness(1.1);
+}
+
+/* Modal Claro Support */
+.capa-modal-exito-pasarela.modo-claro {
+    background: rgba(255,255,255,0.8);
+}
+
+.modal-exito-pasarela.modo-claro {
+    background: white;
+    border-color: #e5e7eb;
+}
+
+.modal-exito-pasarela.modo-claro h2 {
+    color: #111827;
+}
+
+.modal-exito-pasarela.modo-claro .info-tarjeta-modal-pasarela {
+    background: #f9fafb;
+}
+
+.modal-exito-pasarela.modo-claro .valor-modal-pasarela {
+    color: #111827;
+}

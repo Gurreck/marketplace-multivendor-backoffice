@@ -1,0 +1,66 @@
+/* Form Styles */
+.columna-derecha-formulario {
+    flex: 1;
+    min-width: 250px;
+}
+
+.formulario-pago-pasarela {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.entrada-pago-pasarela {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--nexora-border, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.entrada-pago-pasarela:focus {
+    outline: none;
+    border-color: var(--nexora-blue, #0094ff);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.entrada-pago-pasarela.error-entrada {
+    border-color: #ef4444;
+}
+
+.fila-detalles-tarjeta-pasarela {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.grupo-entrada-pasarela {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo-cvv-pasarela {
+    position: relative;
+}
+
+.alternar-cvv-pasarela {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.mensaje-error-pasarela {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
