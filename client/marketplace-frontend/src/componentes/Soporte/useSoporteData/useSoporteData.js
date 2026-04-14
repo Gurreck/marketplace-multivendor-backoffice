@@ -77,7 +77,7 @@ export default function useSoporteData() {
   // ===== ACCIONES: ÓRDENES =====
   const cambiarEstadoOrdenSoporte = async (ordenId, nuevoEstado) => {
     try {
-      const res = await api.put(`/support/orders/${ordenId}/status`, { status: nuevoEstado });
+      const res = await api.put(`/support/orders/${ordenId}/status`, { estado: nuevoEstado });
       if (res.data.success) {
         mostrarNotificacion(`Estado actualizado a "${etiquetasEstadoOrden[nuevoEstado]}"`);
         cargarOrdenes();

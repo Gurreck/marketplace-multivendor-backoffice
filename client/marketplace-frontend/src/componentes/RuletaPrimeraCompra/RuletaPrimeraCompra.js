@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import servicioGamificacion from '../../services/gamificationService';
 import api from '../../services/api';
@@ -18,6 +19,7 @@ const SEGMENTOS = [
 
 export default function RuletaPrimeraCompra() {
   const { user } = useAuth();
+  const navegar = useNavigate();
   const [girando, setGirando] = useState(false);
   const [resultado, setResultado] = useState(null);
   const [error, setError] = useState('');
@@ -83,13 +85,15 @@ export default function RuletaPrimeraCompra() {
     if (resultado?.codigo) {
       navigator.clipboard.writeText(resultado.codigo);
       setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
+      setTimeout(() => {
+        navegar('/');
+      }, 1000);
     }
   };
 
   // Generar paths SVG para los segmentos
   const renderizarRuleta = () => {
-    const cx = 200, cy = 200, r = 190;
+    const cx = 150, cy = 150, r = 140;
     const total = SEGMENTOS.length;
     const anguloPorSegmento = 360 / total;
 
@@ -170,9 +174,9 @@ export default function RuletaPrimeraCompra() {
       <div className="ruleta-wheel-container">
         <div className="ruleta-pointer">▼</div>
         <svg
-          width="400"
-          height="400"
-          viewBox="0 0 400 400"
+          width="300"
+          height="300"
+          viewBox="0 0 300 300"
           className="ruleta-wheel"
           style={{
             transform: `rotate(${rotacion}deg)`,
@@ -180,8 +184,8 @@ export default function RuletaPrimeraCompra() {
           }}
         >
           {renderizarRuleta()}
-          <circle cx="200" cy="200" r="30" fill="#1a1a2e" stroke="white" strokeWidth="3" />
-          <text x="200" y="200" fill="white" fontSize="12" fontWeight="bold" textAnchor="middle" dominantBaseline="middle">
+          <circle cx="150" cy="150" r="22" fill="#1a1a2e" stroke="white" strokeWidth="3" />
+          <text x="150" y="150" fill="white" fontSize="10" fontWeight="bold" textAnchor="middle" dominantBaseline="middle">
             GIRA
           </text>
         </svg>
