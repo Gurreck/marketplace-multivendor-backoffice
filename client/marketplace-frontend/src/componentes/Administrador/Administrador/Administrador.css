@@ -1,0 +1,308 @@
+/* ===== PÁGINA ADMIN - Variables ===== */
+:root {
+    --administrador-azul: #0094FF;
+    --administrador-cian: #00C2FF;
+    --administrador-oscuro: #000B18;
+    --administrador-profundo: #001A2F;
+    --administrador-borde: rgba(0, 194, 255, 0.3);
+    --administrador-tarjeta: rgba(0, 26, 47, 0.8);
+    --administrador-texto: #e5e7eb;
+    --administrador-encabezado-bg: rgba(0, 26, 47, 0.85);
+    --administrador-tarjeta-bg: rgba(30, 41, 82, 0.6);
+    --administrador-entrada-bg: rgba(30, 41, 82, 0.9);
+    --administrador-exito: #10b981;
+    --administrador-peligro: #ef4444;
+    --administrador-advertencia: #f59e0b;
+    --administrador-purpura: #8b5cf6;
+}
+
+.modo-claro {
+    --administrador-azul: #0369a1;
+    --administrador-cian: #0284c7;
+    --administrador-oscuro: #f0f9ff;
+    --administrador-profundo: #e0f2fe;
+    --administrador-borde: rgba(0, 148, 255, 0.2);
+    --administrador-tarjeta: rgba(255, 255, 255, 0.9);
+    --administrador-texto: #334155;
+    --administrador-encabezado-bg: rgba(255, 255, 255, 0.9);
+    --administrador-tarjeta-bg: rgba(255, 255, 255, 0.7);
+    --administrador-entrada-bg: #ffffff;
+}
+
+/* ===== DISEÑO PRINCIPAL ===== */
+.contenedor-administrador {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--administrador-oscuro) 0%, var(--administrador-profundo) 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--administrador-texto);
+}
+
+/* ===== BARRA LATERAL ===== */
+.barra-lateral-administrador {
+    width: 260px;
+    background: rgba(0, 11, 24, 0.95);
+    border-right: 1px solid var(--administrador-borde);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.modo-claro .barra-lateral-administrador {
+    background: rgba(255, 255, 255, 0.95);
+    border-right: 1px solid rgba(0, 148, 255, 0.15);
+}
+
+.marca-barra-lateral-administrador {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--administrador-borde);
+    margin-bottom: 20px;
+}
+
+.marca-barra-lateral-administrador h2 {
+    color: var(--administrador-azul);
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.marca-barra-lateral-administrador span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-administrador {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 12px;
+    flex: 1;
+}
+
+.item-nav-administrador {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+}
+
+.item-nav-administrador:hover {
+    background: rgba(0, 148, 255, 0.1);
+    color: var(--administrador-azul);
+}
+
+.item-nav-administrador.activo {
+    background: rgba(0, 148, 255, 0.15);
+    color: var(--administrador-azul);
+    border-color: var(--administrador-borde);
+    font-weight: 600;
+}
+
+.item-nav-administrador span:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    flex-shrink: 0;
+}
+
+.pie-barra-lateral-administrador {
+    padding: 16px 12px;
+    border-top: 1px solid var(--administrador-borde);
+    margin-top: auto;
+}
+
+.boton-cerrar-sesion-administrador {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: var(--administrador-peligro);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+}
+
+.boton-cerrar-sesion-administrador:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.boton-tema-administrador {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 4px;
+}
+
+.boton-tema-administrador:hover {
+    background: rgba(0, 148, 255, 0.1);
+    color: var(--administrador-azul);
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.principal-administrador {
+    flex: 1;
+    margin-left: 260px;
+    padding: 30px 40px;
+    overflow-y: auto;
+}
+
+.encabezado-pagina-administrador {
+    margin-bottom: 30px;
+}
+
+.encabezado-pagina-administrador h1 {
+    color: var(--administrador-azul);
+    font-size: 28px;
+    margin: 0 0 6px 0;
+}
+
+.encabezado-pagina-administrador p {
+    color: #9ca3af;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* ===== NOTIFICACIÓN ===== */
+.notificacion-administrador {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    background: var(--administrador-encabezado-bg);
+    border: 1px solid var(--administrador-borde);
+    border-radius: 12px;
+    color: var(--administrador-texto);
+    z-index: 3000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    animation: slideIn 0.3s ease forwards;
+}
+
+.notificacion-administrador.success { border-left: 4px solid var(--administrador-exito); }
+.notificacion-administrador.error { border-left: 4px solid var(--administrador-peligro); }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ===== RESPONSIVIDAD ===== */
+@media (max-width: 1200px) {
+    .cuadricula-kpi-administrador { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 992px) {
+    .cuadricula-graficos-administrador { grid-template-columns: 1fr; }
+    .barra-lateral-administrador { width: 80px; }
+    .barra-lateral-administrador h2, .barra-lateral-administrador span:last-child { display: none; }
+    .principal-administrador { margin-left: 80px; }
+    .nav-administrador { padding: 0 8px; }
+    .item-nav-administrador { justify-content: center; padding: 12px; }
+    .item-nav-administrador span:first-child { margin: 0; }
+}
+
+@media (max-width: 600px) {
+    .cuadricula-kpi-administrador { grid-template-columns: 1fr; }
+    .acciones-tabla-administrador { flex-direction: column; align-items: stretch; }
+    .entrada-busqueda-administrador { width: 100%; }
+    .principal-administrador { padding: 20px; }
+    .fila-formulario-administrador { grid-template-columns: 1fr; }
+}
+
+.boton-menu-movil {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 110;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: var(--administrador-azul);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .boton-menu-movil {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .barra-lateral-administrador {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+
+    .barra-lateral-administrador.abierta {
+        transform: translateX(0);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    }
+    
+    .barra-lateral-administrador.abierta .marca-barra-lateral-administrador h2,
+    .barra-lateral-administrador.abierta .item-nav-administrador span:last-child,
+    .barra-lateral-administrador.abierta .pie-barra-lateral-administrador span:last-child {
+        display: block;
+    }
+
+    .principal-administrador {
+        margin-left: 0;
+        padding-top: 80px;
+    }
+
+    .principal-administrador {
+        padding: 20px 15px;
+    }
+    
+    .cuadricula-kpi-administrador {
+        grid-template-columns: 1fr;
+    }
+    
+    .filtros-administrador {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+

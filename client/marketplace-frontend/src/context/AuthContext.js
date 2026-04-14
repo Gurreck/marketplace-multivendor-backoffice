@@ -41,6 +41,14 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("user", JSON.stringify(userData));
         setToken(storedToken);
         setUser(userData);
+        
+        // Unirse a la sala de usuario de WebSocket
+        import("../services/socket").then(({ default: socket }) => {
+          socket.emit("joinUserRoom", userData._id);
+          if (userData.role) {
+            socket.emit("joinRoleRoom", userData.role);
+          }
+        });
       } catch (error) {
         console.error("Error al inicializar sesión:", error);
 
@@ -74,6 +82,13 @@ export const AuthProvider = ({ children }) => {
     setToken(newToken);
     setUser(userData);
 
+    import("../services/socket").then(({ default: socket }) => {
+      socket.emit("joinUserRoom", userData._id);
+      if (userData.role) {
+        socket.emit("joinRoleRoom", userData.role);
+      }
+    });
+
     return userData;
   };
 
@@ -99,6 +114,13 @@ export const AuthProvider = ({ children }) => {
 
     setToken(newToken);
     setUser(userData);
+
+    import("../services/socket").then(({ default: socket }) => {
+      socket.emit("joinUserRoom", userData._id);
+      if (userData.role) {
+        socket.emit("joinRoleRoom", userData.role);
+      }
+    });
 
     return userData;
   };
@@ -154,6 +176,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    if (user) {
+      import("../services/socket").then(({ default: socket }) => {
+        socket.emit("leaveUserRoom", user._id);
+        if (user.role) {
+          socket.emit("leaveRoleRoom", user.role);
+        }
+      });
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("marketplace_cart");

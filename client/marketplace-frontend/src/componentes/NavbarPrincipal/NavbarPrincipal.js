@@ -91,7 +91,7 @@ export default function NavbarPrincipal({
                         } else if (user?.role === 'vendedor') {
                             navigate('/vendedor/dashboard');
                         } else if (user?.role === 'administrador') {
-                            navigate('/admin/dashboard');
+                            navigate('/administrador/dashboard');
                         } else {
                             navigate('/cliente/perfil');
                         }
@@ -190,3 +190,4 @@ export default function NavbarPrincipal({
         </header>
     );
 }
+
