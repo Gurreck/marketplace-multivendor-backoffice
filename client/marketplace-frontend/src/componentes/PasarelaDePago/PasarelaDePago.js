@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import NavbarSecundario from "../NavbarSecundario/NavbarSecundario";
 import DireccionEnvio from "./DireccionEnvio";
-import TarjetaPago from "./TarjetaPago";
+import TarjetaPago from "./TarjetaPago/TarjetaPago";
 import { CheckCircle2, X } from 'lucide-react';
 
 const PasarelaDePago = () => {
@@ -22,7 +22,7 @@ const PasarelaDePago = () => {
   const selectedSubtotal = location.state?.selectedSubtotal || cartTotal;
 
   const [shippingAddress, setShippingAddress] = useState(null);
-  
+
   // Estado para autocompletar desde el Modal
   const [showSavedDataModal, setShowSavedDataModal] = useState(false);
   const [decidedSavedData, setDecidedSavedData] = useState(false); // Flag para evitar bucles
@@ -110,12 +110,12 @@ const PasarelaDePago = () => {
             </div>
             <h2>¡Hola {user?.nombre?.split(' ')[0] || ''}!</h2>
             <p>
-              Hemos detectado que tienes 
-              {user?.shippingAddress?.direccion && user?.debitCard?.cardNumber 
-                ? " una dirección de envío y una tarjeta guardadas " 
-                : user?.shippingAddress?.direccion 
-                  ? " una dirección de envío guardada " 
-                  : " una tarjeta guardada "} 
+              Hemos detectado que tienes
+              {user?.shippingAddress?.direccion && user?.debitCard?.cardNumber
+                ? " una dirección de envío y una tarjeta guardadas "
+                : user?.shippingAddress?.direccion
+                  ? " una dirección de envío guardada "
+                  : " una tarjeta guardada "}
               en tu perfil. ¿Deses utilizar estos datos para agilizar tu compra?
             </p>
             <div className="acciones-modal-datos">
@@ -143,10 +143,10 @@ const PasarelaDePago = () => {
               />
             </div>
             <div className="columna-izquierda-pasarela">
-              <DireccionEnvio 
-                onAddressSave={handleAddressSave} 
+              <DireccionEnvio
+                onAddressSave={handleAddressSave}
                 initialAddress={initialAddressData}
-                user={user} 
+                user={user}
               />
             </div>
           </div>

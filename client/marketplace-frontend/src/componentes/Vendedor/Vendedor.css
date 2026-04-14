@@ -1,34 +1,3 @@
-/* ===== PÁGINA VENDEDOR - Variables ===== */
-:root {
-    --vend-azul: #0094FF;
-    --vend-cian: #00C2FF;
-    --vend-oscuro: #000B18;
-    --vend-profundo: #001A2F;
-    --vend-borde: rgba(0, 194, 255, 0.3);
-    --vend-tarjeta: rgba(0, 26, 47, 0.8);
-    --vend-texto: #e5e7eb;
-    --vend-encabezado-bg: rgba(0, 26, 47, 0.85);
-    --vend-tarjeta-bg: rgba(30, 41, 82, 0.6);
-    --vend-entrada-bg: rgba(30, 41, 82, 0.9);
-    --vend-exito: #10b981;
-    --vend-peligro: #ef4444;
-    --vend-advertencia: #f59e0b;
-    --vend-purpura: #8b5cf6;
-}
-
-.contenedor-vend.modo-claro {
-    --vend-azul: #0369a1;
-    --vend-cian: #0284c7;
-    --vend-oscuro: #f0f9ff;
-    --vend-profundo: #e0f2fe;
-    --vend-borde: rgba(0, 148, 255, 0.2);
-    --vend-tarjeta: rgba(255, 255, 255, 0.9);
-    --vend-texto: #334155;
-    --vend-encabezado-bg: rgba(255, 255, 255, 0.9);
-    --vend-tarjeta-bg: rgba(255, 255, 255, 0.7);
-    --vend-entrada-bg: #ffffff;
-}
-
 /* ===== DISEÑO PRINCIPAL ===== */
 .contenedor-vend {
     display: flex;
@@ -594,23 +563,6 @@
     border-color: var(--vend-azul);
 }
 
-/* ===== INSIGNIAS ===== */
-.insignia-vend {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.insignia-vend.blue { background: rgba(0, 148, 255, 0.15); color: #0094FF; }
-.insignia-vend.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-.insignia-vend.orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.insignia-vend.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-.insignia-vend.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-
 /* ===== USUARIO INFO ===== */
 .info-usuario-vend {
     display: flex;
@@ -1076,64 +1028,6 @@
 .sugerencia-carga-vend {
     font-size: 0.8rem;
     color: #6b7280;
-}
-
-/* ===== NOTIFICACIÓN ===== */
-.notificacion-vend {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    background: var(--vend-encabezado-bg);
-    border: 1px solid var(--vend-borde);
-    border-radius: 12px;
-    color: var(--vend-texto);
-    z-index: 3000;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 600;
-    animation: slideInVend 0.3s ease forwards;
-}
-
-.notificacion-vend.success { border-left: 4px solid var(--vend-exito); }
-.notificacion-vend.error { border-left: 4px solid var(--vend-peligro); }
-
-@keyframes slideInVend {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-/* ===== ESTADOS DE CARGA Y VACÍO ===== */
-.cargando-vend {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    color: var(--vend-azul);
-    gap: 16px;
-}
-
-.vacio-vend {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: #9ca3af;
-    gap: 12px;
-}
-
-/* ===== ANIMACIÓN DE GIRO ===== */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.animacion-giro {
-    animation: spin 1s linear infinite;
 }
 
 /* ===== MENÚ MÓVIL ===== */

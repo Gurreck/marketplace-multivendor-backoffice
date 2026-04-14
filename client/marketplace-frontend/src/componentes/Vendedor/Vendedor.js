@@ -1,5 +1,6 @@
 import React from "react";
 import "./Vendedor.css";
+import "./useVendedorData.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -52,7 +53,7 @@ export default function Vendedor() {
       {data.notificacion && (
         <div className={`notificacion-vend ${data.notificacion.tipo}`}>
           {data.notificacion.tipo === "success" ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
-          <span style={{ marginLeft: "8px" }}>{data.notificacion.mensaje}</span>
+          <span>{data.notificacion.mensaje}</span>
         </div>
       )}
 
@@ -63,20 +64,17 @@ export default function Vendedor() {
 
       {/* Barra lateral */}
       <aside className={`barra-lateral-vend ${data.menuAbierto ? "abierta" : ""}`}>
-        <div
-          className="perfil-sidebar-vend"
-          style={{ padding: "24px 20px", display: "flex", alignItems: "center", gap: "12px", borderBottom: "1px solid var(--vend-borde)", marginBottom: "10px" }}
-        >
+        <div className="perfil-sidebar-vend">
           <img
             src={user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.nombre || user?.email || "V")}&background=0ea5e9&color=fff`}
             alt="Perfil"
-            style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--vend-azul)" }}
+            className="avatar-sidebar-vend"
           />
-          <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <span style={{ fontWeight: "600", fontSize: "15px", color: "var(--vend-texto)", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>
+          <div className="info-usuario-sidebar-vend">
+            <span className="nombre-usuario-sidebar-vend">
               {user?.nombre || user?.email?.split("@")[0]}
             </span>
-            <span style={{ fontSize: "12px", color: "var(--vend-texto-secundario)", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>
+            <span className="email-usuario-sidebar-vend">
               {user?.email}
             </span>
           </div>

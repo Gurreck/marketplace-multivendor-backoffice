@@ -1,0 +1,116 @@
+/* ===== VARIABLES GLOBALES SOPORTE ===== */
+:root {
+    --sop-azul: #0094FF;
+    --sop-cian: #00C2FF;
+    --sop-oscuro: #000B18;
+    --sop-profundo: #001A2F;
+    --sop-borde: rgba(0, 194, 255, 0.3);
+    --sop-tarjeta: rgba(0, 26, 47, 0.8);
+    --sop-texto: #e5e7eb;
+    --sop-texto-secundario: #9ca3af;
+    --sop-encabezado-bg: rgba(0, 26, 47, 0.85);
+    --sop-tarjeta-bg: rgba(30, 41, 82, 0.6);
+    --sop-entrada-bg: rgba(30, 41, 82, 0.9);
+    --sop-exito: #10b981;
+    --sop-peligro: #ef4444;
+    --sop-advertencia: #f59e0b;
+    --sop-purpura: #8b5cf6;
+}
+
+.contenedor-sop.modo-claro {
+    --sop-azul: #0369a1;
+    --sop-cian: #0284c7;
+    --sop-oscuro: #f0f9ff;
+    --sop-profundo: #e0f2fe;
+    --sop-borde: rgba(0, 148, 255, 0.2);
+    --sop-tarjeta: rgba(255, 255, 255, 0.9);
+    --sop-texto: #334155;
+    --sop-texto-secundario: #64748b;
+    --sop-encabezado-bg: rgba(255, 255, 255, 0.9);
+    --sop-tarjeta-bg: rgba(255, 255, 255, 0.7);
+    --sop-entrada-bg: #ffffff;
+}
+
+/* ===== ESTADOS DE CARGA (Loader) ===== */
+.cargando-sop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--sop-azul);
+    gap: 16px;
+}
+
+.animacion-giro-sop {
+    animation: spin-sop 1s linear infinite;
+}
+
+@keyframes spin-sop {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== NOTIFICACIONES ===== */
+.notificacion-sop {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 16px 28px;
+    background: var(--sop-encabezado-bg);
+    border: 1px solid var(--sop-borde);
+    border-radius: 16px;
+    color: var(--sop-texto);
+    z-index: 3000;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    animation: slideInSop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.notificacion-sop.success { border-left: 5px solid var(--sop-exito); }
+.notificacion-sop.error { border-left: 5px solid var(--sop-peligro); }
+
+@keyframes slideInSop {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ===== INSIGNIAS DE ESTADO (Badges) ===== */
+.insignia-sop {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.insignia-sop.blue { background: rgba(0, 148, 255, 0.15); color: #0094FF; }
+.insignia-sop.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.insignia-sop.orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.insignia-sop.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.insignia-sop.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.insignia-sop.gray { background: rgba(156, 163, 175, 0.15); color: #9ca3af; }
+.insignia-sop.teal { background: rgba(20, 184, 166, 0.15); color: #14b8a6; }
+
+/* Mensaje vacío */
+.vacio-sop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: var(--sop-texto-secundario);
+    gap: 12px;
+    text-align: center;
+}
+
+/* Utilidades de texto */
+.notificacion-texto-sop {
+    margin-left: 8px;
+}

@@ -1,0 +1,107 @@
+.contenedor-pago {
+  padding: 20px 5%;
+  background: linear-gradient(
+    135deg,
+    var(--nexora-dark) 0%,
+    var(--nexora-deep) 100%
+  );
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+  color: var(--nexora-text);
+}
+
+.modo-claro.contenedor-pago {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: var(--nexora-text);
+}
+
+.modo-claro .seleccion-activa,
+.modo-claro .vendedor-item-pago,
+.modo-claro .precio-actual,
+.modo-claro .fila-etiqueta-total strong {
+  color: var(--nexora-blue) !important;
+}
+
+.modo-claro .barra-seleccion,
+.modo-claro .lista-items-pago,
+.modo-claro .tarjeta-resumen-fija,
+.modo-claro .tarjeta-vacia,
+.modo-claro .tarjeta-exito {
+  background: var(--nexora-card) !important;
+  border-color: var(--nexora-border) !important;
+  color: var(--nexora-text) !important;
+}
+
+/* Layout Principal */
+.contenido-principal-pago {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Success & Empty states */
+.vista-exito,
+.vista-vacia {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: var(--nexora-bg);
+}
+
+.tarjeta-exito,
+.tarjeta-vacia {
+  background: var(--nexora-card);
+  backdrop-filter: blur(20px);
+  padding: 60px;
+  border-radius: 24px;
+  max-width: 550px;
+  border: 1px solid var(--nexora-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.icono-exito {
+  font-size: 5rem;
+  color: #10b981;
+  margin-bottom: 25px;
+}
+
+.boton-volver-inicio {
+  margin-top: 35px;
+  padding: 14px 30px;
+  background: var(--nexora-blue);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.boton-volver-inicio:hover {
+  background: var(--nexora-cyan);
+  box-shadow: 0 0 20px rgba(0, 194, 255, 0.4);
+  transform: scale(1.05);
+}
+
+@media (max-width: 1000px) {
+  .contenido-principal-pago {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .contenedor-pago {
+    padding: 15px 3%;
+  }
+}
+
+.animacion-giro {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

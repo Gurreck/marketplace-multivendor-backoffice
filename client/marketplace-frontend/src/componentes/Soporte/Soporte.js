@@ -1,5 +1,6 @@
 import React from "react";
 import "./Soporte.css";
+import "./useSoporteData.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -50,7 +51,7 @@ export default function Soporte() {
       {data.notificacion && (
         <div className={`notificacion-sop ${data.notificacion.tipo}`}>
           {data.notificacion.tipo === "success" ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
-          <span style={{ marginLeft: "8px" }}>{data.notificacion.mensaje}</span>
+          <span className="notificacion-texto-sop">{data.notificacion.mensaje}</span>
         </div>
       )}
 
