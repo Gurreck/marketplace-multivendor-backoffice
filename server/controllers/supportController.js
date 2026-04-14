@@ -176,6 +176,8 @@ const getTickets = async (req, res) => {
     // Clientes solo ven sus propios tickets
     if (req.user.role === "cliente") {
       filter.user = req.user.id;
+    } else if (req.user.role === "vendedor" || req.user.role === "administrador") {
+      filter.escaladoARol = req.user.role;
     }
 
     if (estado) filter.estado = estado;
@@ -377,7 +379,15 @@ const escalateTicket = async (req, res) => {
       return res.status(404).json({ success: false, message: "Ticket no encontrado." });
     }
 
-    ticket.escaladoA = destino;
+    // Check if it's escalating to a role ("administrador" / "vendedor") or a specific user
+    if (destino === "administrador" || destino === "vendedor") {
+      ticket.escaladoARol = destino;
+      ticket.escaladoA = undefined; // Clear if previously assigned to a specific user
+    } else {
+      ticket.escaladoA = destino;
+      ticket.escaladoARol = undefined;
+    }
+
     if (comentario) {
       ticket.mensajes.push({
         remitente: req.user.id,
@@ -400,6 +410,15 @@ const escalateTicket = async (req, res) => {
       .populate("user", "nombre email")
       .populate("asignadoA", "nombre email")
       .populate("escaladoA", "nombre email");
+
+    const io = req.app.get("io");
+    if (io) {
+      if (destino === "administrador" || destino === "vendedor") {
+        io.to(`role_${destino}`).emit("ticketEscalated", populated);
+      } else {
+        io.to(`user_${destino}`).emit("ticketEscalated", populated);
+      }
+    }
 
     res.status(200).json({ success: true, data: populated });
   } catch (error) {

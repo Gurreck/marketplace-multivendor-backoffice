@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Package, MapPin, CreditCard, Calendar, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 import { commentService } from '../../services/commentService';
-import Rastreo from '../Rastreo/Rastreo';
+import Rastreo from '../Rastreo/Rastreo/Rastreo';
 import DejarReseña from '../DejarReseña/DejarReseña';
 import './DetalleOrden.css';
 
@@ -60,23 +60,14 @@ export default function DetalleOrden() {
 
     const getEstadoInfo = (status) => {
         switch (status) {
-            case 'created':
-                return { label: 'Creada', icon: <Package size={20} color="#6366f1" />, class: 'en-proceso' };
-            case 'paid': 
-            case 'pagado':
-                return { label: 'Pagado', icon: <CheckCircle size={20} color="#10b981" />, class: 'entregado' };
-            case 'packed':
-                return { label: 'Empacado', icon: <Package size={20} color="#f59e0b" />, class: 'pendiente' };
-            case 'shipped':
-                return { label: 'Enviado', icon: <Truck size={20} color="#0094FF" />, class: 'en-proceso' };
-            case 'delivered':
-                return { label: 'Entregado', icon: <CheckCircle size={20} color="#10b981" />, class: 'entregado' };
-            case 'pending': 
-                return { label: 'Pendiente', icon: <Clock size={20} color="#f59e0b" />, class: 'pendiente' };
-            case 'cancelled': 
-                return { label: 'Cancelado', icon: <CheckCircle size={20} color="#ef4444" />, class: 'cancelado' };
-            default: 
-                return { label: status || 'En Proceso', icon: <Package size={20} />, class: 'en-proceso' };
+            case 'created': return { label: 'Creada', icon: <Package size={20} color="#6366f1" />, class: 'en-proceso' };
+            case 'paid': case 'pagado': return { label: 'Pagado', icon: <CheckCircle size={20} color="#10b981" />, class: 'entregado' };
+            case 'packed': return { label: 'Empacado', icon: <Package size={20} color="#f59e0b" />, class: 'pendiente' };
+            case 'shipped': return { label: 'Enviado', icon: <Truck size={20} color="#0094FF" />, class: 'en-proceso' };
+            case 'delivered': return { label: 'Entregado', icon: <CheckCircle size={20} color="#10b981" />, class: 'entregado' };
+            case 'pending': return { label: 'Pendiente', icon: <Clock size={20} color="#f59e0b" />, class: 'pendiente' };
+            case 'cancelled': return { label: 'Cancelado', icon: <CheckCircle size={20} color="#ef4444" />, class: 'cancelado' };
+            default: return { label: status || 'En Proceso', icon: <Package size={20} />, class: 'en-proceso' };
         }
     };
 

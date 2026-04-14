@@ -7,9 +7,9 @@ import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 import SeccionPromocion from '../Promocion/SeccionPromocion';
 import NavbarPrincipal from '../NavbarPrincipal/NavbarPrincipal';
-import ModalLogin from '../Modal/ModalLogin';
+import ModalLogin from '../Modal/ModalLogin/ModalLogin';
+import TarjetaProducto from '../TarjetaProducto/TarjetaProducto';
 import { 
-  Plus, 
   CheckCircle2, 
   Loader2,
   PackageSearch
@@ -58,10 +58,7 @@ export default function Principal() {
     try {
       const response = await api.get('/categories');
       if (response.data.success) {
-        const catNames = response.data.data
-          .filter(c => c.activa)
-          .map(c => c.nombre);
-        setCategories(['Todos', ...catNames]);
+        setCategories(['Todos', ...response.data.data.filter(c => c.activa).map(c => c.nombre)]);
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -74,15 +71,11 @@ export default function Principal() {
     try {
       const response = await api.get('/products');
       if (response.data.success) {
-        const uniqueVendors = [];
-        const seen = new Set();
-        response.data.data.forEach(p => {
-          if (p.vendor && p.vendor._id && !seen.has(p.vendor._id)) {
-            seen.add(p.vendor._id);
-            uniqueVendors.push({ _id: p.vendor._id, nombre: p.vendor.nombre });
-          }
-        });
-        setVendors(uniqueVendors);
+        const unseen = new Set();
+        setVendors(response.data.data.reduce((acc, p) => {
+          if (p.vendor && p.vendor._id && !unseen.has(p.vendor._id)) { unseen.add(p.vendor._id); acc.push({ _id: p.vendor._id, nombre: p.vendor.nombre }); }
+          return acc;
+        }, []));
       }
     } catch (error) {
       console.error('Error fetching vendors:', error);
@@ -124,49 +117,20 @@ export default function Principal() {
   /**
    * Agrega un producto al carrito, validando sesión previa
    */
-  const handleAddToCart = async (product) => {
-    if (!isAuthenticated) {
-      setShowLoginModal(true);
-      return;
-    }
-    if (product.stock <= 0) {
-      setShowNotification('⚠️ Este producto no tiene stock disponible');
-      setTimeout(() => setShowNotification(''), 3000);
-      return;
-    }
-    const added = await addToCart(product);
-    if (added === false) {
-      setShowNotification(`⚠️ Solo hay ${product.stock} unidades disponibles de "${product.name}"`);
-      setTimeout(() => setShowNotification(''), 3000);
-      return;
-    }
-    setShowNotification(`${product.name} agregado al carrito`);
-    setTimeout(() => setShowNotification(''), 3000);
-  };
-
-  /**
-   * Agrega un producto en oferta al carrito aplicando un descuento del 10%
-   */
-  const handlePromoAddToCart = (product) => {
-    if (!isAuthenticated) {
-      setShowLoginModal(true);
-      return;
-    }
-    if (product.stock <= 0) {
-      setShowNotification('⚠️ Este producto no tiene stock disponible');
-      setTimeout(() => setShowNotification(''), 3000);
-      return;
-    }
-    const discountedProduct = {
-      ...product,
-      originalPrice: product.price,
-      price: Math.floor(product.price * 0.90),
-      isPromo: true
+    const handleAddToCart = async (product) => {
+      if (!isAuthenticated) return setShowLoginModal(true);
+      if (product.stock <= 0) return (setShowNotification('⚠️ Este producto no tiene stock disponible'), setTimeout(() => setShowNotification(''), 3000));
+      const added = await addToCart(product);
+      if (added === false) return (setShowNotification(`⚠️ Solo hay ${product.stock} unidades disponibles de "${product.name}"`), setTimeout(() => setShowNotification(''), 3000));
+      setShowNotification(`${product.name} agregado al carrito`); setTimeout(() => setShowNotification(''), 3000);
     };
-    addToCart(discountedProduct);
-    setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`);
-    setTimeout(() => setShowNotification(''), 3000);
-  };
+
+    const handlePromoAddToCart = (product) => {
+      if (!isAuthenticated) return setShowLoginModal(true);
+      if (product.stock <= 0) return (setShowNotification('⚠️ Este producto no tiene stock disponible'), setTimeout(() => setShowNotification(''), 3000));
+      addToCart({ ...product, originalPrice: product.price, price: Math.floor(product.price * 0.90), isPromo: true });
+      setShowNotification(`${product.name} (Oferta 10%) agregado al carrito`); setTimeout(() => setShowNotification(''), 3000);
+    };
 
   // ===== RENDERIZADO PRINCIPAL =====
   return (
@@ -236,37 +200,15 @@ export default function Principal() {
           ) : filteredProducts.length > 0 ? (
             <div className="rejilla-productos">
               {filteredProducts.map((product) => (
-                <div key={product._id || product.id} className="tarjeta-producto">
-                  {/* Imagen y Vendedor */}
-                  <div className="imagen-producto" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>
-                    <img src={product.images[0]?.url || "https://via.placeholder.com/300"} alt={product.name} className="imagen-real-producto" />
-                    <div className="etiqueta-producto">{product.vendor?.nombre || product.vendor}</div>
-                  </div>
-
-                  {/* Detalle y Acción */}
-                  <div className="informacion-producto">
-                    <h3 className="nombre-producto" onClick={() => navigate(`/product/${product._id || product.id}`)} style={{ cursor: 'pointer' }}>{product.name}</h3>
-                    <p className="descripcion-corta-producto">{product.description?.substring(0, 60)}...</p>
-                    <p className="vendedor-producto">Vendedor: {product.vendor?.nombre || product.vendor}</p>
-
-                    <div className="pie-producto">
-                      <span className="precio-producto">₡{product.price.toLocaleString()}</span>
-                      {product.stock > 0 ? (
-                        <button className="boton-agregar" onClick={() => handleAddToCart(product)}>
-                          <Plus size={16} />
-                          Agregar
-                        </button>
-                      ) : (
-                        <button className="boton-agregar sin-stock" onClick={() => {
-                          setShowNotification('⚠️ Este producto no tiene stock disponible');
-                          setTimeout(() => setShowNotification(''), 3000);
-                        }}>
-                          Sin stock
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <TarjetaProducto
+                  key={product._id || product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onNoStock={() => {
+                    setShowNotification('⚠️ Este producto no tiene stock disponible');
+                    setTimeout(() => setShowNotification(''), 3000);
+                  }}
+                />
               ))}
 
 

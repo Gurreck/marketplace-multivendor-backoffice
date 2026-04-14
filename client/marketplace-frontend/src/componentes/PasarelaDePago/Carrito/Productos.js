@@ -78,12 +78,12 @@ const Productos = ({
                           size={14}
                           fill={
                             i < Math.round(productComments[getItemId(item)]?.averageRating || 0)
-                              ? "var(--admin-advertencia)"
+                              ? "var(--administrador-advertencia)"
                               : "none"
                           }
                           color={
                             i < Math.round(productComments[getItemId(item)]?.averageRating || 0)
-                              ? "var(--admin-advertencia)"
+                              ? "var(--administrador-advertencia)"
                               : "#ccc"
                           }
                         />
@@ -174,3 +174,4 @@ const Productos = ({
 };
 
 export default Productos;
+
