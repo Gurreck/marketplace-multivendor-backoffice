@@ -1,0 +1,17 @@
+/* ===== MÉTRICAS DE VENDEDOR ===== */
+.metricas-vendedor-administrador {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pildora-metrica-administrador {
+    padding: 2px 8px;
+    background: rgba(0, 148, 255, 0.08);
+    border: 1px solid var(--administrador-borde);
+    border-radius: 4px;
+    font-size: 11px;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+

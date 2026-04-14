@@ -131,20 +131,26 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  
-
   socket.on("joinOrderRoom", (orderId) => {
     socket.join(orderId);
-    
   });
-
   socket.on("leaveOrderRoom", (orderId) => {
     socket.leave(orderId);
-    
   });
-
+  socket.on("joinUserRoom", (userId) => {
+    socket.join(`user_${userId}`);
+  });
+  socket.on("leaveUserRoom", (userId) => {
+    socket.leave(`user_${userId}`);
+  });
+  socket.on("joinRoleRoom", (role) => {
+    socket.join(`role_${role}`);
+  });
+  socket.on("leaveRoleRoom", (role) => {
+    socket.leave(`role_${role}`);
+  });
   socket.on("disconnect", () => {
-    
+
   });
 });
 

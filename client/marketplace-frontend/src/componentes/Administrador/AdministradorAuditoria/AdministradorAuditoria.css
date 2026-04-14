@@ -1,0 +1,107 @@
+/* ===== FILTROS DE AUDITORÍA ===== */
+.filtros-administrador {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: var(--administrador-tarjeta-bg);
+    border: 1px solid var(--administrador-borde);
+    border-radius: 16px;
+}
+
+.grupo-filtro-administrador {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.grupo-filtro-administrador label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.grupo-filtro-administrador select,
+.grupo-filtro-administrador input {
+    background: var(--administrador-entrada-bg);
+    border: 1px solid var(--administrador-borde);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--administrador-texto);
+    font-size: 13px;
+    outline: none;
+    min-width: 150px;
+}
+
+.grupo-filtro-administrador select:focus,
+.grupo-filtro-administrador input:focus {
+    border-color: var(--administrador-azul);
+}
+
+.boton-filtro-administrador {
+    align-self: flex-end;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--administrador-borde);
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.boton-filtro-administrador:hover {
+    background: rgba(0, 148, 255, 0.1);
+    border-color: var(--administrador-azul);
+    color: var(--administrador-azul);
+}
+
+/* ===== PAGINACIÓN ===== */
+.paginacion-administrador {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+}
+
+.boton-pagina-administrador {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--administrador-borde);
+    background: transparent;
+    color: var(--administrador-texto);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.boton-pagina-administrador:hover {
+    background: rgba(0, 148, 255, 0.1);
+    border-color: var(--administrador-azul);
+}
+
+.boton-pagina-administrador.activo {
+    background: var(--administrador-azul);
+    color: white;
+    border-color: var(--administrador-azul);
+}
+
+.boton-pagina-administrador:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ===== DETALLES DE AUDITORÍA ===== */
+.detalles-auditoria-administrador {
+    font-size: 12px;
+    color: #9ca3af;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

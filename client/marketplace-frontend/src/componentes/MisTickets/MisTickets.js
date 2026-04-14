@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Ticket, Clock, MessageCircle, CheckCircle, Plus, X, Send, AlertCircle, Loader2 } from 'lucide-react';
 import servicioSoporte from '../../services/supportService';
+import socket from '../../services/socket';
+import { useAuth } from '../../context/AuthContext';
 import './MisTickets.css';
 
 export default function MisTickets() {
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { user } = useAuth();
 
     // Modal nuevo ticket
     const [showNewTicket, setShowNewTicket] = useState(false);
@@ -23,6 +26,14 @@ export default function MisTickets() {
 
     useEffect(() => {
         fetchTickets();
+
+        socket.on("ticketEscalated", () => {
+            fetchTickets();
+        });
+
+        return () => {
+            socket.off("ticketEscalated");
+        };
     }, []);
 
     const fetchTickets = async () => {
@@ -90,27 +101,21 @@ export default function MisTickets() {
         }
     };
 
-    const getEstadoClass = (estado) => {
-        switch (estado) {
-            case 'open': return 'ticket-abierto';
-            case 'in_progress': return 'ticket-progreso';
-            case 'waiting_customer': return 'ticket-espera';
-            case 'resolved': return 'ticket-resuelto';
-            case 'closed': return 'ticket-cerrado';
-            default: return '';
+    const handleAssignTicket = async () => {
+        try {
+            await servicioSoporte.asignarseTicket(selectedTicket);
+            // Refrescar detalle
+            const response = await servicioSoporte.obtenerDetalleTicket(selectedTicket);
+            setTicketDetail(response.data);
+            fetchTickets();
+        } catch (err) {
+            console.error('Error al asignar el ticket:', err);
         }
     };
 
-    const getEstadoLabel = (estado) => {
-        const labels = {
-            'open': 'Abierto',
-            'in_progress': 'En Progreso',
-            'waiting_customer': 'Esperando Respuesta',
-            'resolved': 'Resuelto',
-            'closed': 'Cerrado',
-        };
-        return labels[estado] || estado;
-    };
+    const getEstadoClass = (e) => ({ 'open': 'ticket-abierto', 'in_progress': 'ticket-progreso', 'waiting_customer': 'ticket-espera', 'resolved': 'ticket-resuelto', 'closed': 'ticket-cerrado' }[e] || '');
+
+    const getEstadoLabel = (e) => ({ 'open': 'Abierto', 'in_progress': 'En Progreso', 'waiting_customer': 'Esperando Respuesta', 'resolved': 'Resuelto', 'closed': 'Cerrado' }[e] || e);
 
     // Stats calculados de los datos reales
     const statsAbiertos = tickets.filter(t => t.estado === 'open' || t.estado === 'in_progress').length;
@@ -127,18 +132,16 @@ export default function MisTickets() {
     return (
         <div className="seccion-tickets">
             <div className="detalle-header">
-                <h1><Ticket size={28} /> Mis Tickets de Soporte</h1>
-                <button className="boton-primario" onClick={() => setShowNewTicket(true)}>
-                    <Plus size={18} />
-                    Nuevo Ticket
-                </button>
+                <h1><Ticket size={28} /> {user?.role === 'cliente' ? 'Mis Tickets de Soporte' : 'Tickets Escalados'}</h1>
+                {user?.role === 'cliente' && (
+                    <button className="boton-primario" onClick={() => setShowNewTicket(true)}>
+                        <Plus size={18} />
+                        Nuevo Ticket
+                    </button>
+                )}
             </div>
 
-            {error && (
-                <div style={{ padding: '12px 18px', background: 'rgba(239,68,68,0.1)', borderRadius: '10px', color: '#f87171', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <AlertCircle size={18} /> {error}
-                </div>
-            )}
+            {error && ( <div style={{ padding: '12px 18px', background: 'rgba(239,68,68,0.1)', borderRadius: '10px', color: '#f87171', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><AlertCircle size={18} /> {error}</div> )}
 
             <div className="tickets-stats">
                 <div className="stat-card">
@@ -207,9 +210,7 @@ export default function MisTickets() {
                             <div className="form-group">
                                 <label>Prioridad</label>
                                 <select value={newPrioridad} onChange={e => setNewPrioridad(e.target.value)}>
-                                    <option value="Baja">Baja</option>
-                                    <option value="Media">Media</option>
-                                    <option value="Alta">Alta</option>
+                                    <option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option>
                                 </select>
                             </div>
                             <div className="form-group">
@@ -235,6 +236,18 @@ export default function MisTickets() {
                         <div className={`ticket-status-pills ${getEstadoClass(ticketDetail.estado)}`} style={{ margin: '0 0 16px', display: 'inline-flex' }}>
                             {getEstadoLabel(ticketDetail.estado)}
                         </div>
+                        {user?.role !== 'cliente' && !ticketDetail.asignadoA && (
+                            <div style={{ marginBottom: '16px', display: 'flex' }}>
+                                <button className="boton-primario" onClick={handleAssignTicket} style={{ fontSize: '13px', padding: '6px 12px' }}>
+                                    Asignarme este Ticket
+                                </button>
+                            </div>
+                        )}
+                        {ticketDetail.asignadoA && (
+                            <div style={{ marginBottom: '16px', fontSize: '13px', color: '#9ca3af' }}>
+                                <strong>Asignado a:</strong> {ticketDetail.asignadoA.nombre}
+                            </div>
+                        )}
                         <div className="conversation-messages">
                             {ticketDetail.mensajes && ticketDetail.mensajes.length > 0 ? (
                                 ticketDetail.mensajes.map((msg, i) => (
