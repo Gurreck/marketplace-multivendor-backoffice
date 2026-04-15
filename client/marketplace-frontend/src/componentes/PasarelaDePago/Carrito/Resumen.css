@@ -1,0 +1,132 @@
+/* Sidebar Summary */
+.barra-lateral-resumen {
+  position: sticky;
+  top: 100px;
+}
+
+.tarjeta-resumen-fija {
+  background: var(--nexora-card);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid var(--nexora-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.tarjeta-resumen-fija h3 {
+  margin: 0 0 25px 0;
+  font-size: 1.3rem;
+  color: var(--nexora-blue);
+}
+
+.detalles-resumen {
+  padding-bottom: 25px;
+  border-bottom: 1px solid var(--nexora-border);
+  margin-bottom: 25px;
+}
+
+.linea-detalle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+.linea-detalle.envio span:last-child {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.total-final-resumen {
+  margin-bottom: 30px;
+}
+
+.fila-etiqueta-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.fila-etiqueta-total strong {
+  font-size: 1.2rem;
+  color: var(--nexora-text);
+}
+
+.monto-total-grande {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--nexora-blue);
+  text-shadow: 0 0 15px rgba(0, 148, 255, 0.3);
+}
+
+.nota-impuestos {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.boton-enviar-pedido {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--nexora-blue), var(--nexora-cyan));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(0, 148, 255, 0.3);
+}
+
+.boton-enviar-pedido:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 148, 255, 0.5);
+  filter: brightness(1.1);
+}
+
+.boton-enviar-pedido:disabled {
+  background: #374151;
+  color: #6b7280;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.seccion-confianza-pago {
+  display: flex;
+  flex-direction: column;
+}
+
+.texto-pago-seguro {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  margin-bottom: 5px;
+}
+
+.descargo-responsabilidad-confianza {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+@media (max-width: 1000px) {
+  .barra-lateral-resumen {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .tarjeta-resumen-fija {
+    padding: 20px;
+  }
+
+  .boton-enviar-pedido {
+    padding: 15px;
+    font-size: 1rem;
+  }
+}

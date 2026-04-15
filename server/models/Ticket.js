@@ -57,6 +57,11 @@ const ticketSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    escaladoARol: {
+      type: String,
+      enum: ["administrador", "vendedor", null],
+      default: null,
+    },
   },
   {
     timestamps: true,

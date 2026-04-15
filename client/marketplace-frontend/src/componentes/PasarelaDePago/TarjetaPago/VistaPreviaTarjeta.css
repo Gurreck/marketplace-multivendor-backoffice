@@ -1,0 +1,86 @@
+/* Card Preview Styles */
+.columna-izquierda-tarjeta {
+    flex: 1;
+    min-width: 250px;
+}
+
+.vista-previa-tarjeta-pasarela {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 130px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-right: -20px;
+    margin-left: -20px;
+}
+
+.chip-tarjeta-pasarela {
+    width: 45px;
+    height: 35px;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-bottom: 15px;
+}
+
+.vista-previa-numero-tarjeta {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: white;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.vista-previa-detalles-tarjeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.vista-previa-nombre-tarjeta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.vista-previa-vencimiento-tarjeta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.vista-previa-logo-tarjeta {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 50px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.texto-tipo-tarjeta-pasarela {
+    font-weight: 800;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+}
+
+/* Card brands specific colors */
+.vista-previa-tarjeta-pasarela.visa {
+    background: linear-gradient(135deg, #1a1f71, #0d1257);
+}
+
+.vista-previa-tarjeta-pasarela.mastercard {
+    background: linear-gradient(135deg, #1e1e1e, #000000);
+}
+
+.vista-previa-tarjeta-pasarela.amex {
+    background: linear-gradient(135deg, #006fcf, #0056a0);
+}

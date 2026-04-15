@@ -2,21 +2,21 @@ import React from "react";
 import "./App.css";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
-import IniciarSesion from "./componentes/Acceso/IniciarSesion";
-import Registro from "./componentes/Acceso/Registro";
-import RecuperarPassword from "./componentes/Acceso/RecuperarPassword";
+import IniciarSesion from './componentes/Acceso/IniciarSesion/IniciarSesion';
+import Registro from './componentes/Acceso/Registro/Registro';
+import RecuperarPassword from './componentes/Acceso/RecuperarPassword/RecuperarPassword';
 import Principal from "./componentes/Principal/Principal";
 import VistaProducto from "./componentes/VistaProducto/VistaProducto";
-import Carrito from "./componentes/PasarelaDePago/Carrito";
-import PasarelaDePago from "./componentes/PasarelaDePago/PasarelaDePago";
-import Vendedor from "./componentes/Vendedor/Vendedor";
-import Admin from "./componentes/Admin/Admin";
-import Soporte from "./componentes/Soporte/Soporte";
+import Carrito from "./componentes/PasarelaDePago/Carrito/Carrito";
+import PasarelaDePago from "./componentes/PasarelaDePago/PasarelaDePago/PasarelaDePago";
+import Vendedor from "./componentes/Vendedor/Vendedor/Vendedor";
+import Administrador from "./componentes/Administrador/Administrador/Administrador";
+import Soporte from "./componentes/Soporte/Soporte/Soporte";
 import Mascota from "./componentes/MascotaNexo/MascotaNexo";
-import PerfilCliente from "./componentes/Perfil/PerfilCliente";
-import Rastreo from "./componentes/Rastreo/Rastreo";
+import PerfilCliente from './componentes/Perfil/PerfilCliente/PerfilCliente';
+import Rastreo from "./componentes/Rastreo/Rastreo/Rastreo";
 import RuletaPrimeraCompra from "./componentes/RuletaPrimeraCompra/RuletaPrimeraCompra";
-import ResetPassword from "./componentes/Acceso/ReseteoPassword";
+import ResetPassword from './componentes/Acceso/ReseteoPassword/ReseteoPassword';
 
 import { useAuth } from "./context/AuthContext";
 
@@ -24,7 +24,7 @@ import { useAuth } from "./context/AuthContext";
 const obtenerRutaPorRol = (rol) => {
   switch (rol) {
     case "administrador":
-      return "/admin/dashboard";
+      return "/administrador/dashboard";
     case "vendedor":
       return "/vendedor";
     case "soporte":
@@ -62,9 +62,9 @@ const RutaProtegida = ({ children, rolesPermitidos }) => {
 const RutaRaiz = () => {
   const { user } = useAuth();
 
-  // Si el usuario es administrador, redirigir al panel admin
+  // Si el usuario es administrador, redirigir al panel administrador
   if (user && user.role === "administrador") {
-    return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/administrador/dashboard" replace />;
   }
 
   // Si es vendedor, redirigir a su panel
@@ -110,18 +110,18 @@ function App() {
 
         {/* ⭐ rutas protegidas - Administrador */}
         <Route
-          path="/admin/dashboard"
+          path="/administrador/dashboard"
           element={
             <RutaProtegida rolesPermitidos={["administrador"]}>
-              <Admin />
+              <Administrador />
             </RutaProtegida>
           }
         />
 
-        {/* ⭐ Redirigir /admin a /admin/dashboard */}
+        {/* ⭐ Redirigir /administrador a /administrador/dashboard */}
         <Route
-          path="/admin"
-          element={<Navigate to="/admin/dashboard" replace />}
+          path="/administrador"
+          element={<Navigate to="/administrador/dashboard" replace />}
         />
 
         <Route
@@ -192,3 +192,4 @@ function App() {
 }
 
 export default App;
+

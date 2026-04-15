@@ -91,7 +91,7 @@ export default function NavbarPrincipal({
                         } else if (user?.role === 'vendedor') {
                             navigate('/vendedor/dashboard');
                         } else if (user?.role === 'administrador') {
-                            navigate('/admin/dashboard');
+                            navigate('/administrador/dashboard');
                         } else {
                             navigate('/cliente/perfil');
                         }
@@ -148,25 +148,46 @@ export default function NavbarPrincipal({
             </div>
 
             {/* Filtros Avanzados */}
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', padding: '12px 24px', background: 'rgba(255,255,255,0.03)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <label style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Precio:</label>
-                    <input type="number" placeholder="Min" value={priceMin} onChange={e => setPriceMin(e.target.value)} style={{ width: '80px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }} />
-                    <span style={{ color: 'rgba(255,255,255,0.4)' }}>-</span>
-                    <input type="number" placeholder="Max" value={priceMax} onChange={e => setPriceMax(e.target.value)} style={{ width: '80px', padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }} />
+            <div className="filtros-avanzados-navbar">
+                <div className="grupo-filtro-navbar">
+                    <label className="etiqueta-filtro-navbar">Precio:</label>
+                    <input 
+                        type="number" 
+                        placeholder="Min" 
+                        value={priceMin} 
+                        onChange={e => setPriceMin(e.target.value)} 
+                        className="input-precio-navbar" 
+                    />
+                    <span className="separador-precio-navbar">-</span>
+                    <input 
+                        type="number" 
+                        placeholder="Max" 
+                        value={priceMax} 
+                        onChange={e => setPriceMax(e.target.value)} 
+                        className="input-precio-navbar" 
+                    />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <label style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>Vendedor:</label>
-                    <select value={selectedVendor} onChange={e => setSelectedVendor(e.target.value)} style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', color: 'white', fontSize: '13px' }}>
+                <div className="grupo-filtro-navbar">
+                    <label className="etiqueta-filtro-navbar">Vendedor:</label>
+                    <select 
+                        value={selectedVendor} 
+                        onChange={e => setSelectedVendor(e.target.value)} 
+                        className="select-vendedor-navbar"
+                    >
                         <option value="">Todos</option>
                         {vendors?.map(v => <option key={v._id} value={v._id}>{v.nombre}</option>)}
                     </select>
                 </div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={onlyInStock} onChange={e => setOnlyInStock(e.target.checked)} />
+                <label className="label-checkbox-navbar">
+                    <input 
+                        type="checkbox" 
+                        checked={onlyInStock} 
+                        onChange={e => setOnlyInStock(e.target.checked)} 
+                    />
                     Solo disponibles
                 </label>
             </div>
         </header>
     );
 }
+

@@ -105,9 +105,9 @@ export default function Mascota() {
     ];
   }
 
-  else if (location.pathname === "/admin/dashboard") {
+  else if (location.pathname === "/administrador/dashboard") {
     mensajes = [
-      "Aquí puedes administrar la plataforma",
+      "Aquí puedes administradoristrar la plataforma",
       "Revisa las estadísticas del sistema",
       "Gestiona usuarios y productos"
     ];
