@@ -1,13 +1,5 @@
 require("dotenv").config();
 
-// 🔍 DEBUG: Ver variables de entorno
-console.log('===================== DEBUG .ENV =====================');
-console.log('PORT:', process.env.PORT);
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
-console.log('JWT_SECRET existe?:', !!process.env.JWT_SECRET);
-console.log('CLIENT_URL:', process.env.CLIENT_URL);
-console.log('====================================================');
-
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -32,14 +24,20 @@ const { getCategories } = require("./controllers/categoryController");
 
 const app = express();
 
+// Construir lista de orígenes CORS dinámicamente
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:5173",
+];
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 // 1️⃣ CORS
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "http://localhost:5173",
-    ],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
@@ -105,16 +103,12 @@ app.use((req, res) => {
 
 // Manejo de errores global
 app.use((err, req, res, next) => {
-  console.error('==================== ERROR ====================');
-  console.error('Ruta:', req.method, req.path);
-  console.error('Error completo:', err);
-  console.error('Stack:', err.stack);
-  console.error('===============================================');
+  console.error('Error:', req.method, req.path, err.message);
 
   res.status(500).json({
     success: false,
     message: "Error interno del servidor.",
-    error: err.message,
+    ...(process.env.NODE_ENV !== 'production' && { error: err.message }),
   });
 });
 
@@ -124,7 +118,7 @@ const server = http.createServer(app);
 // ✅ Configurar Socket.io
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT"],
     credentials: true,
   },
@@ -148,6 +142,12 @@ io.on("connection", (socket) => {
   });
   socket.on("leaveRoleRoom", (role) => {
     socket.leave(`role_${role}`);
+  });
+  socket.on("joinTicketRoom", (ticketId) => {
+    socket.join(`ticket_${ticketId}`);
+  });
+  socket.on("leaveTicketRoom", (ticketId) => {
+    socket.leave(`ticket_${ticketId}`);
   });
   socket.on("disconnect", () => {
 

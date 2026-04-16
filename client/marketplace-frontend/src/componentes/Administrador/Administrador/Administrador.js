@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 // Import local components
-import MisTickets from '../../MisTickets/MisTickets';
+import AdministradorTickets from '../AdministradorTickets/AdministradorTickets';
 import AdministradorDashboard from '../AdministradorDashboard/AdministradorDashboard';
 import AdministradorUsuarios from '../AdministradorUsuarios/AdministradorUsuarios';
 import AdministradorVendedores from '../AdministradorVendedores/AdministradorVendedores';
@@ -165,7 +165,7 @@ export default function Administrador() {
           />
         )}
         {datos.seccionActiva === "reportes" && <AdministradorReportes />}
-        {datos.seccionActiva === "tickets" && <MisTickets />}
+        {datos.seccionActiva === "tickets" && <AdministradorTickets />}
       </main>
 
       <ModalCrearUsuario
