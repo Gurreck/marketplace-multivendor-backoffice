@@ -5,18 +5,18 @@
 /* Botón guardar dirección */
 .boton-guardar-direccion {
     width: 100%;
-    padding: 14px;
+    padding: 10px;
     background: linear-gradient(135deg, var(--nexora-blue), var(--nexora-cyan));
     color: white;
     border: none;
     border-radius: 10px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 6px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 148, 255, 0.18);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .boton-guardar-direccion:hover {
@@ -30,9 +30,9 @@
     background: var(--nexora-card);
     backdrop-filter: blur(10px);
     border-radius: 18px;
-    padding: 28px 32px 18px 32px;
+    padding: 18px 24px 12px 24px;
     border: 1px solid var(--nexora-border);
-    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
     margin-bottom: 0;
     max-width: 100%;
     width: 100%;
@@ -44,9 +44,9 @@
 }
 
 .titulo-direccion-pasarela {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     color: var(--nexora-blue);
-    margin-bottom: 18px;
+    margin-bottom: 10px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -55,17 +55,17 @@
 .formulario-direccion-pasarela {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 6px;
 }
 
 .entrada-direccion-pasarela {
     width: 100%;
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.06);
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--nexora-border);
     border-radius: 8px;
     color: var(--nexora-text);
-    font-size: 1rem;
+    font-size: 0.9rem;
     margin-bottom: 0;
     transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
@@ -79,7 +79,7 @@
 .entrada-direccion-pasarela:focus {
     outline: none;
     border-color: var(--nexora-blue);
-    box-shadow: 0 0 0 2px rgba(0,148,255,0.13);
+    box-shadow: 0 0 0 2px rgba(0, 148, 255, 0.13);
 }
 
 .entrada-direccion-pasarela::placeholder {
@@ -107,4 +107,3 @@
         padding: 20px;
     }
 }
-
