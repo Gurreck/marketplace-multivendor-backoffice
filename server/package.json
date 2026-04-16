@@ -1,0 +1,35 @@
+{
+  "name": "marketplace-backend",
+  "version": "1.0.0",
+  "description": "Backend API para Marketplace Multivendor con Backoffice Empresarial",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^1.41.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.1",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^8.0.5",
+    "pdfkit": "^0.18.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3"
+
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

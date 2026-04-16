@@ -1,0 +1,131 @@
+/* ============================================
+   TarjetaPago - Layout and Shared Styles
+   ============================================ */
+
+.pasarela-de-pago {
+    background: var(--nexora-card, rgba(14, 25, 45, 0.7));
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid var(--nexora-border, rgba(255, 255, 255, 0.05));
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.pasarela-de-pago.modo-claro {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #e5e7eb;
+}
+
+.titulo-pago-pasarela {
+    font-size: 1.4rem;
+    color: white;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pasarela-de-pago.modo-claro .titulo-pago-pasarela {
+    color: #111827;
+}
+
+.subtitulo-pago-pasarela {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+.contenido-tarjeta-dos-columnas {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.error-general-pago {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.boton-enviar-pasarela {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--nexora-blue, #0094ff), var(--nexora-cyan, #00d4ff));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boton-enviar-pasarela:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 4px 15px rgba(0, 148, 255, 0.3);
+}
+
+.boton-enviar-pasarela:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.animacion-giro {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.advertencia-direccion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f59e0b;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.seccion-confianza-pasarela {
+    margin-top: 30px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 20px;
+}
+
+.texto-pago-seguro-pasarela {
+    color: #10b981;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+/* Responsive adjustment */
+@media (max-width: 600px) {
+    .contenido-tarjeta-dos-columnas {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .pasarela-de-pago {
+        padding: 20px;
+    }
+}

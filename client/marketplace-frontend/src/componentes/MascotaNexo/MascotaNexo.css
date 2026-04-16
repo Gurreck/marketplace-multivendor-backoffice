@@ -1,0 +1,86 @@
+.contenedor-mascota{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}
+
+.mascota{
+  width: 120px;
+}
+
+.mascota-mensaje{
+  position: absolute;
+  bottom: 130px;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.mascota-ayuda{
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #6c63ff;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascota-ocultar{
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascota-mostrar{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border: none;
+  background: #6c63ff;
+  color: white;
+  cursor: pointer;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+}
+
+.mascota-botones{
+  position: absolute;
+  bottom: -10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 600px) {
+  .mascota {
+    width: 80px;
+  }
+  
+  .mascota-mensaje {
+    bottom: 90px;
+    font-size: 12px;
+    right: -10px;
+    min-width: 120px;
+  }
+}

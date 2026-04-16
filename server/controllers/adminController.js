@@ -1,0 +1,641 @@
+const User = require("../models/User");
+const Product = require("../models/Product");
+const AuditLog = require("../models/AuditLog");
+
+// ========== UTILIDAD: Registrar acción en auditoría ==========
+const registrarAuditoria = async ({ usuario, usuarioNombre, accion, entidad, entidadId, detalles, datosAnteriores, datosNuevos }) => {
+  try {
+    await AuditLog.create({
+      usuario,
+      usuarioNombre,
+      accion,
+      entidad,
+      entidadId,
+      detalles,
+      datosAnteriores,
+      datosNuevos,
+    });
+  } catch (err) {
+    console.error("Error al registrar auditoría:", err);
+  }
+};
+
+// ========== GESTIÓN DE USUARIOS ==========
+
+// @desc    Obtener todos los usuarios
+// @route   GET /api/admin/users
+// @access  Solo Administrador
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-__v");
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener los usuarios.",
+    });
+  }
+};
+
+// @desc    Crear un nuevo usuario
+// @route   POST /api/admin/users
+// @access  Solo Administrador
+const createUser = async (req, res) => {
+  try {
+    const { nombre, email, password, role } = req.body;
+
+    if (!nombre || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Nombre, email y contraseña son obligatorios.",
+      });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Ya existe un usuario con ese email.",
+      });
+    }
+
+    // NO hashear aquí — el modelo User tiene un pre('save') hook que lo hace automáticamente
+    const user = await User.create({
+      nombre,
+      email,
+      password,
+      role: role || "cliente",
+    });
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "crear_usuario",
+      entidad: "usuario",
+      entidadId: user._id,
+      detalles: `Usuario "${nombre}" creado con rol "${user.role}"`,
+      datosNuevos: { nombre, email, role: user.role },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Usuario creado exitosamente.",
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Error en createUser:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al crear el usuario.",
+    });
+  }
+};
+
+// @desc    Actualizar datos de un usuario
+// @route   PUT /api/admin/users/:id
+// @access  Solo Administrador
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, email, password, role } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    const datosAnteriores = { nombre: user.nombre, email: user.email, role: user.role };
+
+    if (nombre) user.nombre = nombre;
+    if (email && email !== user.email) {
+      const existente = await User.findOne({ email });
+      if (existente) {
+        return res.status(400).json({
+          success: false,
+          message: "Ya existe otro usuario con ese email.",
+        });
+      }
+      user.email = email;
+    }
+    if (role) user.role = role;
+    if (password && password.length >= 6) {
+      user.password = password; // El pre('save') hook hashea automáticamente
+    }
+
+    await user.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "editar_usuario",
+      entidad: "usuario",
+      entidadId: user._id,
+      detalles: `Usuario "${user.nombre}" actualizado`,
+      datosAnteriores,
+      datosNuevos: { nombre: user.nombre, email: user.email, role: user.role },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Usuario actualizado exitosamente.",
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        activo: user.activo,
+      },
+    });
+  } catch (error) {
+    console.error("Error en updateUser:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar el usuario.",
+    });
+  }
+};
+
+// @desc    Eliminar un usuario
+// @route   DELETE /api/admin/users/:id
+// @access  Solo Administrador
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    // No permitir eliminar al mismo admin
+    if (id === req.user.id) {
+      return res.status(400).json({
+        success: false,
+        message: "No puedes eliminarte a ti mismo.",
+      });
+    }
+
+    const datosEliminados = { nombre: user.nombre, email: user.email, role: user.role };
+    await User.findByIdAndDelete(id);
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "eliminar_usuario",
+      entidad: "usuario",
+      entidadId: id,
+      detalles: `Usuario "${datosEliminados.nombre}" eliminado permanentemente`,
+      datosAnteriores: datosEliminados,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Usuario "${datosEliminados.nombre}" eliminado exitosamente.`,
+    });
+  } catch (error) {
+    console.error("Error en deleteUser:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al eliminar el usuario.",
+    });
+  }
+};
+
+// @desc    Asignar rol a un usuario
+// @route   PUT /api/admin/users/:id/role
+// @access  Solo Administrador
+const assignRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    const { id } = req.params;
+
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: "Debe proporcionar un rol.",
+      });
+    }
+
+    const validRoles = ["cliente", "vendedor", "administrador", "soporte"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: `Rol no válido. Los roles disponibles son: ${validRoles.join(", ")}.`,
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    const rolAnterior = user.role;
+    user.role = role;
+    await user.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "asignar_rol",
+      entidad: "usuario",
+      entidadId: user._id,
+      detalles: `Rol cambiado de "${rolAnterior}" a "${role}" para "${user.nombre}"`,
+      datosAnteriores: { role: rolAnterior },
+      datosNuevos: { role },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Rol actualizado exitosamente a '${role}'.`,
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    if (error.kind === "ObjectId") {
+      return res.status(400).json({
+        success: false,
+        message: "ID de usuario no válido.",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Error al asignar el rol.",
+    });
+  }
+};
+
+// @desc    Desactivar/Activar usuario
+// @route   PUT /api/admin/users/:id/status
+// @access  Solo Administrador
+const toggleUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { activo } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado.",
+      });
+    }
+
+    const estadoAnterior = user.activo;
+    user.activo = activo;
+    await user.save();
+
+    const accion = activo ? "activar_usuario" : "desactivar_usuario";
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion,
+      entidad: "usuario",
+      entidadId: user._id,
+      detalles: `Usuario "${user.nombre}" ${activo ? "activado" : "desactivado"}`,
+      datosAnteriores: { activo: estadoAnterior },
+      datosNuevos: { activo },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Usuario ${activo ? "activado" : "desactivado"} exitosamente.`,
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        activo: user.activo,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al cambiar el estado del usuario.",
+    });
+  }
+};
+
+// ========== GESTIÓN DE VENDEDORES ==========
+
+// @desc    Obtener todos los vendedores con métricas
+// @route   GET /api/admin/vendors
+// @access  Solo Administrador
+const getVendors = async (req, res) => {
+  try {
+    const vendors = await User.find({ role: "vendedor" }).select("-__v");
+
+    // Obtener métricas por vendedor
+    const vendorsWithMetrics = await Promise.all(
+      vendors.map(async (vendor) => {
+        const productCount = await Product.countDocuments({ vendor: vendor._id });
+        const products = await Product.find({ vendor: vendor._id });
+        const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+        const avgPrice = products.length > 0
+          ? products.reduce((sum, p) => sum + p.price, 0) / products.length
+          : 0;
+
+        return {
+          _id: vendor._id,
+          nombre: vendor.nombre,
+          email: vendor.email,
+          role: vendor.role,
+          activo: vendor.activo,
+          createdAt: vendor.createdAt,
+          metricas: {
+            totalProductos: productCount,
+            totalStock,
+            precioPromedio: Math.round(avgPrice),
+          },
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      count: vendorsWithMetrics.length,
+      data: vendorsWithMetrics,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener los vendedores.",
+    });
+  }
+};
+
+// @desc    Aprobar vendedor
+// @route   PUT /api/admin/vendors/:id/approve
+// @access  Solo Administrador
+const approveVendor = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendedor no encontrado.",
+      });
+    }
+
+    user.activo = true;
+    user.role = "vendedor";
+    await user.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "aprobar_vendedor",
+      entidad: "vendedor",
+      entidadId: user._id,
+      detalles: `Vendedor "${user.nombre}" aprobado`,
+      datosNuevos: { activo: true, role: "vendedor" },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Vendedor aprobado exitosamente.",
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        activo: user.activo,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al aprobar el vendedor.",
+    });
+  }
+};
+
+// @desc    Suspender vendedor
+// @route   PUT /api/admin/vendors/:id/suspend
+// @access  Solo Administrador
+const suspendVendor = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendedor no encontrado.",
+      });
+    }
+
+    user.activo = false;
+    await user.save();
+
+    await registrarAuditoria({
+      usuario: req.user.id,
+      usuarioNombre: req.user.nombre,
+      accion: "suspender_vendedor",
+      entidad: "vendedor",
+      entidadId: user._id,
+      detalles: `Vendedor "${user.nombre}" suspendido`,
+      datosAnteriores: { activo: true },
+      datosNuevos: { activo: false },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Vendedor suspendido exitosamente.",
+      data: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        role: user.role,
+        activo: user.activo,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al suspender el vendedor.",
+    });
+  }
+};
+
+// ========== REPORTERÍA / KPIs ==========
+
+// @desc    Obtener KPIs globales del dashboard
+// @route   GET /api/admin/kpis
+// @access  Solo Administrador
+const getKPIs = async (req, res) => {
+  try {
+    const Order = require("../models/Order");
+    const Ticket = require("../models/Ticket");
+    const RMA = require("../models/RMA");
+
+    const totalUsers = await User.countDocuments();
+    const totalVendors = await User.countDocuments({ role: "vendedor" });
+    const totalClients = await User.countDocuments({ role: "cliente" });
+    const totalProducts = await Product.countDocuments({ isActive: { $ne: false } });
+
+    // ⭐ Ventas totales reales (órdenes pagadas o entregadas)
+    const ventasAgg = await Order.aggregate([
+      { $match: { status: { $in: ["paid", "packed", "shipped", "delivered"] } } },
+      { $group: { _id: null, total: { $sum: "$total" }, count: { $sum: 1 } } },
+    ]);
+    const ventasTotales = ventasAgg.length > 0 ? ventasAgg[0].total : 0;
+    const totalOrdenes = ventasAgg.length > 0 ? ventasAgg[0].count : 0;
+
+    // ⭐ Tickets abiertos
+    const ticketsAbiertos = await Ticket.countDocuments({
+      estado: { $in: ["open", "in_progress", "waiting_customer"] },
+    });
+
+    // ⭐ RMAs en proceso
+    const rmasEnProceso = await RMA.countDocuments({
+      estado: { $in: ["requested", "approved", "received"] },
+    });
+
+    // Productos por categoría
+    const productsByCategory = await Product.aggregate([
+      { $match: { isActive: { $ne: false } } },
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ]);
+
+    // Top productos por stock
+    const topProducts = await Product.find({ isActive: { $ne: false } })
+      .sort({ stock: -1 })
+      .limit(10)
+      .populate("vendor", "nombre")
+      .select("name price stock category vendor");
+
+    // Top vendedores por cantidad de productos
+    const topVendors = await Product.aggregate([
+      { $match: { isActive: { $ne: false } } },
+      { $group: { _id: "$vendor", totalProductos: { $sum: 1 }, totalStock: { $sum: "$stock" } } },
+      { $sort: { totalProductos: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "vendorInfo",
+        },
+      },
+      { $unwind: "$vendorInfo" },
+      {
+        $project: {
+          _id: 1,
+          totalProductos: 1,
+          totalStock: 1,
+          nombre: "$vendorInfo.nombre",
+          email: "$vendorInfo.email",
+        },
+      },
+    ]);
+
+    // Productos creados por mes (últimos 6 meses)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const productsByMonth = await Product.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    // Ventas por mes (últimos 6 meses)
+    const ventasPorMes = await Order.aggregate([
+      {
+        $match: {
+          status: { $in: ["paid", "packed", "shipped", "delivered"] },
+          createdAt: { $gte: sixMonthsAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          total: { $sum: "$total" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        resumen: {
+          totalUsuarios: totalUsers,
+          totalVendedores: totalVendors,
+          totalClientes: totalClients,
+          totalProductos: totalProducts,
+          ventasTotales,
+          totalOrdenes,
+          ticketsAbiertos,
+          rmasEnProceso,
+        },
+        productosPorCategoria: productsByCategory,
+        topProductos: topProducts,
+        topVendedores: topVendors,
+        productosPorMes: productsByMonth,
+        ventasPorMes,
+      },
+    });
+  } catch (error) {
+    console.error("Error al obtener KPIs:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener los KPIs.",
+    });
+  }
+};
+
+module.exports = {
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  assignRole,
+  toggleUserStatus,
+  getVendors,
+  approveVendor,
+  suspendVendor,
+  getKPIs,
+  registrarAuditoria,
+};

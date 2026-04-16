@@ -1,0 +1,37 @@
+Title	URL	Assignees	Status	Linked pull requests	Sub-issues progress	Priority	Estimate	Size	Sprint	Team
+prueba	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/13		New Issues							
+Ítem 14 – Solicitud de devoluciones (RMA)	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/10		New Issues						Sprint 3	Frontend
+Ítem 15 – Ruleta de descuento	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/11		New Issues					L	Sprint 3	Frontend
+Ítem 16 – Gestión de productos del vendedor	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/12		New Issues					M	Sprint 3	Frontend
+Ítem 17 – Gestión de órdenes del vendedor	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/19		New Issues					M	Sprint 3	Frontend
+Ítem 18 – Dashboard del vendedor	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/13		New Issues					M	Sprint 3	Frontend
+Ítem 19 – Gestión de tickets	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/14		New Issues					S	Sprint 3	Frontend
+Ítem 20 – Gestión de devoluciones	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/15		New Issues						Sprint 3	Frontend
+Ítem 21 – Gestión de usuarios	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/16		New Issues						Sprint 4	Backend
+Ítem 22 – Gestión de vendedores	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/17		New Issues					M	Sprint 4	Backend
+Ítem 23 – Gestión de categorías	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/18		New Issues					M	Sprint 4	Backend
+Ítem 24 – Auditoría	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/19		New Issues					M	Sprint 4	Backend
+Ítem 25 – Reportería global	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/20		New Issues					S	Sprint 4	Frontend
+Ítem 26 – Configuración del repositorio mono repo	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/21		New Issues					S	Sprint 4	QA
+Ítem 27 – Pipeline CI/CD	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/22		New Issues					S	Sprint 4	QA
+Ítem 28 – Pruebas unitarias	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/23		New Issues					L	Sprint 4	QA
+Ítem 29 – Pruebas de integración	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/24		New Issues					M	Sprint 4	QA
+Ítem 30 – Documentación técnica y funcional	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/25		New Issues					M	Sprint 4	QA
+Ítem 31 – Perfil público de tienda	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/41		New Issues							
+Ítem 32 – Gestión del perfil de tienda	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/42		New Issues							
+Ítem 33 – Reseñas y calificaciones	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/43		New Issues							
+Ítem 34 – Estandarización visual con iconografía vectorial	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/44		New Issues							
+Ítem 9 – Eliminar productos del carrito	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/16		Sprint Backlog			P2		S	Sprint 2	Frontend
+Ítem 12 – Detalle de orden	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/18		Sprint Backlog						Sprint 2	Frontend
+Ítem 11 – Historial de órdenes	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/8		Sprint Backlog					S	Sprint 2	Frontend
+Ítem 9 – Eliminar productos del carrito	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/7		Sprint Backlog					S	Sprint 2	Frontend
+Ítem 6 – Filtros de productos	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/4	camilo506	Sprint Backlog						Sprint 2	Frontend
+Ítem 5 – Búsqueda de productos	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/15		Sprint Backlog					S	Sprint 2	Frontend
+Item 13 – Creación de tickets de soporte	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/9	iordix	In progress					S	Sprint 3	Backend
+Ítem 10 – Confirmar compra (Checkout)	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/17		Review/QA			P1		M	Sprint 2	Backend
+Ítem 8 – Modificar cantidades del carrito	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/6	iordix	Review/QA					S	Sprint 2	Backend
+Ítem 2 – Inicio de sesión MODIFICADO 	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/2	camilo506, Gerald1692	Done				10		Sprint 1	Backend
+Registro de clientes	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/1	iordix, Thoka88	Done				10		Sprint 1	Backend
+Ítem 4 – Visualización del catálogo	https://github.com/Chuz06/Gestor-Proyectos-Academicos/issues/14		Done						Sprint 1	Frontend
+Ítem 3 – Gestión de roles Y  CRUD de admin 	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/3	Thoka88	Done						Sprint 1	Backend
+Ítem 7 – Agregar productos al carrito	https://github.com/Gurreck/marketplace-multivendor-backoffice/issues/5	iordix, Thoka88	Done					M	Sprint 2	Backend

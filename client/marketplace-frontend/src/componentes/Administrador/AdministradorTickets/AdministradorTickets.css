@@ -1,0 +1,172 @@
+/* ===== Admin Tickets — Premium Design ===== */
+.admin-tickets-container { padding: 20px; }
+.admin-tickets-loading { text-align: center; padding: 60px; }
+.admin-tickets-loading .spin-icon { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.admin-tickets-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.admin-tickets-title { display: flex; align-items: center; gap: 12px; }
+.admin-tickets-title h1 { font-size: 1.4rem; color: var(--title-color, white); margin: 0; }
+.admin-tickets-refresh {
+  display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+  background: rgba(0, 148, 255, 0.12); border: 1px solid rgba(0, 148, 255, 0.3);
+  color: #0094FF; border-radius: 10px; cursor: pointer; font-size: 0.85rem;
+  font-weight: 600; transition: all 0.3s ease;
+}
+.admin-tickets-refresh:hover { background: rgba(0, 148, 255, 0.25); }
+
+.admin-tickets-error {
+  padding: 12px 18px; background: rgba(239,68,68,0.1); border-radius: 10px;
+  color: #f87171; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+
+/* Stats */
+.admin-tickets-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.admin-stat-card {
+  background: var(--info-bg, rgba(255,255,255,0.06)); border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+  border-radius: 14px; padding: 18px; text-align: center; display: flex; flex-direction: column; gap: 6px;
+}
+.admin-stat-num { font-size: 1.8rem; font-weight: 800; color: var(--title-color, white); }
+.admin-stat-label { font-size: 0.85rem; color: var(--text-muted, rgba(255,255,255,0.6)); }
+
+/* Filtros */
+.admin-tickets-filters { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.admin-search-bar {
+  flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px;
+  background: var(--info-bg, rgba(255,255,255,0.06)); border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+  border-radius: 12px; padding: 0 14px;
+}
+.admin-search-bar input {
+  flex: 1; padding: 10px 0; background: transparent; border: none; color: var(--text-main, white);
+  font-size: 0.9rem; outline: none;
+}
+.admin-filter-group { display: flex; align-items: center; gap: 10px; }
+.admin-filter-group select { min-width: 150px; }
+
+/* Lista */
+.admin-tickets-list { display: flex; flex-direction: column; gap: 12px; }
+.admin-tickets-empty { text-align: center; padding: 50px; color: rgba(255,255,255,0.4); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+.admin-ticket-card {
+  background: var(--card-bg, rgba(30, 41, 82, 0.6)); border: 1px solid var(--card-border, rgba(255,255,255,0.1));
+  border-radius: 14px; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; transition: all 0.3s ease;
+}
+.admin-ticket-card:hover { border-color: rgba(0, 148, 255, 0.5); transform: translateX(4px); background: rgba(0, 148, 255, 0.05); }
+
+.admin-ticket-left { flex: 1; }
+.admin-ticket-id { color: #0094FF; font-weight: 700; font-size: 0.8rem; display: block; margin-bottom: 4px; }
+.admin-ticket-subject { color: var(--title-color, white); font-size: 1.05rem; margin: 0 0 8px; }
+.admin-ticket-meta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.admin-ticket-date { color: var(--text-muted, rgba(255,255,255,0.5)); font-size: 0.82rem; display: flex; align-items: center; gap: 4px; }
+.admin-ticket-client { color: var(--text-muted, rgba(255,255,255,0.5)); font-size: 0.82rem; }
+
+.admin-ticket-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.admin-ticket-msgs { color: var(--text-muted, rgba(255,255,255,0.5)); font-size: 0.82rem; display: flex; align-items: center; gap: 5px; }
+
+/* Badges */
+.admin-estado-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+  border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+}
+.estado-abierto { background: rgba(0, 148, 255, 0.15); color: #0094FF; }
+.estado-progreso { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.estado-espera { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.estado-resuelto { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.estado-cerrado { background: rgba(156, 163, 175, 0.15); color: #9ca3af; }
+
+.admin-prio-badge { padding: 3px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; }
+.prio-alta { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.prio-media { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+.prio-baja { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+/* Conversation Modal */
+.admin-conv-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.admin-conv-modal {
+  background: var(--card-bg, #1a1f3e); border: 1px solid var(--card-border, rgba(255,255,255,0.12));
+  border-radius: 18px; width: 95%; max-width: 680px; max-height: 88vh;
+  display: flex; flex-direction: column; box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+.admin-conv-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 22px 24px 16px; border-bottom: 1px solid var(--card-border, rgba(255,255,255,0.1));
+}
+.admin-conv-header h2 { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--title-color, white); margin: 0; }
+.admin-conv-ticket-id { color: #0094FF; font-size: 0.8rem; font-weight: 600; }
+.admin-conv-close { background: rgba(255,255,255,0.08); border: none; color: var(--text-muted, white); padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.admin-conv-close:hover { background: rgba(255,255,255,0.15); }
+
+.admin-conv-info-bar { display: flex; gap: 12px; align-items: center; padding: 14px 24px; flex-wrap: wrap; border-bottom: 1px solid var(--card-border, rgba(255,255,255,0.08)); }
+.admin-conv-assigned { font-size: 0.82rem; color: var(--text-muted, rgba(255,255,255,0.6)); }
+.admin-conv-assign-btn {
+  display: flex; align-items: center; gap: 6px; padding: 5px 12px;
+  background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+  transition: 0.3s;
+}
+.admin-conv-assign-btn:hover { background: rgba(16, 185, 129, 0.3); }
+
+.admin-conv-actions { display: flex; gap: 8px; padding: 10px 24px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--card-border, rgba(255,255,255,0.08)); }
+.admin-actions-label { font-size: 0.78rem; color: var(--text-muted, rgba(255,255,255,0.5)); font-weight: 600; margin-right: 4px; }
+.admin-status-btn {
+  padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; border: 1px solid rgba(255,255,255,0.15); transition: 0.3s;
+  background: rgba(255,255,255,0.05); color: var(--text-muted, rgba(255,255,255,0.6));
+}
+.admin-status-btn:hover:not(:disabled) { background: rgba(0, 148, 255, 0.15); border-color: rgba(0, 148, 255, 0.3); color: #0094FF; }
+.admin-status-btn.active { background: rgba(0, 148, 255, 0.2); border-color: #0094FF; color: #0094FF; cursor: default; opacity: 1; }
+.admin-status-btn:disabled { opacity: 0.6; cursor: default; }
+.admin-status-btn.resolve { border-color: rgba(16, 185, 129, 0.3); }
+.admin-status-btn.resolve:hover:not(:disabled) { background: rgba(16, 185, 129, 0.2); color: #10b981; border-color: rgba(16, 185, 129, 0.5); }
+.admin-status-btn.resolve.active { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #10b981; }
+.admin-status-btn.close-btn { border-color: rgba(156, 163, 175, 0.3); }
+.admin-status-btn.close-btn:hover:not(:disabled) { background: rgba(156, 163, 175, 0.2); color: #9ca3af; border-color: rgba(156, 163, 175, 0.5); }
+.admin-status-btn.close-btn.active { background: rgba(156, 163, 175, 0.2); border-color: #9ca3af; color: #9ca3af; }
+
+/* Messages */
+.admin-conv-messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; min-height: 200px; max-height: 400px; }
+.admin-conv-no-msgs { text-align: center; color: rgba(255,255,255,0.3); font-size: 0.9rem; padding: 30px; }
+
+.admin-msg-bubble { padding: 12px 16px; border-radius: 14px; max-width: 82%; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.admin-msg-bubble.own { align-self: flex-end; background: rgba(0, 148, 255, 0.15); border: 1px solid rgba(0, 148, 255, 0.25); }
+.admin-msg-bubble.support { align-self: flex-start; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); }
+.admin-msg-bubble.client { align-self: flex-start; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+.admin-msg-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.admin-msg-header strong { font-size: 0.82rem; color: var(--title-color, white); }
+.admin-msg-role { font-size: 0.7rem; color: var(--text-muted, rgba(255,255,255,0.4)); text-transform: capitalize; }
+.admin-msg-text { font-size: 0.9rem; color: var(--text-main, white); line-height: 1.5; margin: 0; }
+.admin-msg-time { font-size: 0.7rem; color: var(--text-muted, rgba(255,255,255,0.35)); text-align: right; display: block; margin-top: 6px; }
+
+/* Input */
+.admin-conv-input {
+  display: flex; gap: 10px; padding: 16px 24px;
+  border-top: 1px solid var(--card-border, rgba(255,255,255,0.1));
+}
+.admin-conv-input input {
+  flex: 1; padding: 12px 16px; background: var(--info-bg, rgba(255,255,255,0.06));
+  border: 1px solid var(--card-border, rgba(255,255,255,0.12)); border-radius: 12px;
+  color: var(--text-main, white); font-size: 0.9rem; outline: none;
+}
+.admin-conv-input input:focus { border-color: #0094FF; }
+.admin-conv-input button {
+  padding: 12px 18px; background: #0094FF; border: none; border-radius: 12px;
+  color: white; cursor: pointer; display: flex; align-items: center; transition: 0.2s;
+}
+.admin-conv-input button:hover { opacity: 0.85; }
+.admin-conv-input button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-tickets-stats { grid-template-columns: repeat(2, 1fr); }
+  .admin-tickets-filters { flex-direction: column; }
+  .admin-ticket-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .admin-ticket-right { flex-direction: row; align-items: center; }
+  .admin-conv-modal { width: 100%; max-width: 100%; border-radius: 0; max-height: 100vh; }
+}

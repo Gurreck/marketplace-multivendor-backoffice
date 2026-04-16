@@ -1,0 +1,368 @@
+/* ===== Navbar Secundario (scopeado con .barra-navegacion-secundaria) ===== */
+.barra-navegacion-secundaria {
+    --nexora-blue: #0094FF;
+    --nexora-cyan: #00C2FF;
+    --nexora-dark: #000B18;
+    --nexora-deep: #001A2F;
+    --nexora-border: rgba(0, 194, 255, 0.3);
+    --nexora-card: rgba(0, 26, 47, 0.8);
+    --nexora-text: #e5e7eb;
+    --header-bg: rgba(0, 26, 47, 1);
+    --card-bg: rgba(30, 41, 82, 0.6);
+    --input-bg: rgba(30, 41, 82, 0.9);
+    --btn-bg: rgba(0, 148, 255, 0.3);
+}
+
+.barra-navegacion-secundaria.modo-claro {
+    --nexora-blue: #0369a1;
+    --nexora-cyan: #0284c7;
+    --nexora-dark: #f0f9ff;
+    --nexora-deep: #e0f2fe;
+    --nexora-border: rgba(0, 148, 255, 0.2);
+    --nexora-card: rgba(255, 255, 255, 0.9);
+    --nexora-text: #334155;
+    --header-bg: rgba(255, 255, 255, 0.95);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --input-bg: #ffffff;
+    --btn-bg: rgba(14, 165, 233, 0.15);
+}
+
+
+/* Header principal - fijado en la parte superior */
+.barra-navegacion-secundaria .encabezado {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--nexora-border);
+    padding: 16px 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Contenedor superior - logo + acciones */
+.barra-navegacion-secundaria .parte-superior-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* ===== Sección Marca (Logo) ===== */
+.barra-navegacion-secundaria .marca-encabezado {
+    flex-shrink: 0;
+}
+
+.barra-navegacion-secundaria .logotipo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.barra-navegacion-secundaria .logotipo:hover {
+    transform: scale(1.05);
+}
+
+.barra-navegacion-secundaria .imagen-logo-encabezado {
+    width: 60px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(0, 148, 255, 0.5));
+    scale: 1.8;
+    top: 3px;
+    position: relative;
+    transition: filter 0.3s ease;
+}
+
+.barra-navegacion-secundaria .logotipo:hover .imagen-logo-encabezado {
+    filter: drop-shadow(0 0 16px rgba(0, 148, 255, 0.8));
+}
+
+.barra-navegacion-secundaria .texto-logo {
+    color: var(--nexora-blue);
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--nexora-blue), var(--nexora-cyan, #00C2FF));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== Sección Barra de acciones ===== */
+.barra-navegacion-secundaria .barra-encabezado {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Botones del header */
+.barra-navegacion-secundaria .menu-usuario,
+.barra-navegacion-secundaria .boton-carrito,
+.barra-navegacion-secundaria .boton-salir,
+.barra-navegacion-secundaria .alternar-tema-encabezado,
+.barra-navegacion-secundaria .boton-inicio {
+    background: var(--btn-bg);
+    border: 1px solid var(--nexora-border);
+    color: var(--nexora-blue);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    max-width: 200px;
+    text-overflow: ellipsis;
+}
+
+/* Efecto glow sutil en botones */
+.barra-navegacion-secundaria .menu-usuario::before,
+.barra-navegacion-secundaria .boton-carrito::before,
+.barra-navegacion-secundaria .alternar-tema-encabezado::before,
+.barra-navegacion-secundaria .boton-inicio::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 148, 255, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.barra-navegacion-secundaria .menu-usuario:hover::before,
+.barra-navegacion-secundaria .boton-carrito:hover::before,
+.barra-navegacion-secundaria .alternar-tema-encabezado:hover::before,
+.barra-navegacion-secundaria .boton-inicio:hover::before {
+    opacity: 1;
+}
+
+/* Toggle de tema */
+.barra-navegacion-secundaria .alternar-tema-encabezado {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    font-size: 18px;
+}
+
+/* Hover en botones */
+.barra-navegacion-secundaria .menu-usuario:hover,
+.barra-navegacion-secundaria .boton-carrito:hover,
+.barra-navegacion-secundaria .alternar-tema-encabezado:hover,
+.barra-navegacion-secundaria .boton-inicio:hover {
+    background: var(--nexora-blue);
+    color: white;
+    border-color: var(--nexora-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 148, 255, 0.25);
+}
+
+.barra-navegacion-secundaria .menu-usuario {
+    padding: 6px 16px 6px 6px;
+    gap: 10px;
+    max-width: 360px;
+    justify-content: flex-start;
+    border-radius: 30px;
+}
+
+.barra-navegacion-secundaria .foto-perfil {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid white;
+    background: #1e293b;
+    flex-shrink: 0;
+}
+
+.barra-navegacion-secundaria .info-usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.barra-navegacion-secundaria .nombre-usuario {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--nexora-text, #e5e7eb);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+.barra-navegacion-secundaria .email-usuario {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+/* Botón de cerrar sesión */
+.barra-navegacion-secundaria .boton-salir {
+    color: #f87171;
+    border-color: rgba(244, 63, 94, 0.3);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.barra-navegacion-secundaria.modo-claro .boton-salir {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.barra-navegacion-secundaria .boton-salir:hover {
+    background: rgba(244, 63, 94, 0.25);
+    border-color: #f87171;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(244, 63, 94, 0.2);
+}
+
+/* Carrito con badge */
+.barra-navegacion-secundaria .boton-carrito {
+    position: relative;
+    overflow: visible;
+}
+
+.barra-navegacion-secundaria .etiqueta-carrito {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(248, 113, 113, 0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .barra-navegacion-secundaria .encabezado {
+        padding: 12px 30px;
+    }
+    
+    .barra-navegacion-secundaria .parte-superior-encabezado {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .barra-navegacion-secundaria .encabezado {
+        padding: 12px 20px;
+    }
+
+    .barra-navegacion-secundaria .parte-superior-encabezado {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .barra-navegacion-secundaria .marca-encabezado {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .barra-navegacion-secundaria .barra-encabezado {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .barra-navegacion-secundaria .texto-logo {
+        font-size: 24px;
+    }
+
+    .barra-navegacion-secundaria .imagen-logo-encabezado {
+        width: 45px;
+        scale: 1.4;
+    }
+
+    .barra-navegacion-secundaria .boton-carrito,
+    .barra-navegacion-secundaria .boton-salir,
+    .barra-navegacion-secundaria .boton-inicio {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .barra-navegacion-secundaria .alternar-tema-encabezado {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        max-width: none;
+        flex: 0 0 auto;
+    }
+    
+    .barra-navegacion-secundaria .menu-usuario .info-usuario {
+        display: none;
+    }
+
+    .barra-navegacion-secundaria .menu-usuario .foto-perfil {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .barra-navegacion-secundaria .encabezado {
+        padding: 10px 12px;
+    }
+
+    .barra-navegacion-secundaria .barra-encabezado {
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .barra-navegacion-secundaria .boton-carrito,
+    .barra-navegacion-secundaria .boton-salir,
+    .barra-navegacion-secundaria .boton-inicio {
+        padding: 7px 10px;
+        font-size: 11px;
+        border-radius: 20px;
+        flex: 1;
+        min-width: 0;
+        max-width: fit-content;
+    }
+    
+    .barra-navegacion-secundaria .boton-salir span {
+        display: none;
+    }
+}

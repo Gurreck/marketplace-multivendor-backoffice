@@ -1,0 +1,399 @@
+:root {
+    --bg-gradient: linear-gradient(135deg, #000B18 0%, #001A2F 100%);
+    --card-bg: rgba(0, 26, 47, 0.8);
+    --card-border: rgba(0, 194, 255, 0.3);
+    --title-color: #0094FF;
+    --subtitle-color: #9ca3af;
+    --text-main: #d1d5db;
+    --input-bg: rgba(0, 11, 24, 0.6);
+    --input-border: rgba(0, 194, 255, 0.2);
+    --input-text: #e5e7eb;
+    --input-focus-bg: rgba(0, 11, 24, 0.8);
+    --btn-gradient: linear-gradient(135deg, #0094FF 0%, #0057FF 100%);
+    --btn-hover-gradient: linear-gradient(135deg, #0057FF 0%, #0042C2 100%);
+    --btn-shadow: rgba(0, 148, 255, 0.4);
+    --link-color: #00C2FF;
+    --link-hover: #60E1FF;
+}
+
+.modo-claro {
+    --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-border: rgba(0, 148, 255, 0.2);
+    --title-color: #0369a1;
+    --subtitle-color: #64748b;
+    --text-main: #334155;
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+    --input-text: #0f172a;
+    --input-focus-bg: #ffffff;
+    --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    --btn-hover-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    --btn-shadow: rgba(14, 165, 233, 0.3);
+    --link-color: #0284c7;
+    --link-hover: #0369a1;
+}
+
+.contenedor-registro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background 0.3s ease;
+}
+
+.tarjeta-registro {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 50px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.icono-registro {
+    text-align: center;
+    margin-bottom: 20px;
+    scale: 3;
+    top: 25px;
+    position: relative;
+    right: 14px;
+}
+
+.imagen-logotipo {
+    width: 100px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(0, 194, 255, 0.5));
+}
+
+.titulo-registro {
+    color: var(--title-color);
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 10px 0;
+}
+
+.subtitulo-registro {
+    color: var(--subtitle-color);
+    text-align: center;
+    margin: 0 0 30px 0;
+    font-size: 14px;
+}
+
+.error-registro {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.formulario-registro {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.grupo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.grupo-formulario label {
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.contenedor-registro .icono-etiqueta {
+    font-size: 16px;
+}
+
+.contenedor-registro .grupo-formulario input {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--input-text);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.grupo-formulario input::placeholder {
+    color: #6b7280;
+}
+
+.grupo-formulario input:focus {
+    outline: none;
+    border-color: var(--link-color);
+    background: var(--input-focus-bg);
+    box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.1);
+}
+
+.grupo-formulario input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Role Selector */
+.seleccion-rol {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--input-text);
+    font-size: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300C2FF' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.seleccion-rol:focus {
+    outline: none;
+    border-color: var(--link-color);
+    background-color: var(--input-focus-bg);
+    box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.1);
+}
+
+.seleccion-rol:hover:not(:disabled) {
+    border-color: var(--link-color);
+}
+
+.seleccion-rol:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.seleccion-rol option {
+    background: #001A2F;
+    color: var(--input-text);
+    padding: 8px;
+}
+
+.modo-claro .seleccion-rol option {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+.boton-registro {
+    background: var(--btn-gradient);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.boton-registro:hover:not(:disabled) {
+    background: var(--btn-hover-gradient);
+    box-shadow: 0 4px 15px var(--btn-shadow);
+    transform: translateY(-2px);
+}
+
+.boton-registro:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.boton-registro:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.pie-registro {
+    text-align: center;
+    color: var(--subtitle-color);
+    font-size: 14px;
+}
+
+.boton-enlace {
+    background: none;
+    border: none;
+    color: var(--link-color);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 14px;
+}
+
+.boton-enlace:hover:not(:disabled) {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+.boton-enlace:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Theme Toggle Button Styles */
+.alternador-tema {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.alternador-tema:hover {
+    transform: rotate(15deg) scale(1.1);
+    border-color: var(--title-color);
+    color: var(--title-color);
+    box-shadow: 0 0 10px var(--btn-shadow);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .tarjeta-registro {
+        padding: 40px 20px;
+    }
+
+    .titulo-registro {
+        font-size: 24px;
+    }
+
+    .subtitulo-registro {
+        font-size: 12px;
+    }
+}
+
+
+.contenedor-entrada-contrasena {
+    position: relative;
+    width: 100%;
+}
+
+.contenedor-entrada-contrasena input {
+    width: 100%;
+    padding: 12px 45px 12px 16px;
+    box-sizing: border-box;
+}
+
+.boton-alternar-contrasena {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background: rgba(255,255,255,0.08);
+    border: none;
+    border-radius: 6px;
+
+    padding: 6px 8px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.2s ease;
+}
+
+.boton-alternar-contrasena:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.boton-alternar-contrasena:hover {
+  color: var(--link-color);
+}
+
+/* ===== Password Strength Indicator ===== */
+.password-strength-container {
+    margin-top: 8px;
+}
+.password-strength-bar {
+    height: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.password-strength-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+.password-strength-text {
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+}
+.password-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.password-rule {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    transition: color 0.3s ease;
+}
+.password-rule.valid {
+    color: #10b981;
+}
+.password-rule.invalid {
+    color: #6b7280;
+}
+.password-mismatch {
+    color: #ef4444;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+.password-match {
+    color: #10b981;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Light mode overrides */
+.modo-claro .password-strength-bar {
+    background: rgba(0, 0, 0, 0.08);
+}
+.modo-claro .password-rule.invalid {
+    color: #94a3b8;
+}
