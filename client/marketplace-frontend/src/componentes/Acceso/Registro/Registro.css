@@ -337,3 +337,63 @@
   color: var(--link-color);
 }
 
+/* ===== Password Strength Indicator ===== */
+.password-strength-container {
+    margin-top: 8px;
+}
+.password-strength-bar {
+    height: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.password-strength-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+.password-strength-text {
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+}
+.password-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.password-rule {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    transition: color 0.3s ease;
+}
+.password-rule.valid {
+    color: #10b981;
+}
+.password-rule.invalid {
+    color: #6b7280;
+}
+.password-mismatch {
+    color: #ef4444;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+.password-match {
+    color: #10b981;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Light mode overrides */
+.modo-claro .password-strength-bar {
+    background: rgba(0, 0, 0, 0.08);
+}
+.modo-claro .password-rule.invalid {
+    color: #94a3b8;
+}

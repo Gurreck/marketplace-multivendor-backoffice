@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './Registro.css';
 import logo from '../../../resource/logo1.png';
 import { useNavigate } from 'react-router-dom';
@@ -13,8 +13,11 @@ import {
     EyeOff, 
     UserPlus, 
     Loader2,
-    ShieldCheck
+    ShieldCheck,
+    Check,
+    X as XIcon
 } from 'lucide-react';
+import TerminosCondiciones from '../TerminosCondiciones/TerminosCondiciones';
 
 export default function Registro() {
     const navigate = useNavigate();
@@ -28,23 +31,41 @@ export default function Registro() {
         confirmPassword: '',
         role: 'cliente'
     }); // Datos del formulario
+    const [aceptoTerminos, setAceptoTerminos] = useState(false);
     const [error, setError] = useState(''); // Mensajes de error
     const [loading, setLoading] = useState(false); // Estado de carga (submitting)
     const [isDarkMode, setIsDarkMode] = useState(true); // Tema local
     const [showPassword, setShowPassword] = useState(false); // Visibilidad contraseña
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Visibilidad confirmación
 
+    // ===== VALIDACIÓN DE CONTRASEÑA =====
+    const passwordRules = useMemo(() => {
+        const pwd = formData.password;
+        return [
+            { label: 'Mínimo 8 caracteres', valid: pwd.length >= 8 },
+            { label: 'Una letra mayúscula', valid: /[A-Z]/.test(pwd) },
+            { label: 'Una letra minúscula', valid: /[a-z]/.test(pwd) },
+            { label: 'Un número', valid: /[0-9]/.test(pwd) },
+            { label: 'Un carácter especial (!@#$%^&*)', valid: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd) },
+        ];
+    }, [formData.password]);
+
+    const passwordStrength = useMemo(() => {
+        const passedCount = passwordRules.filter(r => r.valid).length;
+        if (passedCount <= 1) return { level: 'Muy débil', color: '#ef4444', width: '20%' };
+        if (passedCount === 2) return { level: 'Débil', color: '#f59e0b', width: '40%' };
+        if (passedCount === 3) return { level: 'Media', color: '#f59e0b', width: '60%' };
+        if (passedCount === 4) return { level: 'Fuerte', color: '#10b981', width: '80%' };
+        return { level: 'Muy fuerte', color: '#10b981', width: '100%' };
+    }, [passwordRules]);
+
+    const allPasswordValid = passwordRules.every(r => r.valid);
+
     // ===== MANEJADORES DE EVENTOS =====
-    /**
-     * Alterna el tema entre claro y oscuro
-     */
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
     };
 
-    /**
-     * Actualiza el estado del formulario al escribir
-     */
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -53,9 +74,6 @@ export default function Registro() {
         }));
     };
 
-    /**
-     * Procesa el registro del usuario
-     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -68,11 +86,14 @@ export default function Registro() {
         if (!/\S+@\S+\.\S+/.test(formData.email)) {
             setError('Por favor, ingresa un email válido'); setLoading(false); return;
         }
-        if (formData.password.length < 6) {
-            setError('La contraseña debe tener al menos 6 caracteres'); setLoading(false); return;
+        if (!allPasswordValid) {
+            setError('La contraseña no cumple todos los requisitos de seguridad'); setLoading(false); return;
         }
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden'); setLoading(false); return;
+        }
+        if (!aceptoTerminos) {
+            setError('Debes aceptar los Términos y Condiciones para registrarte'); setLoading(false); return;
         }
 
         try {
@@ -80,9 +101,13 @@ export default function Registro() {
             alert(`¡Cuenta creada exitosamente! Bienvenido ${formData.name}`);
             setError('');
             setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'cliente' });
+            setAceptoTerminos(false);
             navigate('/login');
         } catch (err) {
-            setError(err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.');
+            const errMsg = err.response?.data?.errores
+                ? err.response.data.errores.join('. ')
+                : err.response?.data?.message || 'Error al crear la cuenta. Intenta nuevamente.';
+            setError(errMsg);
             console.error(err);
         } finally {
             setLoading(false);
@@ -154,7 +179,7 @@ export default function Registro() {
                                 type={showPassword ? "text" : "password"}
                                 id="password"
                                 name="password"
-                                placeholder="Mínimo 6 caracteres"
+                                placeholder="Contraseña segura"
                                 value={formData.password}
                                 onChange={handleChange}
                                 disabled={loading}
@@ -167,6 +192,29 @@ export default function Registro() {
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
+
+                        {/* Indicador de fortaleza */}
+                        {formData.password && (
+                            <div className="password-strength-container">
+                                <div className="password-strength-bar">
+                                    <div
+                                        className="password-strength-fill"
+                                        style={{ width: passwordStrength.width, backgroundColor: passwordStrength.color }}
+                                    />
+                                </div>
+                                <span className="password-strength-text" style={{ color: passwordStrength.color }}>
+                                    {passwordStrength.level}
+                                </span>
+                                <div className="password-rules-list">
+                                    {passwordRules.map((rule, i) => (
+                                        <div key={i} className={`password-rule ${rule.valid ? 'valid' : 'invalid'}`}>
+                                            {rule.valid ? <Check size={14} /> : <XIcon size={14} />}
+                                            <span>{rule.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="grupo-formulario">
@@ -191,6 +239,12 @@ export default function Registro() {
                                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
+                        {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                            <span className="password-mismatch">Las contraseñas no coinciden</span>
+                        )}
+                        {formData.confirmPassword && formData.password === formData.confirmPassword && formData.confirmPassword.length > 0 && (
+                            <span className="password-match">Las contraseñas coinciden ✓</span>
+                        )}
                     </div>
 
                     <div className="grupo-formulario">
@@ -210,10 +264,13 @@ export default function Registro() {
                         </select>
                     </div>
 
+                    {/* Términos y Condiciones */}
+                    <TerminosCondiciones aceptado={aceptoTerminos} onChange={setAceptoTerminos} />
+
                     <button
                         type="submit"
                         className={`boton-registro ${loading ? 'cargando' : ''}`}
-                        disabled={loading}
+                        disabled={loading || !aceptoTerminos || !allPasswordValid}
                     >
                         {loading ? (
                             <>

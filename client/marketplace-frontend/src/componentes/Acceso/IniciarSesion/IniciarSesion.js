@@ -45,7 +45,9 @@ export default function IniciarSesion({ onRegisterClick, onForgotClick }) {
       case 'administrador':
         return '/administrador/dashboard';
       case 'vendedor':
-        return '/vendedor';        
+        return '/vendedor';
+      case 'soporte':
+        return '/soporte';
       case 'cliente':
         return '/cliente';
       default:

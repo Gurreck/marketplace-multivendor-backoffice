@@ -18,7 +18,7 @@ import {
   Ticket,
 } from "lucide-react";
 import PerfilVendedor from '../../Perfil/PerfilVendedor/PerfilVendedor';
-import MisTickets from '../../MisTickets/MisTickets';
+import VendedorTickets from '../VendedorTickets/VendedorTickets';
 
 // Sub-componentes
 import VendedorDashboard from '../VendedorDashboard/VendedorDashboard';
@@ -148,7 +148,7 @@ export default function Vendedor() {
             historialOrden={data.historialOrden}
           />
         )}
-        {data.seccionActiva === "tickets" && <MisTickets />}
+        {data.seccionActiva === "tickets" && <VendedorTickets />}
       </main>
 
       <ModalesVendedor

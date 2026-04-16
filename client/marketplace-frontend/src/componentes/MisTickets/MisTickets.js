@@ -31,10 +31,24 @@ export default function MisTickets() {
             fetchTickets();
         });
 
+        socket.on("ticketUpdated", (data) => {
+            fetchTickets();
+        });
+
+        socket.on("ticketMessageSent", (data) => {
+            if (selectedTicket && data._id === selectedTicket) {
+                setTicketDetail(data);
+            }
+            fetchTickets();
+        });
+
         return () => {
             socket.off("ticketEscalated");
+            socket.off("ticketUpdated");
+            socket.off("ticketMessageSent");
         };
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedTicket]);
 
     const fetchTickets = async () => {
         try {
@@ -78,6 +92,8 @@ export default function MisTickets() {
             const response = await servicioSoporte.obtenerDetalleTicket(ticketId);
             setTicketDetail(response.data);
             setSelectedTicket(ticketId);
+            // Unirse a la sala del ticket para mensajes en tiempo real
+            socket.emit('joinTicketRoom', ticketId);
         } catch (err) {
             console.error('Error al cargar detalle:', err);
         }
@@ -227,11 +243,11 @@ export default function MisTickets() {
 
             {/* Modal Conversación */}
             {selectedTicket && ticketDetail && (
-                <div className="modal-overlay" onClick={() => { setSelectedTicket(null); setTicketDetail(null); }}>
+                <div className="modal-overlay" onClick={() => { if (selectedTicket) socket.emit('leaveTicketRoom', selectedTicket); setSelectedTicket(null); setTicketDetail(null); }}>
                     <div className="modal-content modal-conversation" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2><MessageCircle size={20} /> {ticketDetail.asunto}</h2>
-                            <button className="modal-close" onClick={() => { setSelectedTicket(null); setTicketDetail(null); }}><X size={20} /></button>
+                            <button className="modal-close" onClick={() => { if (selectedTicket) socket.emit('leaveTicketRoom', selectedTicket); setSelectedTicket(null); setTicketDetail(null); }}><X size={20} /></button>
                         </div>
                         <div className={`ticket-status-pills ${getEstadoClass(ticketDetail.estado)}`} style={{ margin: '0 0 16px', display: 'inline-flex' }}>
                             {getEstadoLabel(ticketDetail.estado)}
@@ -250,13 +266,30 @@ export default function MisTickets() {
                         )}
                         <div className="conversation-messages">
                             {ticketDetail.mensajes && ticketDetail.mensajes.length > 0 ? (
-                                ticketDetail.mensajes.map((msg, i) => (
-                                    <div key={i} className={`message-bubble ${msg.remitente?.role === 'soporte' || msg.remitente?.role === 'administrador' ? 'support' : 'user'}`}>
-                                        <div className="message-sender">{msg.remitente?.nombre || 'Usuario'}</div>
-                                        <div className="message-text">{msg.texto}</div>
-                                        <div className="message-time">{new Date(msg.fecha).toLocaleString()}</div>
-                                    </div>
-                                ))
+                                ticketDetail.mensajes.map((msg, i) => {
+                                    const isOwn = msg.remitente?._id === user?.id || msg.remitente?._id === user?._id;
+                                    const role = msg.remitente?.role || 'cliente';
+                                    const roleLabel = { 'cliente': 'Cliente', 'soporte': 'Soporte', 'administrador': 'Admin', 'vendedor': 'Vendedor' }[role] || role;
+                                    const roleColor = { 'cliente': '#3b82f6', 'soporte': '#a855f7', 'administrador': '#ef4444', 'vendedor': '#f59e0b' }[role] || '#9ca3af';
+                                    const bubbleClass = isOwn ? 'user' : (role === 'soporte' || role === 'administrador') ? 'support' : role === 'vendedor' ? 'support' : 'user';
+                                    return (
+                                        <div key={i} className={`message-bubble ${bubbleClass}`}>
+                                            <div className="message-sender" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                {msg.remitente?.nombre || 'Usuario'}
+                                                <span style={{
+                                                    fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px',
+                                                    borderRadius: '10px', background: `${roleColor}22`,
+                                                    color: roleColor, border: `1px solid ${roleColor}44`,
+                                                    textTransform: 'capitalize'
+                                                }}>
+                                                    {roleLabel}
+                                                </span>
+                                            </div>
+                                            <div className="message-text">{msg.texto}</div>
+                                            <div className="message-time">{new Date(msg.fecha).toLocaleString()}</div>
+                                        </div>
+                                    );
+                                })
                             ) : (
                                 <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>Sin mensajes aún</p>
                             )}

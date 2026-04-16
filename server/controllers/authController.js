@@ -3,12 +3,23 @@ const generateToken = require("../config/generateToken");
 const crypto = require("crypto");
 const sendEmail = require("../Utils/SendEmail");
 
+// ========== VALIDACIÓN DE CONTRASEÑA FUERTE ==========
+const validatePassword = (password) => {
+  const errores = [];
+  if (password.length < 8) errores.push("Mínimo 8 caracteres");
+  if (!/[A-Z]/.test(password)) errores.push("Al menos una letra mayúscula");
+  if (!/[a-z]/.test(password)) errores.push("Al menos una letra minúscula");
+  if (!/[0-9]/.test(password)) errores.push("Al menos un número");
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) errores.push("Al menos un carácter especial (!@#$%^&*)");
+  return errores;
+};
+
 // @desc    Registrar un nuevo usuario
 // @route   POST /api/auth/register
 // @access  Público
 const register = async (req, res) => {
   try {
-    const { nombre, email, password, role } = req.body;
+    const { nombre, email, password, role, aceptoTerminos } = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -19,11 +30,22 @@ const register = async (req, res) => {
       });
     }
 
+    // Validar fortaleza de contraseña
+    const erroresPassword = validatePassword(password);
+    if (erroresPassword.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "La contraseña no cumple los requisitos de seguridad",
+        errores: erroresPassword,
+      });
+    }
+
     const user = await User.create({
       nombre,
       email,
       password,
       role: role || "cliente",
+      aceptoTerminos: aceptoTerminos || false,
     });
 
     const token = generateToken(user);
@@ -381,6 +403,16 @@ const resetPassword = async (req, res) => {
       });
     }
 
+    // Validar fortaleza de contraseña
+    const erroresPassword = validatePassword(password);
+    if (erroresPassword.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "La contraseña no cumple los requisitos de seguridad",
+        errores: erroresPassword,
+      });
+    }
+
     const hashedToken = crypto
       .createHash("sha256")
       .update(token)
@@ -436,6 +468,16 @@ const changePassword = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Las nuevas contraseñas no coinciden.",
+      });
+    }
+
+    // Validar fortaleza de contraseña
+    const erroresPassword = validatePassword(newPassword);
+    if (erroresPassword.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "La contraseña no cumple los requisitos de seguridad",
+        errores: erroresPassword,
       });
     }
 

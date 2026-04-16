@@ -263,8 +263,8 @@ const replyTicket = async (req, res) => {
       fecha: new Date(),
     });
 
-    // Si soporte responde, cambiar estado a waiting_customer
-    if (req.user.role === "soporte" || req.user.role === "administrador") {
+    // Si soporte/admin/vendedor responde, cambiar estado a waiting_customer
+    if (req.user.role === "soporte" || req.user.role === "administrador" || req.user.role === "vendedor") {
       if (ticket.estado === "open" || ticket.estado === "in_progress") {
         ticket.estado = "waiting_customer";
       }
@@ -283,6 +283,20 @@ const replyTicket = async (req, res) => {
       .populate("user", "nombre email")
       .populate("asignadoA", "nombre email")
       .populate("mensajes.remitente", "nombre email role");
+
+    // WebSocket: notificar a todos en la sala del ticket
+    const io = req.app.get("io");
+    if (io) {
+      io.to(`ticket_${ticket._id}`).emit("ticketMessageSent", populated);
+      // Notificar al usuario dueño del ticket
+      io.to(`user_${ticket.user.toString()}`).emit("ticketUpdated", populated);
+      // Notificar a roles escalados
+      if (ticket.escaladoARol) {
+        io.to(`role_${ticket.escaladoARol}`).emit("ticketUpdated", populated);
+      }
+      // Notificar al equipo de soporte
+      io.to("role_soporte").emit("ticketUpdated", populated);
+    }
 
     res.status(200).json({ success: true, data: populated });
   } catch (error) {
