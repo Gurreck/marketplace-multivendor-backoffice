@@ -40,7 +40,7 @@ import {
   AlertCircle,
   User,
 } from "lucide-react";
-import PerfilVendedor from "../Perfil/PerfilVendedor";
+import PerfilVendedor from "../perfil/PerfilVendedor";
 
 export default function Vendedor() {
   const navegar = useNavigate();
